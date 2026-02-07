@@ -1,0 +1,2 @@
+# Perfil dev: ativa o DevDataLoader para criar usuário admin@dropshipping.com / Senha@123
+# Use: --spring.profiles.active=dev ou SPRING_PROFILES_ACTIVE=dev
