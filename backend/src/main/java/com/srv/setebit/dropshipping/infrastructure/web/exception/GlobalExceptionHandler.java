@@ -1,6 +1,8 @@
 package com.srv.setebit.dropshipping.infrastructure.web.exception;
 
 import com.srv.setebit.dropshipping.domain.user.exception.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -16,6 +18,8 @@ import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleUserNotFound(UserNotFoundException ex) {
@@ -58,8 +62,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneric(Exception ex) {
+        log.error("Erro inesperado", ex);
+        String message = ex.getMessage() != null ? ex.getMessage() : ex.getClass().getSimpleName();
+        if (ex.getCause() != null && ex.getCause().getMessage() != null) {
+            message = message + " | Causa: " + ex.getCause().getMessage();
+        }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                new ErrorResponse(Instant.now(), 500, "Internal Server Error", "Erro interno do servidor", null));
+                new ErrorResponse(Instant.now(), 500, "Internal Server Error", message, null));
     }
 
     public record ErrorResponse(Instant timestamp, int status, String error, String message, String path) {

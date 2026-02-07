@@ -2,12 +2,15 @@ package com.srv.setebit.dropshipping.infrastructure.web.controller;
 
 import com.srv.setebit.dropshipping.application.user.*;
 import com.srv.setebit.dropshipping.application.user.dto.request.*;
-import com.srv.setebit.dropshipping.application.user.dto.response.*;
+import com.srv.setebit.dropshipping.application.user.dto.request.ChangePasswordRequest;
+import com.srv.setebit.dropshipping.application.user.dto.request.CreateUserRequest;
+import com.srv.setebit.dropshipping.application.user.dto.request.UpdateUserRequest;
+import com.srv.setebit.dropshipping.application.user.dto.response.PageUserResponse;
+import com.srv.setebit.dropshipping.application.user.dto.response.UserResponse;
 import com.srv.setebit.dropshipping.domain.user.UserProfile;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -59,12 +62,12 @@ public class UserController {
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @Operation(summary = "Listar usuários")
-    public ResponseEntity<Page<UserResponse>> list(
+    public ResponseEntity<PageUserResponse> list(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String profile,
             @PageableDefault(size = 20, sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
-        Page<UserResponse> response = listUsersUseCase.execute(name, email, profile, pageable);
+        PageUserResponse response = listUsersUseCase.execute(name, email, profile, pageable);
         return ResponseEntity.ok(response);
     }
 

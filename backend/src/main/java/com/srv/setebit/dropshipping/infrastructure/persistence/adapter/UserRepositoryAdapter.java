@@ -3,8 +3,8 @@ package com.srv.setebit.dropshipping.infrastructure.persistence.adapter;
 import com.srv.setebit.dropshipping.domain.user.User;
 import com.srv.setebit.dropshipping.domain.user.UserProfile;
 import com.srv.setebit.dropshipping.domain.user.port.UserRepositoryPort;
-import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.UserJpaEntity;
-import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.UserJpaRepository;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.UserEntity;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.UserRepository;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,15 +16,15 @@ import java.util.UUID;
 @Component
 public class UserRepositoryAdapter implements UserRepositoryPort {
 
-    private final UserJpaRepository jpaRepository;
+    private final UserRepository jpaRepository;
 
-    public UserRepositoryAdapter(@Lazy UserJpaRepository jpaRepository) {
+    public UserRepositoryAdapter(@Lazy UserRepository jpaRepository) {
         this.jpaRepository = jpaRepository;
     }
 
     @Override
     public User save(User user) {
-        UserJpaEntity entity = toEntity(user);
+        UserEntity entity = toEntity(user);
         entity = jpaRepository.save(entity);
         return toDomain(entity);
     }
@@ -71,8 +71,8 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
         jpaRepository.deleteById(user.getId());
     }
 
-    private UserJpaEntity toEntity(User user) {
-        UserJpaEntity entity = new UserJpaEntity();
+    private UserEntity toEntity(User user) {
+        UserEntity entity = new UserEntity();
         entity.setId(user.getId());
         entity.setEmail(user.getEmail());
         entity.setPasswordHash(user.getPasswordHash());
@@ -85,7 +85,7 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
         return entity;
     }
 
-    private User toDomain(UserJpaEntity entity) {
+    private User toDomain(UserEntity entity) {
         return new User(
                 entity.getId(),
                 entity.getEmail(),

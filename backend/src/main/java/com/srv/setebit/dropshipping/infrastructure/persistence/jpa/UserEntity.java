@@ -2,7 +2,6 @@ package com.srv.setebit.dropshipping.infrastructure.persistence.jpa;
 
 import com.srv.setebit.dropshipping.domain.user.UserProfile;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,7 +16,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserJpaEntity {
+public class UserEntity {
 
     @Id
     @Column(name = "id", updatable = false, nullable = false)

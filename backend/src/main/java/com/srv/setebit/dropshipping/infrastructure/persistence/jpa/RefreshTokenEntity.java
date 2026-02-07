@@ -1,7 +1,6 @@
 package com.srv.setebit.dropshipping.infrastructure.persistence.jpa;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,7 +14,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RefreshTokenJpaEntity {
+public class RefreshTokenEntity {
 
     @Id
     @Column(name = "id", updatable = false, nullable = false)
