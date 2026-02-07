@@ -2,7 +2,7 @@
 node_modules/
 
 # Angular
-frontend/.angular/
+.angular/
 frontend/dist/
 frontend/node_modules/
 
@@ -25,3 +25,4 @@ uploads/
 # Environment (descomente se tiver secrets locais)
 # .env
 # .env.local
+/frontend/.angular/
