@@ -48,6 +48,16 @@ import { AuthService } from '../../services/auth.service';
           >
             <i class="pi pi-users"></i>
           </a>
+          <a
+            routerLink="/produtos"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: false }"
+            class="nav-item"
+            pTooltip="Produtos"
+            tooltipPosition="right"
+          >
+            <i class="pi pi-box"></i>
+          </a>
         </nav>
         <div class="sidebar-footer">
           <div
@@ -159,8 +169,8 @@ import { AuthService } from '../../services/auth.service';
       }
 
       .nav-item.active {
-        background: #1e293b;
-        color: white;
+        background: var(--sidebar-active-bg);
+        color: var(--sidebar-active-text);
       }
 
       .sidebar-footer {
@@ -185,11 +195,10 @@ import { AuthService } from '../../services/auth.service';
         height: 4rem;
         padding: 0 1.5rem;
         background: var(--header-bg);
-        border-bottom: none;
+        border-bottom: 1px solid #e2e8f0;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       }
 
       .header-left {
@@ -213,7 +222,7 @@ import { AuthService } from '../../services/auth.service';
       .header-search .search-icon {
         position: absolute;
         left: 0.75rem;
-        color: rgba(255, 255, 255, 0.7);
+        color: #94a3b8;
         font-size: 0.875rem;
       }
 
@@ -221,14 +230,14 @@ import { AuthService } from '../../services/auth.service';
         width: 16rem;
         padding: 0.5rem 0.75rem 0.5rem 2.25rem;
         border-radius: var(--p-border-radius);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        border: 1px solid #e2e8f0;
         font-size: 0.875rem;
-        background: rgba(255, 255, 255, 0.1);
-        color: white;
+        background: #ffffff;
+        color: #1e293b;
       }
 
       .header-search .search-input::placeholder {
-        color: rgba(255, 255, 255, 0.6);
+        color: #94a3b8;
       }
 
       .header-right {
@@ -238,12 +247,12 @@ import { AuthService } from '../../services/auth.service';
       }
 
       .header-buttons ::ng-deep .p-button {
-        color: rgba(255, 255, 255, 0.9);
+        color: #64748b;
       }
 
       .header-buttons ::ng-deep .p-button:hover {
-        color: white;
-        background: rgba(255, 255, 255, 0.15);
+        color: #1e293b;
+        background: #f1f5f9;
       }
 
       .app-content {

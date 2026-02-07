@@ -29,6 +29,12 @@ spring:
 server:
   port: 8080
 
+app:
+  upload:
+    dir: ${UPLOAD_DIR:uploads}
+  api:
+    base-url: ${API_BASE_URL:http://localhost:8080}
+
 # Para ver no console se o Flyway está rodando e quais migrações aplica (opcional)
 logging:
   level:

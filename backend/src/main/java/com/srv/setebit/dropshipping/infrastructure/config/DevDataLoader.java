@@ -1,5 +1,10 @@
 package com.srv.setebit.dropshipping.infrastructure.config;
 
+import com.srv.setebit.dropshipping.domain.product.Product;
+import com.srv.setebit.dropshipping.domain.product.ProductImage;
+import com.srv.setebit.dropshipping.domain.product.ProductStatus;
+import com.srv.setebit.dropshipping.domain.product.port.ProductImageRepositoryPort;
+import com.srv.setebit.dropshipping.domain.product.port.ProductRepositoryPort;
 import com.srv.setebit.dropshipping.domain.user.User;
 import com.srv.setebit.dropshipping.domain.user.UserProfile;
 import com.srv.setebit.dropshipping.domain.user.port.UserRepositoryPort;
@@ -10,6 +15,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -43,6 +49,44 @@ public class DevDataLoader {
                 user.setUpdatedAt(now);
                 userRepository.save(user);
                 System.out.println("[DevDataLoader] Usuário de teste criado: " + TEST_USER_EMAIL + " / " + TEST_USER_PASSWORD);
+            }
+        };
+    }
+
+    @Bean
+    @Order(2)
+    ApplicationRunner loadDevProducts(ProductRepositoryPort productRepository,
+                                      ProductImageRepositoryPort productImageRepository) {
+        return args -> {
+            if (productRepository.findBySku("PROD-001").isEmpty()) {
+                Instant now = Instant.now();
+                Product p1 = new Product();
+                p1.setId(UUID.randomUUID());
+                p1.setSku("PROD-001");
+                p1.setName("Camiseta Básica Branca");
+                p1.setShortDescription("Camiseta de algodão 100%, básica e confortável");
+                p1.setFullDescription("Camiseta básica de algodão 100%, corte reto, ideal para o dia a dia.");
+                p1.setSalePrice(new BigDecimal("49.90"));
+                p1.setCostPrice(new BigDecimal("25.00"));
+                p1.setCurrency("BRL");
+                p1.setStatus(ProductStatus.ACTIVE);
+                p1.setSlug("camiseta-basica-branca");
+                p1.setDropship(true);
+                p1.setLeadTimeDays(5);
+                p1.setCreatedAt(now);
+                p1.setUpdatedAt(now);
+                p1 = productRepository.save(p1);
+
+                ProductImage img1 = new ProductImage();
+                img1.setId(UUID.randomUUID());
+                img1.setProductId(p1.getId());
+                img1.setUrl("https://placehold.co/400x400?text=Camiseta");
+                img1.setPosition(0);
+                img1.setMain(true);
+                img1.setAltText("Camiseta Básica Branca");
+                productImageRepository.save(img1);
+
+                System.out.println("[DevDataLoader] Produto de teste criado: " + p1.getSku());
             }
         };
     }

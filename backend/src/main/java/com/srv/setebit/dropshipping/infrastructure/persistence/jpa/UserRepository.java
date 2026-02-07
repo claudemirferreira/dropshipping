@@ -18,7 +18,7 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
 
     boolean existsByEmailAndIdNot(String email, UUID id);
 
-    @Query("SELECT u FROM UserJpaEntity u WHERE " +
+    @Query("SELECT u FROM UserEntity u WHERE " +
             "LOWER(u.name) LIKE LOWER(CONCAT('%', COALESCE(:name, ''), '%')) AND " +
             "LOWER(u.email) LIKE LOWER(CONCAT('%', COALESCE(:email, ''), '%')) AND " +
             "(:profile IS NULL OR u.profile = :profile)")

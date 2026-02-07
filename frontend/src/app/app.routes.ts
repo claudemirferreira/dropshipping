@@ -34,6 +34,13 @@ export const routes: Routes = [
             (m) => m.UsersListComponent
           ),
       },
+      {
+        path: 'produtos',
+        loadComponent: () =>
+          import('./features/products/products-list/products-list').then(
+            (m) => m.ProductsListComponent
+          ),
+      },
     ],
   },
   { path: '**', redirectTo: '' },

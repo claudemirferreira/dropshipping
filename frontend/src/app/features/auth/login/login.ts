@@ -86,12 +86,23 @@ import { AuthService } from '../../../core/services/auth.service';
         align-items: center;
         justify-content: center;
         padding: 1rem;
-        background: #0f172a;
+        background: #f8fafc;
       }
 
       .login-card {
         width: 100%;
         max-width: 400px;
+      }
+
+      :host ::ng-deep .login-card,
+      :host ::ng-deep .login-card .p-card {
+        background: #ffffff !important;
+      }
+
+      :host ::ng-deep .login-card .p-card-body,
+      :host ::ng-deep .login-card .p-card-content {
+        background: #ffffff !important;
+        color: #334155;
       }
 
       .login-header {

@@ -1,5 +1,6 @@
 package com.srv.setebit.dropshipping.infrastructure.web.exception;
 
+import com.srv.setebit.dropshipping.domain.product.exception.*;
 import com.srv.setebit.dropshipping.domain.user.exception.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,24 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DuplicateEmailException.class)
     public ResponseEntity<ErrorResponse> handleDuplicateEmail(DuplicateEmailException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                new ErrorResponse(Instant.now(), 409, "Conflict", ex.getMessage(), null));
+    }
+
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleProductNotFound(ProductNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new ErrorResponse(Instant.now(), 404, "Not Found", ex.getMessage(), null));
+    }
+
+    @ExceptionHandler(ProductImageNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleProductImageNotFound(ProductImageNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new ErrorResponse(Instant.now(), 404, "Not Found", ex.getMessage(), null));
+    }
+
+    @ExceptionHandler({DuplicateSkuException.class, DuplicateSlugException.class})
+    public ResponseEntity<ErrorResponse> handleDuplicateProduct(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 new ErrorResponse(Instant.now(), 409, "Conflict", ex.getMessage(), null));
     }
