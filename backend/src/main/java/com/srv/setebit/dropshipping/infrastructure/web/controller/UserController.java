@@ -12,7 +12,6 @@ import com.srv.setebit.dropshipping.application.user.dto.request.CreateUserReque
 import com.srv.setebit.dropshipping.application.user.dto.request.UpdateUserRequest;
 import com.srv.setebit.dropshipping.application.user.dto.response.PageUserResponse;
 import com.srv.setebit.dropshipping.application.user.dto.response.UserResponse;
-import com.srv.setebit.dropshipping.domain.user.UserProfile;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -80,9 +79,9 @@ public class UserController {
     public ResponseEntity<PageUserResponse> list(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String email,
-            @RequestParam(required = false) String profile,
+            @RequestParam(required = false) String perfilCode,
             @PageableDefault(size = 20, sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
-        PageUserResponse response = listUsersUseCase.execute(name, email, profile, pageable);
+        PageUserResponse response = listUsersUseCase.execute(name, email, perfilCode, pageable);
         return ResponseEntity.ok(response);
     }
 
@@ -166,7 +165,9 @@ public class UserController {
     }
 
     private boolean isAdminOrManager(UUID userId) {
-        UserResponse user = getUserByIdUseCase.execute(userId);
-        return user.profile() == UserProfile.ADMIN || user.profile() == UserProfile.MANAGER;
+        List<String> perfilCodes = getUserPerfisUseCase.execute(userId).stream()
+                .map(PerfilResponse::code)
+                .toList();
+        return perfilCodes.contains("ADMIN") || perfilCodes.contains("MANAGER");
     }
 }

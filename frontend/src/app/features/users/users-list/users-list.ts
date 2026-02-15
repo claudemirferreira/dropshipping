@@ -13,6 +13,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { AvatarModule } from 'primeng/avatar';
 import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
+import { MultiSelectModule } from 'primeng/multiselect';
 import { PasswordModule } from 'primeng/password';
 import { PickListModule } from 'primeng/picklist';
 import { UsersService, CreateUserRequest } from '../../../core/services/users.service';
@@ -24,13 +25,6 @@ interface PerfilOption {
   label: string;
   value: string;
 }
-
-const PROFILE_OPTIONS = [
-  { label: 'Administrador', value: 'ADMIN' },
-  { label: 'Gerente', value: 'MANAGER' },
-  { label: 'Vendedor', value: 'SELLER' },
-  { label: 'Operador', value: 'OPERATOR' },
-];
 
 const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
 
@@ -51,6 +45,7 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
     AvatarModule,
     DialogModule,
     DropdownModule,
+    MultiSelectModule,
     PasswordModule,
     PickListModule,
   ],
@@ -113,7 +108,6 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
           <tr>
             <th>Nome</th>
             <th>E-mail</th>
-            <th>Perfil</th>
             <th>Status</th>
             <th style="width: 170px">Ações</th>
           </tr>
@@ -131,9 +125,6 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
               </div>
             </td>
             <td>{{ user.email }}</td>
-            <td>
-              <p-tag [value]="user.profile" [severity]="getProfileSeverity(user.profile)" />
-            </td>
             <td>
               <p-tag
                 [value]="user.active ? 'Ativo' : 'Inativo'"
@@ -232,19 +223,16 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
           <input id="create-phone" pInputText formControlName="phone" placeholder="(00) 00000-0000" />
         </div>
         <div class="form-field">
-          <label for="create-profile">Perfil</label>
-          <p-dropdown
-            id="create-profile"
-            formControlName="profile"
-            [options]="profileOptions"
-            placeholder="Selecione o perfil"
+          <label for="create-perfis">Perfis (opcional)</label>
+          <p-multiSelect
+            id="create-perfis"
+            formControlName="perfilIds"
+            [options]="perfisOptions()"
+            placeholder="Selecione os perfis"
             optionLabel="label"
             optionValue="value"
             styleClass="w-full"
           />
-          @if (createForm.get('profile')?.invalid && createForm.get('profile')?.touched) {
-            <small class="field-error">Perfil é obrigatório</small>
-          }
         </div>
       </form>
       <ng-template pTemplate="footer">
@@ -580,13 +568,13 @@ export class UsersListComponent {
   pickListTarget: PerfilOption[] = [];
   savingPerfis = signal(false);
   searchControl = new FormControl('', { nonNullable: true });
-  profileOptions = PROFILE_OPTIONS;
+  perfisOptions = signal<PerfilOption[]>([]);
   createForm = this.fb.nonNullable.group({
     name: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(8), Validators.pattern(PASSWORD_PATTERN)]],
     phone: [''],
-    profile: ['', Validators.required],
+    perfilIds: [[] as string[]],
   });
   private currentPage = 0;
   private currentSize = 10;
@@ -682,11 +670,18 @@ export class UsersListComponent {
   }
 
   openCreateDialog(): void {
+    this.perfisService.list({ active: true }).subscribe({
+      next: (res) => {
+        this.perfisOptions.set(
+          res.content.map((p) => ({ label: `${p.code} - ${p.name}`, value: p.id }))
+        );
+      },
+    });
     this.createDialogVisible = true;
   }
 
   resetCreateForm(): void {
-    this.createForm.reset({ name: '', email: '', password: '', phone: '', profile: '' });
+    this.createForm.reset({ name: '', email: '', password: '', phone: '', perfilIds: [] });
   }
 
   submitCreate(): void {
@@ -696,9 +691,9 @@ export class UsersListComponent {
       name: value.name,
       email: value.email,
       password: value.password,
-      profile: value.profile as 'ADMIN' | 'MANAGER' | 'SELLER' | 'OPERATOR',
     };
     if (value.phone?.trim()) data.phone = value.phone.trim();
+    if (value.perfilIds?.length) data.perfilIds = value.perfilIds;
     this.creating.set(true);
     this.usersService.create(data).subscribe({
       next: () => {
@@ -720,16 +715,6 @@ export class UsersListComponent {
       },
       complete: () => this.creating.set(false),
     });
-  }
-
-  getProfileSeverity(profile: string): string {
-    const map: Record<string, string> = {
-      ADMIN: 'danger',
-      MANAGER: 'info',
-      SELLER: 'success',
-      OPERATOR: 'secondary',
-    };
-    return map[profile] ?? 'secondary';
   }
 
   openPerfisDialog(user: User): void {

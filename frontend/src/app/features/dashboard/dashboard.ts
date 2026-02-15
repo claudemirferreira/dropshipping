@@ -15,7 +15,7 @@ import { AuthService } from '../../core/services/auth.service';
       </div>
       <div class="page-badge">
         <span class="badge-dot"></span>
-        <span class="badge-value">{{ currentUser()?.profile }}</span>
+        <span class="badge-value">{{ (currentUser()?.perfilCodes ?? [])[0] || '—' }}</span>
         <span class="badge-label">seu perfil</span>
       </div>
     </div>

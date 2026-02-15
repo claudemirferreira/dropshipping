@@ -20,7 +20,7 @@ export interface CreateUserRequest {
   name: string;
   password: string;
   phone?: string;
-  profile: 'ADMIN' | 'MANAGER' | 'SELLER' | 'OPERATOR';
+  perfilIds?: string[];
 }
 
 export interface UpdateUserRequest {
@@ -31,7 +31,7 @@ export interface UpdateUserRequest {
 export interface ListUsersParams {
   name?: string;
   email?: string;
-  profile?: string;
+  perfilCode?: string;
   page?: number;
   size?: number;
   sort?: string;
@@ -47,7 +47,7 @@ export class UsersService {
     let httpParams = new HttpParams();
     if (params.name) httpParams = httpParams.set('name', params.name);
     if (params.email) httpParams = httpParams.set('email', params.email);
-    if (params.profile) httpParams = httpParams.set('profile', params.profile);
+    if (params.perfilCode) httpParams = httpParams.set('perfilCode', params.perfilCode);
     if (params.page != null) httpParams = httpParams.set('page', params.page);
     if (params.size != null) httpParams = httpParams.set('size', params.size);
     if (params.sort) httpParams = httpParams.set('sort', params.sort);

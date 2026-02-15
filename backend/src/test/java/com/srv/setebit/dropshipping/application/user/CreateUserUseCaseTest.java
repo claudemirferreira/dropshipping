@@ -1,10 +1,11 @@
 package com.srv.setebit.dropshipping.application.user;
 
+import com.srv.setebit.dropshipping.application.access.AssignPerfisToUserUseCase;
+import com.srv.setebit.dropshipping.application.access.GetUserPerfisUseCase;
 import com.srv.setebit.dropshipping.application.user.dto.request.CreateUserRequest;
 import com.srv.setebit.dropshipping.application.user.dto.response.UserResponse;
 import com.srv.setebit.dropshipping.application.user.port.PasswordEncoderPort;
 import com.srv.setebit.dropshipping.domain.user.User;
-import com.srv.setebit.dropshipping.domain.user.UserProfile;
 import com.srv.setebit.dropshipping.domain.user.exception.DuplicateEmailException;
 import com.srv.setebit.dropshipping.domain.user.port.UserRepositoryPort;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +15,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,6 +36,12 @@ class CreateUserUseCaseTest {
     @Mock
     private PasswordEncoderPort passwordEncoder;
 
+    @Mock
+    private AssignPerfisToUserUseCase assignPerfisToUserUseCase;
+
+    @Mock
+    private GetUserPerfisUseCase getUserPerfisUseCase;
+
     @InjectMocks
     private CreateUserUseCase createUserUseCase;
 
@@ -45,7 +54,7 @@ class CreateUserUseCaseTest {
                 "Senha@123",
                 "Joao Silva",
                 null,
-                UserProfile.SELLER
+                null
         );
     }
 
@@ -58,12 +67,13 @@ class CreateUserUseCaseTest {
             u.setId(UUID.randomUUID());
             return u;
         });
+        when(getUserPerfisUseCase.execute(any())).thenReturn(Collections.emptyList());
 
         UserResponse result = createUserUseCase.execute(request);
 
         assertThat(result.email()).isEqualTo("user@example.com");
         assertThat(result.name()).isEqualTo("Joao Silva");
-        assertThat(result.profile()).isEqualTo(UserProfile.SELLER);
+        assertThat(result.perfilCodes()).isEmpty();
         assertThat(result.active()).isTrue();
         verify(userRepository).save(argThat(u -> "user@example.com".equals(u.getEmail()) && "hashed".equals(u.getPasswordHash())));
     }

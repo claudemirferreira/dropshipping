@@ -1,12 +1,14 @@
 package com.srv.setebit.dropshipping.infrastructure.config;
 
+import com.srv.setebit.dropshipping.application.access.AssignPerfisToUserUseCase;
+import com.srv.setebit.dropshipping.application.access.dto.request.AssignPerfisRequest;
+import com.srv.setebit.dropshipping.domain.access.port.PerfilRepositoryPort;
 import com.srv.setebit.dropshipping.domain.product.Product;
 import com.srv.setebit.dropshipping.domain.product.ProductImage;
 import com.srv.setebit.dropshipping.domain.product.ProductStatus;
 import com.srv.setebit.dropshipping.domain.product.port.ProductImageRepositoryPort;
 import com.srv.setebit.dropshipping.domain.product.port.ProductRepositoryPort;
 import com.srv.setebit.dropshipping.domain.user.User;
-import com.srv.setebit.dropshipping.domain.user.UserProfile;
 import com.srv.setebit.dropshipping.domain.user.port.UserRepositoryPort;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -33,7 +36,10 @@ public class DevDataLoader {
 
     @Bean
     @Order(1)
-    ApplicationRunner loadDevUser(UserRepositoryPort userRepository, PasswordEncoder passwordEncoder) {
+    ApplicationRunner loadDevUser(UserRepositoryPort userRepository,
+                                  PasswordEncoder passwordEncoder,
+                                  PerfilRepositoryPort perfilRepository,
+                                  AssignPerfisToUserUseCase assignPerfisToUserUseCase) {
         return args -> {
             if (userRepository.findByEmail(TEST_USER_EMAIL).isEmpty()) {
                 User user = new User();
@@ -43,11 +49,12 @@ public class DevDataLoader {
                 user.setName("Admin Dropshipping");
                 user.setPhone(null);
                 user.setActive(true);
-                user.setProfile(UserProfile.ADMIN);
                 Instant now = Instant.now();
                 user.setCreatedAt(now);
                 user.setUpdatedAt(now);
                 userRepository.save(user);
+                perfilRepository.findByCode("ADMIN").ifPresent(perfil ->
+                        assignPerfisToUserUseCase.execute(user.getId(), new AssignPerfisRequest(Set.of(perfil.getId()))));
                 System.out.println("[DevDataLoader] Usuário de teste criado: " + TEST_USER_EMAIL + " / " + TEST_USER_PASSWORD);
             }
         };
