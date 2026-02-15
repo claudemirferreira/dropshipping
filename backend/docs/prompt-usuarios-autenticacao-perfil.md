@@ -379,9 +379,9 @@ com.srv.setebit.dropshipping
 │   ├── persistence/
 │   │   ├── jpa/
 │   │   │   ├── UserJpaEntity.java
-│   │   │   ├── RefreshTokenJpaEntity.java
+│   │   │   ├── RefreshTokenEntity.java
 │   │   │   ├── UserJpaRepository.java
-│   │   │   └── RefreshTokenJpaRepository.java
+│   │   │   └── RefreshTokenRepository.java
 │   │   └── adapter/
 │   │       ├── UserRepositoryAdapter.java
 │   │       └── RefreshTokenRepositoryAdapter.java

@@ -2,8 +2,8 @@ package com.srv.setebit.dropshipping.infrastructure.persistence.adapter;
 
 import com.srv.setebit.dropshipping.domain.user.RefreshToken;
 import com.srv.setebit.dropshipping.domain.user.port.RefreshTokenRepositoryPort;
-import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.RefreshTokenJpaEntity;
-import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.RefreshTokenJpaRepository;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.RefreshTokenEntity;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.RefreshTokenRepository;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -13,15 +13,15 @@ import java.util.UUID;
 @Component
 public class RefreshTokenRepositoryAdapter implements RefreshTokenRepositoryPort {
 
-    private final RefreshTokenJpaRepository jpaRepository;
+    private final RefreshTokenRepository jpaRepository;
 
-    public RefreshTokenRepositoryAdapter(@Lazy RefreshTokenJpaRepository jpaRepository) {
+    public RefreshTokenRepositoryAdapter(@Lazy RefreshTokenRepository jpaRepository) {
         this.jpaRepository = jpaRepository;
     }
 
     @Override
     public RefreshToken save(RefreshToken refreshToken) {
-        RefreshTokenJpaEntity entity = toEntity(refreshToken);
+        RefreshTokenEntity entity = toEntity(refreshToken);
         entity = jpaRepository.save(entity);
         return toDomain(entity);
     }
@@ -41,8 +41,8 @@ public class RefreshTokenRepositoryAdapter implements RefreshTokenRepositoryPort
         jpaRepository.deleteByUserId(userId);
     }
 
-    private RefreshTokenJpaEntity toEntity(RefreshToken token) {
-        RefreshTokenJpaEntity entity = new RefreshTokenJpaEntity();
+    private RefreshTokenEntity toEntity(RefreshToken token) {
+        RefreshTokenEntity entity = new RefreshTokenEntity();
         entity.setId(token.getId());
         entity.setToken(token.getToken());
         entity.setUserId(token.getUserId());
@@ -52,7 +52,7 @@ public class RefreshTokenRepositoryAdapter implements RefreshTokenRepositoryPort
         return entity;
     }
 
-    private RefreshToken toDomain(RefreshTokenJpaEntity entity) {
+    private RefreshToken toDomain(RefreshTokenEntity entity) {
         return new RefreshToken(
                 entity.getId(),
                 entity.getToken(),

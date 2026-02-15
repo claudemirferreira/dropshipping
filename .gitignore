@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Angular
+.angular/
+frontend/.angular/
+frontend/dist/
+frontend/node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Uploads (backend)
+uploads/
+
+# Environment (descomente se tiver secrets locais)
+# .env
+# .env.local
+/frontend/.angular/

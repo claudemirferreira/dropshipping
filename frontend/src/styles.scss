@@ -1,0 +1,177 @@
+:root {
+  --header-bg: #ffffff;
+  --header-text: #1e293b;
+  --sidebar-active-bg: #f1f5f9;
+  --sidebar-active-text: #1e293b;
+  --badge-active-color: #22c55e;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-family), -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, sans-serif;
+  background-color: #f8fafc;
+  color: #1e293b;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Dropdown/Select - fundo claro (overlay renderizado no body) */
+.p-select-overlay,
+.p-select-overlay.p-component {
+  background: #ffffff !important;
+  border-color: #dde2e7 !important;
+  color: #334155 !important;
+}
+
+.p-select-overlay .p-select-list-container,
+.p-select-overlay .p-select-list,
+.p-select-overlay .p-select-option {
+  background: #ffffff !important;
+  color: #334155 !important;
+}
+
+.p-select-overlay .p-select-option:hover,
+.p-select-overlay .p-select-option.p-focus,
+.p-select-overlay .p-select-option.p-select-option-selected {
+  background: #f1f5f9 !important;
+  color: #1e293b !important;
+}
+
+/* p-select / p-dropdown trigger - fundo claro */
+.p-select,
+.p-select .p-inputwrapper {
+  background: #ffffff !important;
+  border-color: #dde2e7 !important;
+  color: #5d6c7f !important;
+}
+
+.p-select .p-select-label,
+.p-select .p-select-dropdown-icon,
+.p-select .p-icon {
+  color: #5d6c7f !important;
+}
+
+/* Dialog / Modal - fundo claro */
+.p-dialog-mask {
+  background: rgba(0, 0, 0, 0.4) !important;
+}
+
+.p-dialog,
+.p-dialog .p-dialog,
+.p-dialog.p-component,
+.p-component.p-dialog {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #334155 !important;
+}
+
+.p-dialog .p-dialog-header,
+.p-dialog .p-dialog-content,
+.p-dialog .p-dialog-footer {
+  background: #ffffff !important;
+  color: #334155 !important;
+  border-color: #e2e8f0 !important;
+}
+
+.p-dialog .p-dialog-title {
+  color: #1e293b !important;
+}
+
+.p-dialog .p-dialog-header-actions .p-button,
+.p-dialog .p-dialog-close-button {
+  color: #64748b !important;
+}
+
+.p-dialog .p-dialog-header-actions .p-button:hover {
+  background: #f1f5f9 !important;
+  color: #1e293b !important;
+}
+
+/* ConfirmDialog */
+.p-confirmdialog,
+.p-confirmdialog .p-dialog,
+.p-confirm-dialog,
+.p-confirm-dialog .p-dialog {
+  background: #ffffff !important;
+}
+
+.p-confirmdialog .p-dialog-header,
+.p-confirmdialog .p-dialog-content,
+.p-confirmdialog .p-dialog-footer,
+.p-confirm-dialog .p-dialog-header,
+.p-confirm-dialog .p-dialog-content,
+.p-confirm-dialog .p-dialog-footer {
+  background: #ffffff !important;
+  color: #334155 !important;
+}
+
+/* TabView dentro de dialog - fundo claro */
+.p-dialog .p-tabs,
+.p-dialog .p-tablist,
+.p-dialog .p-tablist-content,
+.p-dialog .p-tablist-tab-list,
+.p-dialog .p-tab,
+.p-dialog .p-tabpanels,
+.p-dialog .p-tabs-panel {
+  background: #ffffff !important;
+  color: #334155 !important;
+}
+
+.p-dialog .p-tab {
+  color: #64748b !important;
+}
+
+.p-dialog .p-tab.p-tab-active {
+  color: #22c55e !important;
+}
+
+.p-dialog .p-tab:not(.p-tab-active):hover {
+  color: #1e293b !important;
+}
+
+/* Inputs dentro de dialog - fundo claro */
+.p-dialog .p-inputtext,
+.p-dialog input[type="text"],
+.p-dialog input[type="email"],
+.p-dialog textarea,
+.p-dialog .p-inputnumber-input,
+.p-dialog .p-password-input {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #1e293b !important;
+}
+
+.p-dialog .p-inputtext::placeholder,
+.p-dialog input::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* InputNumber, Password wrappers */
+.p-dialog .p-inputnumber,
+.p-dialog .p-password,
+.p-dialog .p-inputwrapper {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+.p-dialog .p-inputnumber .p-inputnumber-input,
+.p-dialog .p-password input {
+  background: #ffffff !important;
+  color: #1e293b !important;
+}
+
+/* Labels e texto em formulários */
+.p-dialog label,
+.p-dialog .form-field label {
+  color: #334155 !important;
+}

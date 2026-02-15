@@ -34,7 +34,7 @@ mvn spring-boot:run -Dspring-boot.run.arguments="--spring.profiles.active=dev"
 Ou no IDE: ative o perfil **dev** na configuração de run.
 
 **Usuário criado (apenas se ainda não existir):**
-- **Email:** admin@dropshipping.com  
+- **Email:** admin@dropshipping.com
 - **Senha:** Senha@123  
 - **Perfil:** ADMIN  
 

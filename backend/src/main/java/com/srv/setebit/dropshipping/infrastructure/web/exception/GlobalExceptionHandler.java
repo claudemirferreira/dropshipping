@@ -1,6 +1,13 @@
 package com.srv.setebit.dropshipping.infrastructure.web.exception;
 
+import com.srv.setebit.dropshipping.domain.access.exception.DuplicatePerfilCodeException;
+import com.srv.setebit.dropshipping.domain.access.exception.DuplicateRotinaCodeException;
+import com.srv.setebit.dropshipping.domain.access.exception.PerfilNotFoundException;
+import com.srv.setebit.dropshipping.domain.access.exception.RotinaNotFoundException;
+import com.srv.setebit.dropshipping.domain.product.exception.*;
 import com.srv.setebit.dropshipping.domain.user.exception.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -17,6 +24,8 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleUserNotFound(UserNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
@@ -25,6 +34,36 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DuplicateEmailException.class)
     public ResponseEntity<ErrorResponse> handleDuplicateEmail(DuplicateEmailException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                new ErrorResponse(Instant.now(), 409, "Conflict", ex.getMessage(), null));
+    }
+
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleProductNotFound(ProductNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new ErrorResponse(Instant.now(), 404, "Not Found", ex.getMessage(), null));
+    }
+
+    @ExceptionHandler(ProductImageNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleProductImageNotFound(ProductImageNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new ErrorResponse(Instant.now(), 404, "Not Found", ex.getMessage(), null));
+    }
+
+    @ExceptionHandler({RotinaNotFoundException.class, PerfilNotFoundException.class})
+    public ResponseEntity<ErrorResponse> handleAccessNotFound(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new ErrorResponse(Instant.now(), 404, "Not Found", ex.getMessage(), null));
+    }
+
+    @ExceptionHandler({DuplicateRotinaCodeException.class, DuplicatePerfilCodeException.class})
+    public ResponseEntity<ErrorResponse> handleDuplicateAccess(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                new ErrorResponse(Instant.now(), 409, "Conflict", ex.getMessage(), null));
+    }
+
+    @ExceptionHandler({DuplicateSkuException.class, DuplicateSlugException.class})
+    public ResponseEntity<ErrorResponse> handleDuplicateProduct(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 new ErrorResponse(Instant.now(), 409, "Conflict", ex.getMessage(), null));
     }
@@ -58,8 +97,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneric(Exception ex) {
+        log.error("Erro inesperado", ex);
+        String message = ex.getMessage() != null ? ex.getMessage() : ex.getClass().getSimpleName();
+        if (ex.getCause() != null && ex.getCause().getMessage() != null) {
+            message = message + " | Causa: " + ex.getCause().getMessage();
+        }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                new ErrorResponse(Instant.now(), 500, "Internal Server Error", "Erro interno do servidor", null));
+                new ErrorResponse(Instant.now(), 500, "Internal Server Error", message, null));
     }
 
     public record ErrorResponse(Instant timestamp, int status, String error, String message, String path) {
