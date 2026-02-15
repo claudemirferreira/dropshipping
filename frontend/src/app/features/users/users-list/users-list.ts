@@ -88,14 +88,14 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
           label="Novo usuário"
           icon="pi pi-plus"
           size="small"
-          severity="success"
+          severity="primary"
           (onClick)="openCreateDialog()"
         />
         <p-button
           icon="pi pi-refresh"
           [rounded]="true"
           [text]="true"
-          severity="secondary"
+          severity="primary"
           size="small"
           (onClick)="refresh()"
           pTooltip="Atualizar"

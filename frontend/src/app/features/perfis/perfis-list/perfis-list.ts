@@ -100,14 +100,14 @@ interface RotinaOption {
           label="Novo perfil"
           icon="pi pi-plus"
           size="small"
-          severity="success"
+          severity="primary"
           (onClick)="openCreateDialog()"
         />
         <p-button
           icon="pi pi-refresh"
           [rounded]="true"
           [text]="true"
-          severity="secondary"
+          severity="primary"
           size="small"
           (onClick)="refresh()"
           pTooltip="Atualizar"
