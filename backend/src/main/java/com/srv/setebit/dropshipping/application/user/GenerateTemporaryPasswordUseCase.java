@@ -1,6 +1,7 @@
 package com.srv.setebit.dropshipping.application.user;
 
 import com.srv.setebit.dropshipping.application.user.dto.request.ForgotPasswordRequest;
+import com.srv.setebit.dropshipping.application.notification.EmailSenderPort;
 import com.srv.setebit.dropshipping.application.user.port.PasswordEncoderPort;
 import com.srv.setebit.dropshipping.domain.user.TemporaryPassword;
 import com.srv.setebit.dropshipping.domain.user.User;
@@ -22,16 +23,19 @@ public class GenerateTemporaryPasswordUseCase {
     private final UserRepositoryPort userRepository;
     private final TemporaryPasswordRepositoryPort tempPasswordRepository;
     private final PasswordEncoderPort passwordEncoder;
+    private final EmailSenderPort emailSender;
 
     @Value("${auth.temp-password-expiration-minutes:15}")
     private int expirationMinutes;
 
     public GenerateTemporaryPasswordUseCase(UserRepositoryPort userRepository,
                                            TemporaryPasswordRepositoryPort tempPasswordRepository,
-                                           PasswordEncoderPort passwordEncoder) {
+                                           PasswordEncoderPort passwordEncoder,
+                                           EmailSenderPort emailSender) {
         this.userRepository = userRepository;
         this.tempPasswordRepository = tempPasswordRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailSender = emailSender;
     }
 
     @Transactional
@@ -53,7 +57,9 @@ public class GenerateTemporaryPasswordUseCase {
         temp.setCreatedAt(Instant.now());
         tempPasswordRepository.save(temp);
 
-        System.out.println("[ForgotPassword] Senha temporária gerada para " + user.getEmail() + ": " + tempPassword);
+        System.out.println("Temporary password: " + tempPassword);
+        String resetLink = "http://localhost:8080/login?email=" + user.getEmail();
+        emailSender.sendTemporaryPassword(user.getEmail(), user.getName(), tempPassword, resetLink);
     }
 
     private String generateSecurePassword() {
