@@ -63,20 +63,18 @@ public class LoginUseCase {
             throw new InvalidCredentialsException();
         }
 
-        if (user.isLocked()) {
-            throw new UserLockedException(user.getLockedReason());
-        }
-
         boolean needsPasswordChange = false;
-        boolean valid = passwordEncoder.matches(request.password(), user.getPasswordHash());
+        boolean valid = false;
 
-        if (!valid) {
-            // check temporary password
+        // tenta senha padrão
+        if (passwordEncoder.matches(request.password(), user.getPasswordHash())) {
+            valid = true;
+        } else {
+            // tenta senha temporária (self-service unlock)
             var tempOpt = tempPasswordRepository.findActiveByUserId(user.getId());
             if (tempOpt.isPresent() && passwordEncoder.matches(request.password(), tempOpt.get().getPasswordHash())) {
                 TemporaryPassword temp = tempOpt.get();
                 tempPasswordRepository.markUsed(temp.getId());
-                // unlock user via self-service
                 user.setLocked(false);
                 user.setUnlockedAt(Instant.now());
                 user.setFailedLoginAttempts(0);
@@ -86,6 +84,11 @@ public class LoginUseCase {
                 needsPasswordChange = true;
                 valid = true;
             }
+        }
+
+        // se ainda inválido e o usuário está bloqueado, informar bloqueio
+        if (user.isLocked() && !valid) {
+            throw new UserLockedException(user.getLockedReason());
         }
 
         if (!valid) {
