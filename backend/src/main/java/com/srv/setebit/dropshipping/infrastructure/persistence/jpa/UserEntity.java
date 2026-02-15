@@ -48,4 +48,19 @@ public class UserEntity {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
+
+    @Column(name = "failed_login_attempts", nullable = false)
+    private int failedLoginAttempts = 0;
+
+    @Column(name = "locked", nullable = false)
+    private boolean locked = false;
+
+    @Column(name = "locked_reason", length = 255)
+    private String lockedReason;
+
+    @Column(name = "locked_at")
+    private Instant lockedAt;
+
+    @Column(name = "unlocked_at")
+    private Instant unlockedAt;
 }

@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -22,15 +23,21 @@ public class AuthController {
     private final RefreshTokenUseCase refreshTokenUseCase;
     private final LogoutUseCase logoutUseCase;
     private final GetUserByIdUseCase getUserByIdUseCase;
+    private final GenerateTemporaryPasswordUseCase generateTemporaryPasswordUseCase;
+    private final UnlockUserUseCase unlockUserUseCase;
 
     public AuthController(LoginUseCase loginUseCase,
                           RefreshTokenUseCase refreshTokenUseCase,
                           LogoutUseCase logoutUseCase,
-                          GetUserByIdUseCase getUserByIdUseCase) {
+                          GetUserByIdUseCase getUserByIdUseCase,
+                          GenerateTemporaryPasswordUseCase generateTemporaryPasswordUseCase,
+                          UnlockUserUseCase unlockUserUseCase) {
         this.loginUseCase = loginUseCase;
         this.refreshTokenUseCase = refreshTokenUseCase;
         this.logoutUseCase = logoutUseCase;
         this.getUserByIdUseCase = getUserByIdUseCase;
+        this.generateTemporaryPasswordUseCase = generateTemporaryPasswordUseCase;
+        this.unlockUserUseCase = unlockUserUseCase;
     }
 
     @PostMapping("/login")
@@ -59,5 +66,20 @@ public class AuthController {
     public ResponseEntity<UserResponse> me(@AuthenticationPrincipal UUID userId) {
         UserResponse response = getUserByIdUseCase.execute(userId);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/forgot-password")
+    @Operation(summary = "Esqueceu senha", description = "Gera uma senha temporária e envia instruções")
+    public ResponseEntity<Void> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        generateTemporaryPasswordUseCase.execute(request);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/admin/unlock/{userId}")
+    @Operation(summary = "Desbloquear usuário", description = "Desbloqueia o usuário (admin)")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> adminUnlock(@AuthenticationPrincipal UUID adminId, @PathVariable UUID userId) {
+        unlockUserUseCase.execute(userId, adminId);
+        return ResponseEntity.noContent().build();
     }
 }

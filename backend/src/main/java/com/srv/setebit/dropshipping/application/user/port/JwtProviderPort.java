@@ -7,6 +7,7 @@ import java.util.UUID;
 public interface JwtProviderPort {
 
     String generateAccessToken(User user);
+    String generateAccessTokenWithFlags(User user, boolean needsPasswordChange);
 
     String generateRefreshToken(User user);
 

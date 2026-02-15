@@ -33,6 +33,20 @@ public class JwtProviderAdapter implements JwtProviderPort {
                 .subject(user.getId().toString())
                 .claim("email", user.getEmail())
                 .claim("profile", user.getProfile().name())
+                .claim("needs_password_change", false)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + accessTokenExpirationMs))
+                .signWith(secretKey)
+                .compact();
+    }
+
+    @Override
+    public String generateAccessTokenWithFlags(User user, boolean needsPasswordChange) {
+        return Jwts.builder()
+                .subject(user.getId().toString())
+                .claim("email", user.getEmail())
+                .claim("profile", user.getProfile().name())
+                .claim("needs_password_change", needsPasswordChange)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + accessTokenExpirationMs))
                 .signWith(secretKey)

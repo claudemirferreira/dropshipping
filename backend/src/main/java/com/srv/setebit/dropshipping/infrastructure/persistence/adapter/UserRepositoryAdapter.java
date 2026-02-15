@@ -82,20 +82,30 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
         entity.setProfile(user.getProfile());
         entity.setCreatedAt(user.getCreatedAt());
         entity.setUpdatedAt(user.getUpdatedAt());
+        entity.setFailedLoginAttempts(user.getFailedLoginAttempts());
+        entity.setLocked(user.isLocked());
+        entity.setLockedReason(user.getLockedReason());
+        entity.setLockedAt(user.getLockedAt());
+        entity.setUnlockedAt(user.getUnlockedAt());
         return entity;
     }
 
     private User toDomain(UserEntity entity) {
-        return new User(
-                entity.getId(),
-                entity.getEmail(),
-                entity.getPasswordHash(),
-                entity.getName(),
-                entity.getPhone(),
-                entity.isActive(),
-                entity.getProfile(),
-                entity.getCreatedAt(),
-                entity.getUpdatedAt()
-        );
+        User user = new User();
+        user.setId(entity.getId());
+        user.setEmail(entity.getEmail());
+        user.setPasswordHash(entity.getPasswordHash());
+        user.setName(entity.getName());
+        user.setPhone(entity.getPhone());
+        user.setActive(entity.isActive());
+        user.setProfile(entity.getProfile());
+        user.setCreatedAt(entity.getCreatedAt());
+        user.setUpdatedAt(entity.getUpdatedAt());
+        user.setFailedLoginAttempts(entity.getFailedLoginAttempts());
+        user.setLocked(entity.isLocked());
+        user.setLockedReason(entity.getLockedReason());
+        user.setLockedAt(entity.getLockedAt());
+        user.setUnlockedAt(entity.getUnlockedAt());
+        return user;
     }
 }

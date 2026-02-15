@@ -21,4 +21,9 @@ public class User {
     private UserProfile profile;
     private Instant createdAt;
     private Instant updatedAt;
+    private int failedLoginAttempts;
+    private boolean locked;
+    private String lockedReason;
+    private Instant lockedAt;
+    private Instant unlockedAt;
 }
