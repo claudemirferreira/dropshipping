@@ -2,6 +2,7 @@
 node_modules/
 
 # Angular
+.angular/
 frontend/.angular/
 frontend/dist/
 frontend/node_modules/
@@ -19,6 +20,10 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 
+# Uploads (backend)
+uploads/
+
 # Environment (descomente se tiver secrets locais)
 # .env
 # .env.local
+/frontend/.angular/

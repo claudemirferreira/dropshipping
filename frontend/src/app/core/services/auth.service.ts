@@ -1,8 +1,10 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, tap, finalize, catchError, throwError } from 'rxjs';
+import { Observable, tap, finalize, catchError, throwError, switchMap, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import type { Perfil } from './perfis.service';
+import { UsersService } from './users.service';
 
 export interface User {
   id: string;
@@ -33,19 +35,32 @@ export class AuthService {
   private readonly accessTokenKey = 'access_token';
   private readonly refreshTokenKey = 'refresh_token';
   private readonly userKey = 'current_user';
+  private readonly userPerfisKey = 'user_perfis';
+
+  private http = inject(HttpClient);
+  private router = inject(Router);
+  private usersService = inject(UsersService);
 
   private user = signal<User | null>(null);
+  private userPerfis = signal<Perfil[]>([]);
   loading = signal(false);
   errorMessage = signal<string | null>(null);
 
   currentUser = computed(() => this.user());
+  currentUserPerfis = computed(() => this.userPerfis());
   isLoggedIn = computed(() => !!this.user());
 
-  constructor(
-    private http: HttpClient,
-    private router: Router
-  ) {
+  constructor() {
     this.loadStoredUser();
+    if (this.getAccessToken() && this.user()) {
+      this.usersService.getMyPerfis().subscribe({
+        next: (perfis) => this.setUserPerfis(perfis),
+        error: () => {
+          // Mantém os perfis do localStorage em caso de falha (ex: token expirado ainda não tratado)
+          // Não limpar para evitar menu vazio até o refresh do token
+        },
+      });
+    }
   }
 
   login(credentials: LoginRequest): Observable<TokenResponse> {
@@ -54,7 +69,21 @@ export class AuthService {
     return this.http.post<TokenResponse>(`${this.api}/login`, credentials).pipe(
       tap((res) => {
         this.setTokens(res.accessToken, res.refreshToken);
-        this.fetchCurrentUser().subscribe();
+        this.fetchCurrentUser()
+          .pipe(
+            switchMap((user) =>
+              this.usersService.getMyPerfis().pipe(
+                tap((perfis) => this.setUserPerfis(perfis)),
+                map(() => user)
+              )
+            )
+          )
+          .subscribe({
+            next: (user) => {
+              this.user.set(user);
+              localStorage.setItem(this.userKey, JSON.stringify(user));
+            },
+          });
       }),
       catchError((err) => {
         this.errorMessage.set(
@@ -106,12 +135,27 @@ export class AuthService {
         this.clearSession();
       }
     }
+    const storedPerfis = localStorage.getItem(this.userPerfisKey);
+    if (storedPerfis) {
+      try {
+        this.userPerfis.set(JSON.parse(storedPerfis));
+      } catch {
+        this.userPerfis.set([]);
+      }
+    }
+  }
+
+  private setUserPerfis(perfis: Perfil[]): void {
+    this.userPerfis.set(perfis);
+    localStorage.setItem(this.userPerfisKey, JSON.stringify(perfis));
   }
 
   private clearSession(): void {
     localStorage.removeItem(this.accessTokenKey);
     localStorage.removeItem(this.refreshTokenKey);
     localStorage.removeItem(this.userKey);
+    localStorage.removeItem(this.userPerfisKey);
     this.user.set(null);
+    this.userPerfis.set([]);
   }
 }

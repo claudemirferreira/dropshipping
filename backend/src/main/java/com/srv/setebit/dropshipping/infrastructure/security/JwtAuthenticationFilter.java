@@ -1,5 +1,6 @@
 package com.srv.setebit.dropshipping.infrastructure.security;
 
+import com.srv.setebit.dropshipping.domain.access.port.UserPerfilRepositoryPort;
 import com.srv.setebit.dropshipping.domain.user.User;
 import com.srv.setebit.dropshipping.domain.user.UserProfile;
 import com.srv.setebit.dropshipping.domain.user.port.UserRepositoryPort;
@@ -17,7 +18,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -29,10 +31,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtProviderAdapter jwtProvider;
     private final UserRepositoryPort userRepository;
+    private final UserPerfilRepositoryPort userPerfilRepository;
 
-    public JwtAuthenticationFilter(JwtProviderAdapter jwtProvider, UserRepositoryPort userRepository) {
+    public JwtAuthenticationFilter(JwtProviderAdapter jwtProvider,
+                                   UserRepositoryPort userRepository,
+                                   UserPerfilRepositoryPort userPerfilRepository) {
         this.jwtProvider = jwtProvider;
         this.userRepository = userRepository;
+        this.userPerfilRepository = userPerfilRepository;
     }
 
     @Override
@@ -48,8 +54,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 if (userOpt.isPresent() && userOpt.get().isActive()) {
                     User user = userOpt.get();
-                    var authorities = Collections.singletonList(
-                            new SimpleGrantedAuthority("ROLE_" + user.getProfile().name()));
+                    List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+                    authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getProfile().name()));
+                    List<String> rotinaCodes = userPerfilRepository.findRotinaCodesByUserId(user.getId());
+                    for (String code : rotinaCodes) {
+                        authorities.add(new SimpleGrantedAuthority(code));
+                    }
 
                     var authentication = new UsernamePasswordAuthenticationToken(
                             user.getId(),

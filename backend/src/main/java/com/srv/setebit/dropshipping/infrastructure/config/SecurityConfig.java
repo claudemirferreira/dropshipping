@@ -49,7 +49,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/refresh").permitAll()
                         .requestMatchers("/api/v1/auth/**").authenticated()
                         .requestMatchers("/api/v1/users/**").authenticated()
+                        .requestMatchers("/api/v1/public/products/**").permitAll()
+                        .requestMatchers("/api/v1/products/**").authenticated()
+                        .requestMatchers("/api/v1/rotinas/**").authenticated()
+                        .requestMatchers("/api/v1/perfis/**").authenticated()
                         .requestMatchers("/actuator/health").permitAll()
+                        .requestMatchers("/uploads/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

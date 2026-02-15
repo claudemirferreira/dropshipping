@@ -1,0 +1,425 @@
+<p-toast />
+<p-confirmDialog />
+
+<div class="page-header">
+  <div class="page-title-block">
+    <h1 class="page-title">Produtos</h1>
+    <p class="page-description">
+      Catálogo de produtos. Gerencie itens, preços e fotos.
+    </p>
+  </div>
+  <div class="page-badge">
+    <span class="badge-dot"></span>
+    <span class="badge-value">{{ totalRecords() }}</span>
+    <span class="badge-label">produtos cadastrados</span>
+  </div>
+</div>
+
+<div class="page-toolbar">
+  <div class="search-wrapper">
+    <i class="pi pi-search search-icon"></i>
+    <input
+      type="text"
+      pInputText
+      placeholder="Buscar por nome ou SKU..."
+      class="search-input"
+      [formControl]="searchControl"
+      (keyup.enter)="applySearch()"
+    />
+  </div>
+  <div class="filters">
+    <p-dropdown
+      [formControl]="statusFilterControl"
+      [options]="statusOptions"
+      optionLabel="label"
+      optionValue="value"
+      placeholder="Status"
+      [showClear]="true"
+      styleClass="status-filter"
+    />
+  </div>
+  <div class="toolbar-actions">
+    <p-button
+      label="Novo produto"
+      icon="pi pi-plus"
+      size="small"
+      severity="success"
+      (onClick)="openCreateDialog()"
+    />
+    <p-button
+      icon="pi pi-refresh"
+      [rounded]="true"
+      [text]="true"
+      severity="secondary"
+      size="small"
+      (onClick)="refresh()"
+      pTooltip="Atualizar"
+    />
+  </div>
+</div>
+
+<div class="table-card">
+  <p-table
+    [value]="products()"
+    [lazy]="true"
+    [paginator]="true"
+    [rows]="10"
+    [totalRecords]="totalRecords()"
+    [loading]="loading()"
+    (onLazyLoad)="onLazyLoad($event)"
+    [rowsPerPageOptions]="[10, 25, 50]"
+    dataKey="id"
+    currentPageReportTemplate="{first} - {last} de {totalRecords}"
+    paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+    styleClass="p-datatable-sm"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 64px">Foto</th>
+        <th>SKU</th>
+        <th>Nome</th>
+        <th>Preço</th>
+        <th>Status</th>
+        <th style="width: 140px">Ações</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-product>
+      <tr>
+        <td>
+          <div class="product-thumb">
+            @if (product.mainImageUrl) {
+              <img [src]="product.mainImageUrl" [alt]="product.name" />
+            } @else {
+              <span class="thumb-placeholder">—</span>
+            }
+          </div>
+        </td>
+        <td>
+          <span class="product-sku">{{ product.sku }}</span>
+        </td>
+        <td>
+          <span class="product-name">{{ product.name }}</span>
+        </td>
+        <td>
+          <span class="product-price">{{
+            formatPrice(product.salePrice, product.currency)
+          }}</span>
+        </td>
+        <td>
+          <p-tag
+            [value]="getStatusLabel(product.status)"
+            [severity]="getStatusSeverity(product.status)"
+          />
+        </td>
+        <td>
+          <div class="action-buttons">
+            <p-button
+              icon="pi pi-pencil"
+              [rounded]="true"
+              [text]="true"
+              severity="secondary"
+              size="small"
+              (onClick)="openEditDialog(product)"
+              pTooltip="Editar"
+            />
+            <p-dropdown
+              [options]="statusOptions"
+              optionLabel="label"
+              optionValue="value"
+              [ngModel]="product.status"
+              (onChange)="updateStatus(product, $event.value)"
+              placeholder="Status"
+              styleClass="status-dropdown"
+              [appendTo]="'body'"
+            />
+            <p-button
+              icon="pi pi-trash"
+              [rounded]="true"
+              [text]="true"
+              severity="secondary"
+              size="small"
+              (onClick)="deleteProduct(product)"
+              pTooltip="Excluir"
+            />
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="6" class="empty-message">Nenhum produto encontrado.</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="loadingbody">
+      <tr>
+        <td colspan="6" class="loading-message">
+          <i class="pi pi-spin pi-spinner"></i> Carregando...
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<p-dialog
+  [header]="isEditMode() ? 'Editar produto' : 'Cadastrar novo produto'"
+  [visible]="dialogVisible()"
+            (visibleChange)="dialogVisible.set($event)"
+  [modal]="true"
+  [style]="{ width: 'min(48rem, 95vw)', maxHeight: '90vh' }"
+  [contentStyle]="{ overflow: 'auto', maxHeight: 'calc(90vh - 120px)' }"
+  [draggable]="false"
+  [resizable]="false"
+  (onHide)="onDialogHide()"
+>
+  <form [formGroup]="productForm" class="product-form">
+    <p-tabView>
+      <p-tabPanel header="Identificação">
+        <div class="form-row">
+          <div class="form-field">
+            <label for="sku">SKU *</label>
+            <input id="sku" pInputText formControlName="sku" placeholder="Ex: PROD-001" />
+            @if (productForm.get('sku')?.invalid && productForm.get('sku')?.touched) {
+              <small class="field-error">SKU é obrigatório</small>
+            }
+          </div>
+          <div class="form-field flex-2">
+            <label for="name">Nome *</label>
+            <input id="name" pInputText formControlName="name" placeholder="Nome do produto" />
+            @if (productForm.get('name')?.invalid && productForm.get('name')?.touched) {
+              <small class="field-error">Nome é obrigatório</small>
+            }
+          </div>
+        </div>
+        <div class="form-field">
+          <label for="shortDesc">Descrição curta *</label>
+          <input
+            id="shortDesc"
+            pInputText
+            formControlName="shortDescription"
+            placeholder="Para listagens e cards"
+          />
+          @if (productForm.get('shortDescription')?.invalid && productForm.get('shortDescription')?.touched) {
+            <small class="field-error">Descrição curta é obrigatória</small>
+          }
+        </div>
+        <div class="form-field">
+          <label for="fullDesc">Descrição completa (opcional)</label>
+          <textarea
+            id="fullDesc"
+            pInputTextarea
+            formControlName="fullDescription"
+            rows="3"
+            placeholder="Descrição detalhada do produto"
+          ></textarea>
+        </div>
+        <div class="form-field">
+          <label for="slug">Slug (URL amigável) *</label>
+          <input id="slug" pInputText formControlName="slug" placeholder="ex: camiseta-basica" />
+          @if (productForm.get('slug')?.invalid && productForm.get('slug')?.touched) {
+            <small class="field-error">Slug é obrigatório</small>
+          }
+        </div>
+      </p-tabPanel>
+
+      <p-tabPanel header="Preços">
+        <div class="form-row">
+          <div class="form-field">
+            <label for="costPrice">Custo *</label>
+            <p-inputNumber
+              id="costPrice"
+              formControlName="costPrice"
+              mode="currency"
+              currency="BRL"
+              locale="pt-BR"
+              [minFractionDigits]="2"
+              styleClass="w-full"
+            />
+          </div>
+          <div class="form-field">
+            <label for="salePrice">Preço de venda *</label>
+            <p-inputNumber
+              id="salePrice"
+              formControlName="salePrice"
+              mode="currency"
+              currency="BRL"
+              locale="pt-BR"
+              [minFractionDigits]="2"
+              styleClass="w-full"
+            />
+          </div>
+          <div class="form-field">
+            <label for="comparePrice">Preço "de" (opcional)</label>
+            <p-inputNumber
+              id="comparePrice"
+              formControlName="compareAtPrice"
+              mode="currency"
+              currency="BRL"
+              locale="pt-BR"
+              [minFractionDigits]="2"
+              styleClass="w-full"
+            />
+          </div>
+        </div>
+        <div class="form-field">
+          <label for="currency">Moeda</label>
+          <p-dropdown
+            id="currency"
+            formControlName="currency"
+            [options]="currencyOptions"
+            optionLabel="label"
+            optionValue="value"
+            styleClass="w-full"
+          />
+        </div>
+      </p-tabPanel>
+
+      <p-tabPanel header="Fornecedor">
+        <div class="form-row">
+          <div class="form-field">
+            <label for="supplierSku">SKU do fornecedor</label>
+            <input id="supplierSku" pInputText formControlName="supplierSku" />
+          </div>
+          <div class="form-field flex-2">
+            <label for="supplierName">Nome do fornecedor</label>
+            <input id="supplierName" pInputText formControlName="supplierName" />
+          </div>
+        </div>
+        <div class="form-field">
+          <label for="supplierUrl">URL no fornecedor</label>
+          <input id="supplierUrl" pInputText formControlName="supplierProductUrl" placeholder="https://..." />
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label for="leadTime">Prazo de envio (dias)</label>
+            <p-inputNumber id="leadTime" formControlName="leadTimeDays" [min]="0" styleClass="w-full" />
+          </div>
+          <div class="form-field checkbox-field">
+            <p-checkbox formControlName="isDropship" [binary]="true" inputId="isDropship" />
+            <label for="isDropship">Produto dropship</label>
+          </div>
+        </div>
+      </p-tabPanel>
+
+      <p-tabPanel header="Fotos">
+        <div class="photos-section">
+          <p class="photos-hint">Adicione as fotos do produto. Pelo menos uma foto é obrigatória. Marque uma como principal.</p>
+
+          <div class="add-photo-inline">
+            <div class="upload-zone">
+              <input
+                #fileInput
+                type="file"
+                accept="image/jpeg,image/png,image/gif,image/webp"
+                multiple
+                (change)="onFileSelected($event)"
+                class="file-input-hidden"
+              />
+              <button
+                type="button"
+                class="upload-trigger"
+                (click)="fileInput.click()"
+                [disabled]="uploading()"
+              >
+                <i class="pi pi-upload"></i>
+                {{ uploading() ? 'Enviando...' : 'Escolher do computador' }}
+              </button>
+            </div>
+            <div class="add-photo-actions">
+              <p-checkbox [formControl]="newImageMain" [binary]="true" inputId="newMain" />
+              <label for="newMain">Marcar próxima como principal</label>
+            </div>
+          </div>
+
+          <div class="photos-list" formArrayName="images">
+            @for (ctrl of imagesFormArray.controls; track $index) {
+              <div class="photo-card" [formGroupName]="$index">
+                <div class="photo-preview">
+                  <img [src]="ctrl.get('url')?.value" alt="" (error)="$any($event.target).style.display='none'" />
+                  @if (ctrl.get('main')?.value) {
+                    <span class="main-badge">Principal</span>
+                  }
+                </div>
+                <div class="photo-actions">
+                  @if (!isEditMode()) {
+                    <p-button
+                      icon="pi pi-star"
+                      [rounded]="true"
+                      [text]="true"
+                      size="small"
+                      [severity]="ctrl.get('main')?.value ? 'success' : 'secondary'"
+                      (onClick)="setMainImageAt($index)"
+                      pTooltip="Definir como principal"
+                    />
+                    <p-button
+                      icon="pi pi-trash"
+                      [rounded]="true"
+                      [text]="true"
+                      severity="danger"
+                      size="small"
+                      (onClick)="removeImageAt($index)"
+                      pTooltip="Remover"
+                    />
+                  } @else {
+                    <p-button
+                      icon="pi pi-star"
+                      [rounded]="true"
+                      [text]="true"
+                      size="small"
+                      [severity]="ctrl.get('main')?.value ? 'success' : 'secondary'"
+                      (onClick)="setMainInEditMode($index, editingProduct()!.id)"
+                      pTooltip="Definir como principal"
+                    />
+                    <p-button
+                      icon="pi pi-trash"
+                      [rounded]="true"
+                      [text]="true"
+                      severity="danger"
+                      size="small"
+                      (onClick)="removeImageInEditMode($index, editingProduct()!.id)"
+                      pTooltip="Remover"
+                    />
+                  }
+                </div>
+              </div>
+            }
+          </div>
+          @if (imagesFormArray.length === 0) {
+            <p class="no-photos">Nenhuma foto adicionada ainda.</p>
+          }
+        </div>
+      </p-tabPanel>
+
+      <p-tabPanel header="Status e outros">
+        <div class="form-field">
+          <label for="status">Status</label>
+          <p-dropdown
+            id="status"
+            formControlName="status"
+            [options]="statusOptions"
+            optionLabel="label"
+            optionValue="value"
+            styleClass="w-full"
+          />
+        </div>
+        <div class="form-field">
+          <label for="stock">Estoque (opcional)</label>
+          <p-inputNumber id="stock" formControlName="stockQuantity" [min]="0" styleClass="w-full" />
+        </div>
+        <div class="form-field">
+          <label for="brand">Marca</label>
+          <input id="brand" pInputText formControlName="brand" />
+        </div>
+      </p-tabPanel>
+    </p-tabView>
+  </form>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancelar" [text]="true" (onClick)="dialogVisible.set(false)" />
+    <p-button
+      [label]="isEditMode() ? 'Salvar' : 'Cadastrar'"
+      icon="pi pi-check"
+      (onClick)="submit()"
+      [loading]="saving()"
+      [disabled]="productForm.invalid || (imagesFormArray.length === 0 && !isEditMode())"
+    />
+  </ng-template>
+</p-dialog>

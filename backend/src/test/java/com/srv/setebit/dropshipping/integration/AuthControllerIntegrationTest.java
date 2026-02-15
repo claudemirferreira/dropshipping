@@ -20,11 +20,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 class AuthControllerIntegrationTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private MockMvc mockMvc;
 
     @Test
     void deve_fazer_login_com_admin_e_retornar_tokens() throws Exception {
@@ -32,7 +31,7 @@ class AuthControllerIntegrationTest {
 
         mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(OBJECT_MAPPER.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.accessToken").exists())
                 .andExpect(jsonPath("$.refreshToken").exists())
@@ -45,7 +44,7 @@ class AuthControllerIntegrationTest {
 
         mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(OBJECT_MAPPER.writeValueAsString(request)))
                 .andExpect(status().isUnauthorized());
     }
 

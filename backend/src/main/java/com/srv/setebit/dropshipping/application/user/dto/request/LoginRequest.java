@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public record LoginRequest(
         @NotBlank(message = "Email é obrigatório")
         @Email(message = "Email inválido")
-        @Schema(description = "Email do usuário", example = "admin@test.com", required = true)
+        @Schema(description = "Email do usuário", example = "admin@dropshipping.com", required = true)
         String email,
 
         @NotBlank(message = "Senha é obrigatória")
