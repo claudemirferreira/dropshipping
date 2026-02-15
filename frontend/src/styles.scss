@@ -4,6 +4,8 @@
   --sidebar-active-bg: #f1f5f9;
   --sidebar-active-text: #1e293b;
   --badge-active-color: #22c55e;
+  /* Sakai-style layout: topbar com gradiente na cor primária */
+  --layout-topbar-bg: linear-gradient(135deg, var(--p-primary-color) 0%, #0d9488 100%);
 }
 
 * {
@@ -23,6 +25,42 @@ body {
   background-color: #f8fafc;
   color: #1e293b;
   -webkit-font-smoothing: antialiased;
+}
+
+body.blocked-scroll {
+  overflow: hidden;
+}
+
+/* Layout Sakai: topbar – botões só ícone, sem fundo cinza */
+.layout-topbar button.topbar-menu-button,
+.layout-topbar button.topbar-button {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.layout-topbar button.topbar-menu-button:hover,
+.layout-topbar button.topbar-button:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+}
+
+/* Layout Sakai: área principal com fundo neutro */
+.layout-main {
+  background: var(--p-surface-0, #ffffff) !important;
+}
+
+/* Menu popup do topbar (avatar) - garantir contraste */
+.topbar-user-menu.p-menu-overlay,
+.p-menu.topbar-user-menu {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
+}
+.topbar-user-menu .p-menuitem-link,
+.topbar-user-menu .p-menuitem-text,
+.topbar-user-menu .p-menuitem-icon {
+  color: #334155 !important;
+}
+.topbar-user-menu .p-menuitem-link:hover {
+  background: #f1f5f9 !important;
 }
 
 /* Dropdown/Select - fundo claro (overlay renderizado no body) */
