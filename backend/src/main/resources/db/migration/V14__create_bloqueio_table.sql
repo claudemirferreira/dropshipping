@@ -1,5 +1,5 @@
--- Cria tabela de bloqueios de usuários
-CREATE TABLE IF NOT EXISTS dropshipping.bloqueios (
+-- Cria tabela de bloqueio de usuários
+CREATE TABLE IF NOT EXISTS dropshipping.bloqueio (
     id UUID PRIMARY KEY,
     user_id UUID NOT NULL,
     login VARCHAR(255) NOT NULL,
@@ -10,9 +10,9 @@ CREATE TABLE IF NOT EXISTS dropshipping.bloqueios (
     data_do_usuario_desbloqueou TIMESTAMP,
     desbloqueado_por UUID,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_bloqueios_user FOREIGN KEY (user_id) REFERENCES dropshipping.users (id)
+    CONSTRAINT fk_bloqueio_user FOREIGN KEY (user_id) REFERENCES dropshipping.users (id)
 );
 
-CREATE INDEX IF NOT EXISTS idx_bloqueios_user ON dropshipping.bloqueios(user_id);
-CREATE INDEX IF NOT EXISTS idx_bloqueios_status ON dropshipping.bloqueios(status);
+CREATE INDEX IF NOT EXISTS idx_bloqueio_user ON dropshipping.bloqueio(user_id);
+CREATE INDEX IF NOT EXISTS idx_bloqueio_status ON dropshipping.bloqueio(status);
 

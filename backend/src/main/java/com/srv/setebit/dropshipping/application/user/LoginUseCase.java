@@ -1,26 +1,25 @@
 package com.srv.setebit.dropshipping.application.user;
 
+import java.time.Instant;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.srv.setebit.dropshipping.application.user.dto.request.LoginRequest;
 import com.srv.setebit.dropshipping.application.user.dto.response.TokenResponse;
 import com.srv.setebit.dropshipping.application.user.port.JwtProviderPort;
 import com.srv.setebit.dropshipping.application.user.port.PasswordEncoderPort;
 import com.srv.setebit.dropshipping.domain.user.RefreshToken;
-import com.srv.setebit.dropshipping.domain.user.User;
-import com.srv.setebit.dropshipping.domain.user.Bloqueio;
-import com.srv.setebit.dropshipping.domain.user.BloqueioStatus;
 import com.srv.setebit.dropshipping.domain.user.TemporaryPassword;
+import com.srv.setebit.dropshipping.domain.user.User;
 import com.srv.setebit.dropshipping.domain.user.exception.InvalidCredentialsException;
 import com.srv.setebit.dropshipping.domain.user.exception.UserLockedException;
-import com.srv.setebit.dropshipping.domain.user.port.RefreshTokenRepositoryPort;
 import com.srv.setebit.dropshipping.domain.user.port.BloqueioRepositoryPort;
+import com.srv.setebit.dropshipping.domain.user.port.RefreshTokenRepositoryPort;
 import com.srv.setebit.dropshipping.domain.user.port.TemporaryPasswordRepositoryPort;
 import com.srv.setebit.dropshipping.domain.user.port.UserRepositoryPort;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.Instant;
-import java.util.UUID;
 
 @Service
 public class LoginUseCase {
@@ -31,6 +30,7 @@ public class LoginUseCase {
     private final JwtProviderPort jwtProvider;
     private final BloqueioRepositoryPort bloqueioRepository;
     private final TemporaryPasswordRepositoryPort tempPasswordRepository;
+    private final LoginAttemptService loginAttemptService;
 
     @Value("${jwt.access-token-expiration-ms:900000}")
     private long accessTokenExpirationMs;
@@ -43,13 +43,15 @@ public class LoginUseCase {
                         PasswordEncoderPort passwordEncoder,
                         JwtProviderPort jwtProvider,
                         BloqueioRepositoryPort bloqueioRepository,
-                        TemporaryPasswordRepositoryPort tempPasswordRepository) {
+                        TemporaryPasswordRepositoryPort tempPasswordRepository,
+                        LoginAttemptService loginAttemptService) {
         this.userRepository = userRepository;
         this.refreshTokenRepository = refreshTokenRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtProvider = jwtProvider;
         this.bloqueioRepository = bloqueioRepository;
         this.tempPasswordRepository = tempPasswordRepository;
+        this.loginAttemptService = loginAttemptService;
     }
 
     @Transactional
@@ -87,25 +89,7 @@ public class LoginUseCase {
         }
 
         if (!valid) {
-            int attempts = user.getFailedLoginAttempts() + 1;
-            user.setFailedLoginAttempts(attempts);
-            user.setUpdatedAt(Instant.now());
-            if (attempts >= 3) {
-                user.setLocked(true);
-                user.setLockedReason("Senha inválida 3 vezes");
-                user.setLockedAt(Instant.now());
-                // cria registro de bloqueio ativo
-                Bloqueio b = new Bloqueio();
-                b.setId(UUID.randomUUID());
-                b.setUserId(user.getId());
-                b.setLogin(user.getEmail());
-                b.setMotivo("Senha inválida 3 vezes");
-                b.setStatus(BloqueioStatus.ATIVO);
-                b.setDataDoBloqueio(Instant.now());
-                b.setCreatedAt(Instant.now());
-                bloqueioRepository.save(b);
-            }
-            userRepository.save(user);
+            loginAttemptService.registerFailed(user, request.email());
             throw new InvalidCredentialsException();
         } else {
             // reset attempts on success
