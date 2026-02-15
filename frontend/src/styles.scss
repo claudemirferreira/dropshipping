@@ -47,20 +47,29 @@ body.blocked-scroll {
   background: var(--p-surface-0, #ffffff) !important;
 }
 
-/* Menu popup do topbar (avatar) - garantir contraste */
-.topbar-user-menu.p-menu-overlay,
-.p-menu.topbar-user-menu {
+/* Menu popup do topbar (avatar) - fundo claro, item Sair sem fundo preto (PrimeNG 19) */
+.p-menu.p-menu-overlay.topbar-user-menu,
+.p-menu-overlay.topbar-user-menu {
   background: #ffffff !important;
   border: 1px solid #e2e8f0 !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
 }
-.topbar-user-menu .p-menuitem-link,
-.topbar-user-menu .p-menuitem-text,
-.topbar-user-menu .p-menuitem-icon {
+/* só itens dentro do overlay do topbar (não afeta sidebar nem outros menus) */
+.p-menu.p-menu-overlay.topbar-user-menu .p-menu-item .p-menu-item-content,
+.p-menu.p-menu-overlay.topbar-user-menu .p-menu-item .p-menu-item-link {
+  background: transparent !important;
   color: #334155 !important;
 }
-.topbar-user-menu .p-menuitem-link:hover {
+.p-menu.p-menu-overlay.topbar-user-menu .p-menu-item.p-focus .p-menu-item-content,
+.p-menu.p-menu-overlay.topbar-user-menu .p-menu-item.p-focus .p-menu-item-link,
+.p-menu.p-menu-overlay.topbar-user-menu .p-menu-item .p-menu-item-content:hover,
+.p-menu.p-menu-overlay.topbar-user-menu .p-menu-item .p-menu-item-link:hover {
   background: #f1f5f9 !important;
+  color: #334155 !important;
+}
+.p-menu.p-menu-overlay.topbar-user-menu .p-menu-item .p-menu-item-icon,
+.p-menu.p-menu-overlay.topbar-user-menu .p-menu-item .p-menu-item-label {
+  color: #334155 !important;
 }
 
 /* Dropdown/Select - fundo claro (overlay renderizado no body) */
@@ -359,9 +368,20 @@ body.blocked-scroll {
   border-color: #e2e8f0 !important;
 }
 
-/* Coluna Ações: botões em uma linha */
+/* Coluna Ações: botões visíveis e em uma linha */
 .p-datatable .p-datatable-tbody > tr > td:last-child {
   white-space: nowrap;
+  min-width: 10rem;
+  overflow: visible;
+}
+.p-datatable .p-datatable-tbody > tr > td:last-child .p-button {
+  display: inline-flex;
+  min-width: 2.25rem;
+  color: #475569;
+}
+.p-datatable .p-datatable-tbody > tr > td:last-child .p-button .p-icon,
+.p-datatable .p-datatable-tbody > tr > td:last-child .p-button .p-button-icon {
+  color: inherit;
 }
 
 .p-datatable .p-datatable-tbody > tr,

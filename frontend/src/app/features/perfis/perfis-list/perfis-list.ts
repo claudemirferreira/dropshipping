@@ -147,34 +147,36 @@ interface RotinaOption {
                 [severity]="row.active ? 'success' : 'danger'"
               />
             </td>
-            <td>
-              <p-button
-                icon="pi pi-link"
-                [rounded]="true"
-                [text]="true"
-                severity="secondary"
-                size="small"
-                (onClick)="openRotinasDialog(row)"
-                pTooltip="Rotinas"
-              />
-              <p-button
-                icon="pi pi-pencil"
-                [rounded]="true"
-                [text]="true"
-                severity="secondary"
-                size="small"
-                (onClick)="openEditDialog(row)"
-                pTooltip="Editar"
-              />
-              <p-button
-                icon="pi pi-trash"
-                [rounded]="true"
-                [text]="true"
-                severity="secondary"
-                size="small"
-                (onClick)="confirmDelete(row)"
-                pTooltip="Excluir"
-              />
+            <td class="actions-cell">
+              <div class="actions-buttons">
+                <p-button
+                  icon="pi pi-link"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="secondary"
+                  size="small"
+                  (onClick)="openRotinasDialog(row)"
+                  pTooltip="Rotinas"
+                />
+                <p-button
+                  icon="pi pi-pencil"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="secondary"
+                  size="small"
+                  (onClick)="openEditDialog(row)"
+                  pTooltip="Editar"
+                />
+                <p-button
+                  icon="pi pi-trash"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="secondary"
+                  size="small"
+                  (onClick)="confirmDelete(row)"
+                  pTooltip="Excluir"
+                />
+              </div>
             </td>
           </tr>
         </ng-template>
@@ -430,6 +432,19 @@ interface RotinaOption {
         border-color: #e2e8f0;
         color: #334155;
         padding: 0.5rem 1rem;
+      }
+
+      .actions-cell {
+        overflow: visible;
+      }
+      .actions-buttons {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+      }
+      .actions-buttons ::ng-deep .p-button {
+        flex-shrink: 0;
+        color: #475569;
       }
 
       .table-card ::ng-deep .p-datatable .p-datatable-tbody > tr:nth-child(even) {

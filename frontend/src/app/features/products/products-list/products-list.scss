@@ -252,10 +252,19 @@
   color: #1e293b;
 }
 
+.actions-cell {
+  overflow: visible;
+}
+
 .action-buttons {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.25rem;
+
+  ::ng-deep .p-button {
+    flex-shrink: 0;
+    color: #475569;
+  }
 }
 
 .status-dropdown {

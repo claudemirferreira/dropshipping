@@ -131,37 +131,39 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
                 [severity]="user.active ? 'success' : 'danger'"
               />
             </td>
-            <td>
-              <p-button
-                icon="pi pi-id-card"
-                [rounded]="true"
-                [text]="true"
-                severity="secondary"
-                size="small"
-                (onClick)="openPerfisDialog(user)"
-                pTooltip="Perfis"
-              />
-              @if (user.active) {
+            <td class="actions-cell">
+              <div class="actions-buttons">
                 <p-button
-                  icon="pi pi-ban"
+                  icon="pi pi-id-card"
                   [rounded]="true"
                   [text]="true"
                   severity="secondary"
                   size="small"
-                  (onClick)="deactivate(user)"
-                  pTooltip="Desativar"
+                  (onClick)="openPerfisDialog(user)"
+                  pTooltip="Perfis"
                 />
-              } @else {
-                <p-button
-                  icon="pi pi-check"
-                  [rounded]="true"
-                  [text]="true"
-                  severity="secondary"
-                  size="small"
-                  (onClick)="activate(user)"
-                  pTooltip="Ativar"
-                />
-              }
+                @if (user.active) {
+                  <p-button
+                    icon="pi pi-ban"
+                    [rounded]="true"
+                    [text]="true"
+                    severity="secondary"
+                    size="small"
+                    (onClick)="deactivate(user)"
+                    pTooltip="Desativar"
+                  />
+                } @else {
+                  <p-button
+                    icon="pi pi-check"
+                    [rounded]="true"
+                    [text]="true"
+                    severity="secondary"
+                    size="small"
+                    (onClick)="activate(user)"
+                    pTooltip="Ativar"
+                  />
+                }
+              </div>
             </td>
           </tr>
         </ng-template>
@@ -413,6 +415,19 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
         color: #334155;
         padding: 0.5rem 1rem;
         background: inherit !important;
+      }
+
+      .actions-cell {
+        overflow: visible;
+      }
+      .actions-buttons {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+      }
+      .actions-buttons ::ng-deep .p-button {
+        flex-shrink: 0;
+        color: #475569;
       }
 
       .table-card ::ng-deep .p-datatable .p-datatable-tbody > tr:nth-child(even) {

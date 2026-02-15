@@ -139,25 +139,27 @@ const STATUS_OPTIONS = [
                 [severity]="row.active ? 'success' : 'danger'"
               />
             </td>
-            <td>
-              <p-button
-                icon="pi pi-pencil"
-                [rounded]="true"
-                [text]="true"
-                severity="secondary"
-                size="small"
-                (onClick)="openEditDialog(row)"
-                pTooltip="Editar"
-              />
-              <p-button
-                icon="pi pi-trash"
-                [rounded]="true"
-                [text]="true"
-                severity="secondary"
-                size="small"
-                (onClick)="confirmDelete(row)"
-                pTooltip="Excluir"
-              />
+            <td class="actions-cell">
+              <div class="actions-buttons">
+                <p-button
+                  icon="pi pi-pencil"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="secondary"
+                  size="small"
+                  (onClick)="openEditDialog(row)"
+                  pTooltip="Editar"
+                />
+                <p-button
+                  icon="pi pi-trash"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="secondary"
+                  size="small"
+                  (onClick)="confirmDelete(row)"
+                  pTooltip="Excluir"
+                />
+              </div>
             </td>
           </tr>
         </ng-template>
@@ -390,6 +392,19 @@ const STATUS_OPTIONS = [
         background: #22c55e;
         color: white !important;
         border-radius: 50%;
+      }
+
+      .actions-cell {
+        overflow: visible;
+      }
+      .actions-buttons {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+      }
+      .actions-buttons ::ng-deep .p-button {
+        flex-shrink: 0;
+        color: #475569;
       }
 
       .rotina-icon {
