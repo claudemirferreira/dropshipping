@@ -164,7 +164,7 @@ interface RotinaOption {
                 severity="secondary"
                 size="small"
                 (onClick)="openRotinasDialog(row)"
-                pTooltip="Gerenciar rotinas"
+                pTooltip="Rotinas"
               />
               <p-button
                 icon="pi pi-pencil"

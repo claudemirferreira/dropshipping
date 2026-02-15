@@ -157,7 +157,7 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
                 severity="secondary"
                 size="small"
                 (onClick)="openPerfisDialog(user)"
-                pTooltip="Gerenciar perfis"
+                pTooltip="Perfis"
               />
               @if (user.active) {
                 <p-button
