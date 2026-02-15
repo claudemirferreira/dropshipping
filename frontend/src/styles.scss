@@ -175,3 +175,191 @@ body {
 .p-dialog .form-field label {
   color: #334155 !important;
 }
+
+/* PickList - fundo claro em todo o app */
+.p-picklist.p-component,
+.p-dialog .p-picklist {
+  background: transparent !important;
+}
+
+.p-picklist .p-picklist-list-wrapper,
+.p-picklist .p-picklist-list,
+.p-picklist .p-picklist-list-container,
+.p-picklist .p-picklist-header,
+.p-picklist .p-picklist-filter-container,
+.p-picklist .p-picklist-source-list-container,
+.p-picklist .p-picklist-target-list-container,
+.p-picklist .p-listbox,
+.p-picklist .p-listbox-list,
+.p-picklist .p-listbox-list-wrapper,
+.p-picklist .p-listbox-list-container,
+.p-picklist .p-listbox-header,
+.p-picklist .p-listbox-filter,
+.p-picklist .p-listbox-option,
+.p-dialog .p-picklist .p-picklist-list-wrapper,
+.p-dialog .p-picklist .p-picklist-list,
+.p-dialog .p-picklist .p-picklist-list-container,
+.p-dialog .p-picklist .p-picklist-header,
+.p-dialog .p-picklist .p-picklist-filter-container,
+.p-dialog .p-picklist .p-picklist-source-list-container,
+.p-dialog .p-picklist .p-picklist-target-list-container,
+.p-dialog .p-picklist .p-listbox,
+.p-dialog .p-picklist .p-listbox-list,
+.p-dialog .p-picklist .p-listbox-list-wrapper,
+.p-dialog .p-picklist .p-listbox-list-container,
+.p-dialog .p-picklist .p-listbox-header,
+.p-dialog .p-picklist .p-listbox-filter,
+.p-dialog .p-picklist .p-listbox-option {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #1e293b !important;
+}
+
+.p-picklist .p-picklist-list .p-picklist-item,
+.p-picklist .p-picklist-item,
+.p-picklist .p-listbox-option,
+.p-dialog .p-picklist .p-picklist-list .p-picklist-item,
+.p-dialog .p-picklist .p-picklist-item,
+.p-dialog .p-picklist .p-listbox-option {
+  background: #ffffff !important;
+  color: #1e293b !important;
+  border-color: transparent !important;
+}
+
+.p-picklist .p-picklist-item:hover,
+.p-picklist .p-picklist-item.p-focus,
+.p-picklist .p-picklist-item.p-picklist-item-selected,
+.p-picklist .p-listbox-option:hover,
+.p-picklist .p-listbox-option.p-highlight,
+.p-picklist .p-listbox-option.p-focus,
+.p-dialog .p-picklist .p-picklist-list .p-picklist-item:hover,
+.p-dialog .p-picklist .p-picklist-item:hover,
+.p-dialog .p-picklist .p-picklist-item.p-focus,
+.p-dialog .p-picklist .p-picklist-item.p-picklist-item-selected,
+.p-dialog .p-picklist .p-listbox-option:hover,
+.p-dialog .p-picklist .p-listbox-option.p-highlight,
+.p-dialog .p-picklist .p-listbox-option.p-focus {
+  background: #f1f5f9 !important;
+  color: #1e293b !important;
+}
+
+.p-picklist .p-picklist-transfer-buttons,
+.p-picklist .p-picklist-buttons,
+.p-picklist .p-picklist-controls,
+.p-picklist .p-picklist-transfer-controls,
+.p-dialog .p-picklist .p-picklist-controls,
+.p-dialog .p-picklist .p-picklist-transfer-controls {
+  background: transparent !important;
+}
+
+.p-picklist button.p-button,
+.p-picklist .p-button,
+.p-picklist .p-picklist-controls .p-button,
+.p-picklist .p-picklist-transfer-controls .p-button,
+.p-dialog .p-picklist button.p-button,
+.p-dialog .p-picklist .p-button,
+.p-dialog .p-picklist .p-picklist-controls .p-button,
+.p-dialog .p-picklist .p-picklist-transfer-controls .p-button {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #334155 !important;
+}
+
+.p-picklist .p-button .p-icon,
+.p-picklist button .p-icon,
+.p-dialog .p-picklist .p-button .p-icon,
+.p-dialog .p-picklist button .p-icon {
+  color: #334155 !important;
+}
+
+.p-picklist .p-picklist-transfer-buttons button:hover,
+.p-picklist .p-picklist-buttons button:hover,
+.p-picklist .p-picklist-controls button:hover,
+.p-picklist button.p-button:hover,
+.p-picklist .p-button:hover,
+.p-dialog .p-picklist .p-picklist-transfer-buttons button:hover,
+.p-dialog .p-picklist .p-picklist-buttons button:hover,
+.p-dialog .p-picklist .p-picklist-controls button:hover,
+.p-dialog .p-picklist button.p-button:hover,
+.p-dialog .p-picklist .p-button:hover {
+  background: #f1f5f9 !important;
+  color: #1e293b !important;
+  border-color: #e2e8f0 !important;
+}
+
+.p-picklist .p-picklist-filter,
+.p-picklist input.p-inputtext,
+.p-dialog .p-picklist .p-picklist-filter,
+.p-dialog .p-picklist input.p-inputtext {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #1e293b !important;
+}
+
+.p-picklist .p-picklist-filter::placeholder,
+.p-picklist input::placeholder,
+.p-dialog .p-picklist .p-picklist-filter::placeholder,
+.p-dialog .p-picklist input::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* DataTable/Grid - remover cores escuras, fundo claro em todas as linhas */
+.p-datatable,
+.p-datatable.p-component,
+.p-datatable .p-datatable-wrapper,
+.p-datatable .p-datatable-table,
+.p-datatable .p-datatable-thead,
+.p-datatable .p-datatable-tbody,
+.p-datatable .p-datatable-tfoot {
+  background: #ffffff !important;
+  color: #1e293b !important;
+}
+
+.p-datatable .p-datatable-thead > tr > th {
+  background: #f8fafc !important;
+  color: #475569 !important;
+  border-color: #e2e8f0 !important;
+}
+
+.p-datatable .p-datatable-tbody > tr,
+.p-datatable .p-datatable-tbody > tr:nth-child(odd),
+.p-datatable .p-datatable-tbody > tr:nth-child(even) {
+  background: #ffffff !important;
+  color: #334155 !important;
+}
+
+.p-datatable .p-datatable-tbody > tr:nth-child(even) {
+  background: #f8fafc !important;
+}
+
+.p-datatable .p-datatable-tbody > tr:hover,
+.p-datatable .p-datatable-tbody > tr.p-highlight {
+  background: #f1f5f9 !important;
+  color: #1e293b !important;
+}
+
+.p-datatable .p-datatable-tbody > tr > td {
+  background: inherit !important;
+  color: #334155 !important;
+  border-color: #e2e8f0 !important;
+}
+
+.p-datatable .p-datatable-tbody > tr:nth-child(even) > td {
+  background: #f8fafc !important;
+}
+
+.p-datatable .p-datatable-tbody > tr:hover > td,
+.p-datatable .p-datatable-tbody > tr.p-highlight > td {
+  background: #f1f5f9 !important;
+}
+
+.p-datatable .p-paginator {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #64748b !important;
+}
+
+.p-datatable .p-paginator .p-link,
+.p-datatable .p-paginator .p-paginator-current {
+  color: #64748b !important;
+}
