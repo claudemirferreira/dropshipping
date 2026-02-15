@@ -9,5 +9,5 @@ import java.util.UUID;
 public interface BloqueioRepositoryPort {
     Bloqueio save(Bloqueio bloqueio);
     Optional<Bloqueio> findActiveByUserId(UUID userId);
-    void closeActiveByUserId(UUID userId, UUID auditorId, boolean selfService);
+    void closeActiveByUserId(UUID userId, String auditorName, boolean selfService);
 }

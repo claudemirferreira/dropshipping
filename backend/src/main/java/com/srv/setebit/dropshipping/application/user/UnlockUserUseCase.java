@@ -27,6 +27,10 @@ public class UnlockUserUseCase {
         User user = userRepository.findById(targetUserId)
                 .orElseThrow(() -> new UserNotFoundException(targetUserId));
 
+        User admin = userRepository.findById(adminId)
+                .orElseThrow(() -> new UserNotFoundException(adminId));
+        String auditorName = admin.getName();
+
         user.setLocked(false);
         user.setLockedReason(null);
         user.setUnlockedAt(Instant.now());
@@ -34,6 +38,6 @@ public class UnlockUserUseCase {
         user.setUpdatedAt(Instant.now());
         userRepository.save(user);
 
-        bloqueioRepository.closeActiveByUserId(targetUserId, adminId, false);
+        bloqueioRepository.closeActiveByUserId(targetUserId, auditorName, false);
     }
 }

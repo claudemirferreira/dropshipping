@@ -42,8 +42,8 @@ public class BloqueioEntity {
     @Column(name = "data_do_usuario_desbloqueou")
     private Instant dataDoUsuarioDesbloqueou;
 
-    @Column(name = "desbloqueado_por")
-    private UUID desbloqueadoPor;
+    @Column(name = "desbloqueado_por", length = 255)
+    private String desbloqueadoPor;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

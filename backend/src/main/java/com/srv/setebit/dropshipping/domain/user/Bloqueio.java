@@ -19,6 +19,6 @@ public class Bloqueio {
     private Instant dataDoBloqueio;
     private Instant dataDoDesbloqueio;
     private Instant dataDoUsuarioDesbloqueou;
-    private UUID desbloqueadoPor;
+    private String desbloqueadoPor;
     private Instant createdAt;
 }

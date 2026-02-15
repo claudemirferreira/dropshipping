@@ -34,8 +34,8 @@ public class BloqueioRepositoryAdapter implements BloqueioRepositoryPort {
     }
 
     @Override
-    public void closeActiveByUserId(UUID userId, UUID auditorId, boolean selfService) {
-        jpaRepository.closeActiveByUserId(userId, auditorId, selfService, BloqueioStatus.ATIVO, BloqueioStatus.INATIVO);
+    public void closeActiveByUserId(UUID userId, String auditorName, boolean selfService) {
+        jpaRepository.closeActiveByUserId(userId, auditorName, selfService, BloqueioStatus.ATIVO, BloqueioStatus.INATIVO);
     }
 
     private BloqueioEntity toEntity(Bloqueio b) {
