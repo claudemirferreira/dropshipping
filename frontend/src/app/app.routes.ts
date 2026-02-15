@@ -41,6 +41,20 @@ export const routes: Routes = [
             (m) => m.ProductsListComponent
           ),
       },
+      {
+        path: 'rotinas',
+        loadComponent: () =>
+          import('./features/rotinas/rotinas-list/rotinas-list').then(
+            (m) => m.RotinasListComponent
+          ),
+      },
+      {
+        path: 'perfis',
+        loadComponent: () =>
+          import('./features/perfis/perfis-list/perfis-list').then(
+            (m) => m.PerfisListComponent
+          ),
+      },
     ],
   },
   { path: '**', redirectTo: '' },

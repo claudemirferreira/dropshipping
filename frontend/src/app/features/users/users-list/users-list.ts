@@ -14,8 +14,16 @@ import { AvatarModule } from 'primeng/avatar';
 import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
 import { PasswordModule } from 'primeng/password';
+import { PickListModule } from 'primeng/picklist';
 import { UsersService, CreateUserRequest } from '../../../core/services/users.service';
+import { PerfisService } from '../../../core/services/perfis.service';
 import type { User } from '../../../core/services/auth.service';
+import type { Perfil } from '../../../core/services/perfis.service';
+
+interface PerfilOption {
+  label: string;
+  value: string;
+}
 
 const PROFILE_OPTIONS = [
   { label: 'Administrador', value: 'ADMIN' },
@@ -44,6 +52,7 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
     DialogModule,
     DropdownModule,
     PasswordModule,
+    PickListModule,
   ],
   providers: [MessageService, ConfirmationService],
   template: `
@@ -115,7 +124,7 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
             <th>E-mail</th>
             <th>Perfil</th>
             <th>Status</th>
-            <th style="width: 100px">Ações</th>
+            <th style="width: 130px">Ações</th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-user>
@@ -141,6 +150,15 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
               />
             </td>
             <td>
+              <p-button
+                icon="pi pi-id-card"
+                [rounded]="true"
+                [text]="true"
+                severity="secondary"
+                size="small"
+                (onClick)="openPerfisDialog(user)"
+                pTooltip="Gerenciar perfis"
+              />
               @if (user.active) {
                 <p-button
                   icon="pi pi-ban"
@@ -241,6 +259,46 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
       <ng-template pTemplate="footer">
         <p-button label="Cancelar" [text]="true" (onClick)="createDialogVisible = false" />
         <p-button label="Cadastrar" icon="pi pi-check" (onClick)="submitCreate()" [loading]="creating()" [disabled]="createForm.invalid" />
+      </ng-template>
+    </p-dialog>
+
+    <p-dialog
+      header="Gerenciar perfis do usuário"
+      [(visible)]="perfisDialogVisible"
+      [modal]="true"
+      [style]="{ width: '42rem' }"
+      [contentStyle]="{ overflow: 'visible' }"
+      [draggable]="false"
+      [resizable]="false"
+      (onHide)="closePerfisDialog()"
+    >
+      @if (perfisDialogUser()) {
+        <p class="perfis-dialog-subtitle">{{ perfisDialogUser()?.name }}</p>
+        <p-pickList
+          [source]="pickListSource"
+          [target]="pickListTarget"
+          sourceHeader="Disponíveis"
+          targetHeader="Perfis atribuídos"
+          [dragdrop]="true"
+          [filterBy]="'label'"
+          [showSourceFilter]="true"
+          [showTargetFilter]="true"
+          breakpoint="768px"
+          styleClass="perfis-picklist"
+        >
+          <ng-template let-item pTemplate="item">
+            <div class="picklist-item">{{ item.label }}</div>
+          </ng-template>
+        </p-pickList>
+      }
+      <ng-template pTemplate="footer">
+        <p-button label="Cancelar" [text]="true" (onClick)="closePerfisDialog()" />
+        <p-button
+          label="Salvar"
+          icon="pi pi-check"
+          (onClick)="submitPerfis()"
+          [loading]="savingPerfis()"
+        />
       </ng-template>
     </p-dialog>
   `,
@@ -496,6 +554,25 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
       .toolbar-actions .p-button {
         margin: 0;
       }
+
+      .perfis-dialog-subtitle {
+        margin: 0 0 1rem;
+        font-size: 0.875rem;
+        color: #64748b;
+      }
+
+      .picklist-item {
+        padding: 0.25rem 0;
+        font-size: 0.875rem;
+      }
+
+      .perfis-picklist {
+        min-height: 18rem;
+      }
+
+      ::ng-deep .perfis-picklist .p-picklist-list {
+        min-height: 16rem;
+      }
     `,
   ],
 })
@@ -506,6 +583,11 @@ export class UsersListComponent {
   loading = signal(false);
   creating = signal(false);
   createDialogVisible = false;
+  perfisDialogVisible = false;
+  perfisDialogUser = signal<User | null>(null);
+  pickListSource: PerfilOption[] = [];
+  pickListTarget: PerfilOption[] = [];
+  savingPerfis = signal(false);
   searchControl = new FormControl('', { nonNullable: true });
   profileOptions = PROFILE_OPTIONS;
   createForm = this.fb.nonNullable.group({
@@ -520,6 +602,7 @@ export class UsersListComponent {
 
   constructor(
     private usersService: UsersService,
+    private perfisService: PerfisService,
     private messageService: MessageService,
     private confirmationService: ConfirmationService
   ) {}
@@ -656,5 +739,68 @@ export class UsersListComponent {
       OPERATOR: 'secondary',
     };
     return map[profile] ?? 'secondary';
+  }
+
+  openPerfisDialog(user: User): void {
+    this.perfisDialogUser.set(user);
+    this.usersService.getPerfis(user.id).subscribe({
+      next: (perfis) => {
+        this.setPickListFromPerfis(perfis);
+        this.perfisDialogVisible = true;
+      },
+      error: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: 'Não foi possível carregar os perfis do usuário.',
+        });
+      },
+    });
+  }
+
+  closePerfisDialog(): void {
+    this.perfisDialogVisible = false;
+    this.perfisDialogUser.set(null);
+    this.pickListSource = [];
+    this.pickListTarget = [];
+  }
+
+  submitPerfis(): void {
+    const user = this.perfisDialogUser();
+    if (!user) return;
+    const perfilIds = this.pickListTarget.map((t) => t.value);
+    this.savingPerfis.set(true);
+    this.usersService.assignPerfis(user.id, perfilIds).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Sucesso',
+          detail: 'Perfis atualizados.',
+        });
+        this.closePerfisDialog();
+        this.loadUsers(this.currentPage, this.currentSize);
+      },
+      error: (err) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: err.error?.message ?? 'Não foi possível atualizar os perfis.',
+        });
+      },
+      complete: () => this.savingPerfis.set(false),
+    });
+  }
+
+  private setPickListFromPerfis(userPerfis: Perfil[]): void {
+    this.perfisService.list({ size: 500, sort: 'name,asc' }).subscribe({
+      next: (res) => {
+        const all: PerfilOption[] = res.content.map((p) => ({ label: p.name, value: p.id }));
+        const selectedIds = userPerfis.map((p) => p.id);
+        const selected = all.filter((o) => selectedIds.includes(o.value));
+        const available = all.filter((o) => !selectedIds.includes(o.value));
+        this.pickListSource = [...available];
+        this.pickListTarget = [...selected];
+      },
+    });
   }
 }

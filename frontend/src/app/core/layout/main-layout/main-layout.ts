@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -6,6 +6,8 @@ import { AvatarModule } from 'primeng/avatar';
 import { TooltipModule } from 'primeng/tooltip';
 import { InputTextModule } from 'primeng/inputtext';
 import { AuthService } from '../../services/auth.service';
+import type { Rotina } from '../../services/rotinas.service';
+import type { Perfil } from '../../services/perfis.service';
 
 @Component({
   selector: 'app-main-layout',
@@ -28,36 +30,24 @@ import { AuthService } from '../../services/auth.service';
           <span class="brand-icon">📦</span>
         </div>
         <nav class="sidebar-nav">
-          <a
-            routerLink="/dashboard"
-            routerLinkActive="active"
-            [routerLinkActiveOptions]="{ exact: true }"
-            class="nav-item"
-            pTooltip="Dashboard"
-            tooltipPosition="right"
-          >
-            <i class="pi pi-home"></i>
-          </a>
-          <a
-            routerLink="/usuarios"
-            routerLinkActive="active"
-            [routerLinkActiveOptions]="{ exact: false }"
-            class="nav-item"
-            pTooltip="Usuários"
-            tooltipPosition="right"
-          >
-            <i class="pi pi-users"></i>
-          </a>
-          <a
-            routerLink="/produtos"
-            routerLinkActive="active"
-            [routerLinkActiveOptions]="{ exact: false }"
-            class="nav-item"
-            pTooltip="Produtos"
-            tooltipPosition="right"
-          >
-            <i class="pi pi-box"></i>
-          </a>
+          @for (group of menuGroups(); track group.perfil.code) {
+            <div class="menu-group">
+              <div class="menu-group-header">{{ group.perfil.code }}</div>
+              @for (item of group.rotinas; track item.path) {
+                <a
+                  [routerLink]="item.path"
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="item.path === '/dashboard' ? { exact: true } : { exact: false }"
+                  class="nav-item nav-item-rotina"
+                  [pTooltip]="item.name"
+                  tooltipPosition="right"
+                >
+                  <i [class]="item.icon || 'pi pi-circle'"></i>
+                  <span class="nav-item-label">{{ item.name }}</span>
+                </a>
+              }
+            </div>
+          }
         </nav>
         <div class="sidebar-footer">
           <div
@@ -127,18 +117,19 @@ import { AuthService } from '../../services/auth.service';
       }
 
       .sidebar {
-        width: 4.5rem;
-        min-width: 4.5rem;
+        width: 14rem;
+        min-width: 14rem;
         background: #f8fafc;
         border-right: 1px solid #e2e8f0;
         display: flex;
         flex-direction: column;
-        align-items: center;
         padding: 1rem 0;
+        overflow-y: auto;
       }
 
       .sidebar-brand {
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
+        padding: 0 1rem;
         .brand-icon {
           font-size: 1.5rem;
         }
@@ -148,19 +139,47 @@ import { AuthService } from '../../services/auth.service';
         flex: 1;
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 1rem;
+        padding: 0 0.5rem;
+      }
+
+      .menu-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+
+      .menu-group-header {
+        font-size: 0.6875rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #94a3b8;
+        padding: 0.5rem 0.75rem 0.25rem;
       }
 
       .nav-item {
-        width: 2.5rem;
-        height: 2.5rem;
         display: flex;
         align-items: center;
-        justify-content: center;
+        gap: 0.75rem;
+        padding: 0.5rem 0.75rem;
         border-radius: var(--p-border-radius);
         color: #64748b;
         text-decoration: none;
         transition: all 0.2s;
+        font-size: 0.875rem;
+      }
+
+      .nav-item i {
+        flex-shrink: 0;
+        width: 1.25rem;
+        text-align: center;
+      }
+
+      .nav-item-label {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       .nav-item:hover {
@@ -174,7 +193,7 @@ import { AuthService } from '../../services/auth.service';
       }
 
       .sidebar-footer {
-        padding-top: 1rem;
+        padding: 1rem;
         border-top: 1px solid #e2e8f0;
       }
 
@@ -182,6 +201,11 @@ import { AuthService } from '../../services/auth.service';
         width: 2rem !important;
         height: 2rem !important;
         font-size: 0.75rem !important;
+      }
+
+      .user-avatar {
+        width: auto;
+        padding: 0.25rem;
       }
 
       .main-wrapper {
@@ -273,6 +297,27 @@ import { AuthService } from '../../services/auth.service';
 export class MainLayoutComponent {
   private auth = inject(AuthService);
   currentUser = this.auth.currentUser;
+
+  menuGroups = computed(() => {
+    const perfis = [...this.auth.currentUserPerfis()].sort(
+      (a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0)
+    );
+
+    return perfis.map((perfil) => {
+      const rotinasWithPath = (perfil.rotinas ?? [])
+        .filter((r) => r.path?.trim() && r.active)
+        .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0))
+        .map((r) => ({
+          path: r.path!,
+          name: r.name,
+          icon: r.icon || 'pi pi-circle',
+        }));
+      return {
+        perfil: { code: perfil.code, name: perfil.name },
+        rotinas: rotinasWithPath,
+      };
+    }).filter((g) => g.rotinas.length > 0);
+  });
 
   logout(): void {
     this.auth.logout();

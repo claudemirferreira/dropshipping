@@ -42,7 +42,7 @@ logging:
 
 jwt:
   secret: ${JWT_SECRET:dropshipping-secret-key-for-jwt-signing-min-256-bits-required-for-hs256}
-  access-token-expiration-ms: 900000
+  access-token-expiration-ms: 1800000
   refresh-token-expiration-ms: 604800000
 
 springdoc:

@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import type { User } from './auth.service';
+import type { Perfil } from './perfis.service';
 
 export interface PageUserResponse {
   content: User[];
@@ -72,5 +73,18 @@ export class UsersService {
 
   deactivate(id: string): Observable<User> {
     return this.http.patch<User>(`${this.api}/${id}/deactivate`, {});
+  }
+
+  getPerfis(userId: string): Observable<Perfil[]> {
+    return this.http.get<Perfil[]>(`${this.api}/${userId}/perfis`);
+  }
+
+  /** Perfis do usuário autenticado (usa token do header) */
+  getMyPerfis(): Observable<Perfil[]> {
+    return this.http.get<Perfil[]>(`${this.api}/perfis`);
+  }
+
+  assignPerfis(userId: string, perfilIds: string[]): Observable<void> {
+    return this.http.put<void>(`${this.api}/${userId}/perfis`, { perfilIds });
   }
 }

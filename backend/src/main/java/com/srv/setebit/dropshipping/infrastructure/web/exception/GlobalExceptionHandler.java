@@ -1,5 +1,9 @@
 package com.srv.setebit.dropshipping.infrastructure.web.exception;
 
+import com.srv.setebit.dropshipping.domain.access.exception.DuplicatePerfilCodeException;
+import com.srv.setebit.dropshipping.domain.access.exception.DuplicateRotinaCodeException;
+import com.srv.setebit.dropshipping.domain.access.exception.PerfilNotFoundException;
+import com.srv.setebit.dropshipping.domain.access.exception.RotinaNotFoundException;
 import com.srv.setebit.dropshipping.domain.product.exception.*;
 import com.srv.setebit.dropshipping.domain.user.exception.*;
 import org.slf4j.Logger;
@@ -44,6 +48,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleProductImageNotFound(ProductImageNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 new ErrorResponse(Instant.now(), 404, "Not Found", ex.getMessage(), null));
+    }
+
+    @ExceptionHandler({RotinaNotFoundException.class, PerfilNotFoundException.class})
+    public ResponseEntity<ErrorResponse> handleAccessNotFound(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new ErrorResponse(Instant.now(), 404, "Not Found", ex.getMessage(), null));
+    }
+
+    @ExceptionHandler({DuplicateRotinaCodeException.class, DuplicatePerfilCodeException.class})
+    public ResponseEntity<ErrorResponse> handleDuplicateAccess(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                new ErrorResponse(Instant.now(), 409, "Conflict", ex.getMessage(), null));
     }
 
     @ExceptionHandler({DuplicateSkuException.class, DuplicateSlugException.class})
