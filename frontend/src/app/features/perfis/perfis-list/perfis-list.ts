@@ -103,15 +103,6 @@ interface RotinaOption {
           severity="primary"
           (onClick)="openCreateDialog()"
         />
-        <p-button
-          icon="pi pi-refresh"
-          [rounded]="true"
-          [text]="true"
-          severity="primary"
-          size="small"
-          (onClick)="refresh()"
-          pTooltip="Atualizar"
-        />
       </div>
     </div>
 
@@ -138,7 +129,7 @@ interface RotinaOption {
             <th>Descrição</th>
             <th>Rotinas</th>
             <th>Status</th>
-            <th style="width: 100px">Ações</th>
+            <th style="width: 170px">Ações</th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-row>

@@ -95,15 +95,6 @@ const STATUS_OPTIONS = [
           severity="primary"
           (onClick)="openCreateDialog()"
         />
-        <p-button
-          icon="pi pi-refresh"
-          [rounded]="true"
-          [text]="true"
-          severity="primary"
-          size="small"
-          (onClick)="refresh()"
-          pTooltip="Atualizar"
-        />
       </div>
     </div>
 
@@ -130,7 +121,7 @@ const STATUS_OPTIONS = [
             <th>Descrição</th>
             <th>Path</th>
             <th>Status</th>
-            <th style="width: 100px">Ações</th>
+            <th style="width: 170px">Ações</th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-row>

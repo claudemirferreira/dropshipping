@@ -38,24 +38,6 @@ import type { MenuItem } from 'primeng/api';
       <div class="topbar-end">
         <button
           type="button"
-          class="topbar-button"
-          (click)="layoutService.toggleDarkMode()"
-          [pTooltip]="layoutService.isDarkTheme() ? 'Modo claro' : 'Modo escuro'"
-          tooltipPosition="bottom"
-        >
-          <i [class]="layoutService.isDarkTheme() ? 'pi pi-sun' : 'pi pi-moon'"></i>
-        </button>
-        <button
-          type="button"
-          class="topbar-button"
-          (click)="refresh()"
-          pTooltip="Atualizar"
-          tooltipPosition="bottom"
-        >
-          <i class="pi pi-refresh"></i>
-        </button>
-        <button
-          type="button"
           class="topbar-button user-button"
           (click)="userMenu.toggle($event)"
           [pTooltip]="currentUser()?.name ?? 'Usuário'"

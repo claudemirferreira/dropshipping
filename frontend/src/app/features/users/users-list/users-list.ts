@@ -91,15 +91,6 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
           severity="primary"
           (onClick)="openCreateDialog()"
         />
-        <p-button
-          icon="pi pi-refresh"
-          [rounded]="true"
-          [text]="true"
-          severity="primary"
-          size="small"
-          (onClick)="refresh()"
-          pTooltip="Atualizar"
-        />
       </div>
     </div>
 
@@ -124,7 +115,7 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
             <th>E-mail</th>
             <th>Perfil</th>
             <th>Status</th>
-            <th style="width: 130px">Ações</th>
+            <th style="width: 170px">Ações</th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-user>

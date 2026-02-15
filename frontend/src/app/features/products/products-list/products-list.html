@@ -46,15 +46,6 @@
       severity="primary"
       (onClick)="openCreateDialog()"
     />
-    <p-button
-      icon="pi pi-refresh"
-      [rounded]="true"
-      [text]="true"
-      severity="primary"
-      size="small"
-      (onClick)="refresh()"
-      pTooltip="Atualizar"
-    />
   </div>
 </div>
 
@@ -80,7 +71,7 @@
         <th>Nome</th>
         <th>Preço</th>
         <th>Status</th>
-        <th style="width: 140px">Ações</th>
+        <th style="width: 170px">Ações</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-product>

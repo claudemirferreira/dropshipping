@@ -359,6 +359,11 @@ body.blocked-scroll {
   border-color: #e2e8f0 !important;
 }
 
+/* Coluna Ações: botões em uma linha */
+.p-datatable .p-datatable-tbody > tr > td:last-child {
+  white-space: nowrap;
+}
+
 .p-datatable .p-datatable-tbody > tr,
 .p-datatable .p-datatable-tbody > tr:nth-child(odd),
 .p-datatable .p-datatable-tbody > tr:nth-child(even) {
