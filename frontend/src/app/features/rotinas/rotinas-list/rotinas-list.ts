@@ -46,10 +46,7 @@ const STATUS_OPTIONS = [
 
     <div class="page-header">
       <div class="page-title-block">
-        <h1 class="page-title">Rotinas</h1>
-        <p class="page-description">
-          Funcionalidades do sistema. Defina quais ações cada perfil pode executar.
-        </p>
+        <h1 class="page-title">Lista de rotinas</h1>
       </div>
     </div>
 
@@ -79,7 +76,7 @@ const STATUS_OPTIONS = [
       </div>
       <div class="toolbar-actions">
         <p-button
-          label="Nova rotina"
+          label="Nova"
           icon="pi pi-plus"
           size="small"
           severity="primary"

@@ -51,8 +51,8 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
 
     <div class="page-header">
       <div class="page-title-block">
-        <h1 class="page-title">Usuários</h1>
-        <p class="page-description">Lista de todos os usuários do sistema. Gerencie perfis e permissões.</p>
+        <h1 class="page-title">Lista   de usuários</h1>
+        
       </div>
     </div>
 
@@ -70,7 +70,7 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
       </div>
       <div class="toolbar-actions">
         <p-button
-          label="Novo usuário"
+          label="Novo "
           icon="pi pi-plus"
           size="small"
           severity="primary"

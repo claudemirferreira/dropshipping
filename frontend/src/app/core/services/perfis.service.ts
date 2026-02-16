@@ -8,7 +8,6 @@ export interface Perfil {
   id: string;
   code: string;
   name: string;
-  description: string | null;
   icon: string | null;
   active: boolean;
   displayOrder: number;
@@ -30,7 +29,6 @@ export interface PagePerfilResponse {
 export interface CreatePerfilRequest {
   code: string;
   name: string;
-  description?: string;
   icon?: string;
   active?: boolean;
   rotinaIds?: string[];
@@ -39,7 +37,6 @@ export interface CreatePerfilRequest {
 export interface UpdatePerfilRequest {
   code: string;
   name: string;
-  description?: string;
   icon?: string;
   active?: boolean;
   rotinaIds?: string[];

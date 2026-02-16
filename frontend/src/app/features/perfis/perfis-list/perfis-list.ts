@@ -11,7 +11,6 @@ import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
 import { CheckboxModule } from 'primeng/checkbox';
 import { PickListModule } from 'primeng/picklist';
-import { TextareaModule } from 'primeng/textarea';
 import {
   PerfisService,
   Perfil,
@@ -46,7 +45,6 @@ interface RotinaOption {
     DropdownModule,
     CheckboxModule,
     PickListModule,
-    TextareaModule,
   ],
   providers: [ConfirmationService],
   template: `
@@ -54,10 +52,8 @@ interface RotinaOption {
 
     <div class="page-header">
       <div class="page-title-block">
-        <h1 class="page-title">Perfis</h1>
-        <p class="page-description">
-          Agrupe rotinas em perfis. Usuários recebem acesso conforme os perfis atribuídos.
-        </p>
+        <h1 class="page-title">Lista de perfis</h1>
+
       </div>
     </div>
 
@@ -87,7 +83,7 @@ interface RotinaOption {
       </div>
       <div class="toolbar-actions">
         <p-button
-          label="Novo perfil"
+          label="Novo "
           icon="pi pi-plus"
           size="small"
           severity="primary"
@@ -131,7 +127,6 @@ interface RotinaOption {
             </td>
             <td><code class="code-cell">{{ row.code }}</code></td>
             <td class="name-cell">{{ row.name }}</td>
-            <td>{{ (row.description || '-') | slice : 0 : 50 }}{{ (row.description?.length ?? 0) > 50 ? '...' : '' }}</td>
             <td>{{ row.rotinas?.length ?? 0 }}</td>
             <td>
               <span class="status-text">{{ row.active ? 'Ativo' : 'Inativo' }}</span>
@@ -171,12 +166,12 @@ interface RotinaOption {
         </ng-template>
         <ng-template pTemplate="emptymessage">
           <tr>
-            <td colspan="7" class="empty-message">Nenhum perfil encontrado.</td>
+            <td colspan="6" class="empty-message">Nenhum perfil encontrado.</td>
           </tr>
         </ng-template>
         <ng-template pTemplate="loadingbody">
           <tr>
-            <td colspan="7" class="loading-message">
+            <td colspan="6" class="loading-message">
               <i class="pi pi-spin pi-spinner"></i> Carregando...
             </td>
           </tr>
@@ -198,27 +193,31 @@ interface RotinaOption {
       (onHide)="closeDialog()"
     >
       <form [formGroup]="form" class="create-form">
-        <div class="form-field">
-          <label for="code">Código</label>
-          <input id="code" pInputText formControlName="code" placeholder="ADMIN" />
-          @if (form.get('code')?.invalid && form.get('code')?.touched) {
-            <small class="field-error">Código é obrigatório</small>
-          }
+        <div class="form-row">
+          <div class="form-field">
+            <label for="code">Código</label>
+            <input id="code" pInputText formControlName="code" placeholder="ADMIN" />
+            @if (form.get('code')?.invalid && form.get('code')?.touched) {
+              <small class="field-error">Código é obrigatório</small>
+            }
+          </div>
+          <div class="form-field">
+            <label for="name">Nome</label>
+            <input id="name" pInputText formControlName="name" placeholder="Administrador" />
+            @if (form.get('name')?.invalid && form.get('name')?.touched) {
+              <small class="field-error">Nome é obrigatório</small>
+            }
+          </div>
         </div>
-        <div class="form-field">
-          <label for="name">Nome</label>
-          <input id="name" pInputText formControlName="name" placeholder="Administrador" />
-          @if (form.get('name')?.invalid && form.get('name')?.touched) {
-            <small class="field-error">Nome é obrigatório</small>
-          }
-        </div>
-        <div class="form-field">
-          <label for="description">Descrição (opcional)</label>
-          <textarea id="description" pInputTextarea formControlName="description" rows="2" placeholder="Descrição do perfil"></textarea>
-        </div>
-        <div class="form-field">
-          <label for="icon">Ícone (opcional)</label>
-          <input id="icon" pInputText formControlName="icon" placeholder="pi pi-shield" />
+        <div class="form-row">
+          <div class="form-field">
+            <label for="icon">Ícone (opcional)</label>
+            <input id="icon" pInputText formControlName="icon" placeholder="pi pi-shield" />
+          </div>
+          <div class="form-field form-field-checkbox">
+            <p-checkbox formControlName="active" [binary]="true" inputId="active" />
+            <label for="active">Ativo</label>
+          </div>
         </div>
         <div class="form-field">
           <label>Rotinas do perfil</label>
@@ -238,10 +237,6 @@ interface RotinaOption {
               <div class="picklist-item">{{ item.label }}</div>
             </ng-template>
           </p-pickList>
-        </div>
-        <div class="form-field form-field-checkbox">
-          <p-checkbox formControlName="active" [binary]="true" inputId="active" />
-          <label for="active">Ativo</label>
         </div>
       </form>
       <ng-template pTemplate="footer">
@@ -405,6 +400,12 @@ interface RotinaOption {
         gap: 1rem;
       }
 
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+
       .form-field {
         display: flex;
         flex-direction: column;
@@ -485,7 +486,6 @@ export class PerfisListComponent {
   form = this.fb.nonNullable.group({
     code: ['', [Validators.required, Validators.maxLength(50)]],
     name: ['', [Validators.required, Validators.maxLength(255)]],
-    description: [''],
     icon: [''],
     active: [true],
     rotinaIds: [[] as string[]],
@@ -579,7 +579,6 @@ export class PerfisListComponent {
     this.form.reset({
       code: '',
       name: '',
-      description: '',
       icon: '',
       active: true,
       rotinaIds: [],
@@ -599,7 +598,6 @@ export class PerfisListComponent {
         this.form.patchValue({
           code: perfil.code,
           name: perfil.name,
-          description: perfil.description ?? '',
           icon: perfil.icon ?? '',
           active: perfil.active,
           rotinaIds,
@@ -653,7 +651,6 @@ export class PerfisListComponent {
     this.perfisService.update(perfil.id, {
       code: perfil.code,
       name: perfil.name,
-      description: perfil.description ?? undefined,
       icon: perfil.icon ?? undefined,
       active: perfil.active,
       rotinaIds,
@@ -686,7 +683,6 @@ export class PerfisListComponent {
     const data: CreatePerfilRequest | UpdatePerfilRequest = {
       code: value.code,
       name: value.name,
-      description: value.description?.trim() || undefined,
       icon: value.icon?.trim() || undefined,
       active: value.active,
       rotinaIds,
