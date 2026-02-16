@@ -39,56 +39,6 @@ import { AuthService } from '../../core/services/auth.service';
   `,
   styles: [
     `
-      .page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 1.5rem;
-        gap: 1rem;
-        flex-wrap: wrap;
-      }
-
-      .page-title {
-        margin: 0;
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #1e293b;
-      }
-
-      .page-description {
-        margin: 0.25rem 0 0;
-        font-size: 0.875rem;
-        color: #64748b;
-      }
-
-      .page-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.375rem 0.875rem;
-        border-radius: 999px;
-        border: 1px solid #e2e8f0;
-        background: #ffffff;
-      }
-
-      .badge-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #22c55e;
-      }
-
-      .badge-value {
-        color: #22c55e;
-        font-weight: 600;
-        font-size: 0.875rem;
-      }
-
-      .badge-label {
-        color: #64748b;
-        font-size: 0.875rem;
-      }
-
       .dashboard-cards {
         display: grid;
         gap: 1.5rem;
@@ -96,10 +46,10 @@ import { AuthService } from '../../core/services/auth.service';
 
       :host ::ng-deep .welcome-card,
       :host ::ng-deep .welcome-card .p-card {
-        background: #ffffff !important;
+        background: var(--app-surface-card) !important;
         border-radius: var(--p-border-radius);
-        border: 1px solid #e2e8f0;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--app-border-color);
+        box-shadow: var(--app-shadow-card);
       }
 
       :host ::ng-deep .welcome-card .p-card-body,

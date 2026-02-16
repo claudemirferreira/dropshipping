@@ -20,12 +20,16 @@ import { AuthService } from '../../services/auth.service';
       "
     >
       <div class="sidebar-header">
-        <span class="sidebar-brand-icon">📦</span>
+        <i class="pi pi-box sidebar-brand-icon" aria-hidden="true"></i>
+        <span class="sidebar-brand-name">Dropshipping</span>
       </div>
       <nav class="sidebar-nav">
         @for (group of menuGroups(); track group.perfil.code) {
           <div class="menu-group">
-            <div class="menu-group-header">{{ group.perfil.code }}</div>
+            <div class="menu-group-header">
+              <i class="pi pi-layer-group menu-group-icon" aria-hidden="true"></i>
+              <span>{{ group.perfil.code }}</span>
+            </div>
             @for (item of group.rotinas; track item.path + item.name) {
               <a
                 [routerLink]="item.path"
@@ -62,8 +66,8 @@ import { AuthService } from '../../services/auth.service';
         left: 0;
         top: 0;
         height: 100vh;
-        width: 17rem;
-        background: var(--p-surface-50, #f8fafc);
+        width: 11rem;
+        background: var(--app-surface-sidebar, #f1f5f9);
         border-right: 1px solid var(--p-surface-200, #e2e8f0);
         display: flex;
         flex-direction: column;
@@ -74,16 +78,24 @@ import { AuthService } from '../../services/auth.service';
       }
 
       .sidebar-header {
-        padding: 1rem 1.25rem;
+        padding: 1rem;
         min-height: 4rem;
         display: flex;
         align-items: center;
+        gap: 0.625rem;
         border-bottom: 1px solid var(--p-surface-200, #e2e8f0);
         background: var(--p-surface-0, #ffffff);
       }
 
       .sidebar-brand-icon {
         font-size: 1.5rem;
+        color: var(--app-primary);
+      }
+
+      .sidebar-brand-name {
+        font-weight: 700;
+        font-size: 1rem;
+        color: var(--app-text-primary);
       }
 
       .sidebar-nav {
@@ -101,23 +113,32 @@ import { AuthService } from '../../services/auth.service';
       }
 
       .menu-group-header {
-        font-size: 0.75rem;
+        font-size: 0.6875rem;
         font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 0.1em;
-        color: #475569;
-        padding: 0.625rem 0.875rem 0.5rem;
+        letter-spacing: 0.08em;
+        color: var(--app-text-secondary);
+        padding: 0.5rem 0.75rem 0.375rem;
         margin: 0.25rem 0.5rem 0 0;
-        border-left: 3px solid var(--p-primary-color, #10b981);
-        background: linear-gradient(90deg, rgba(16, 185, 129, 0.08) 0%, transparent 100%);
+        border-left: 3px solid var(--app-primary);
+        background: linear-gradient(90deg, rgba(13, 148, 136, 0.08) 0%, transparent 100%);
         border-radius: 0 4px 4px 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .menu-group-icon {
+        font-size: 0.875rem;
+        color: var(--app-primary);
+        opacity: 0.9;
       }
 
       .menuitem-link {
         display: flex;
         align-items: center;
-        gap: 0.75rem;
-        padding: 0.75rem 0.875rem;
+        gap: 0.5rem;
+        padding: 0.625rem 0.75rem;
         border-radius: var(--p-border-radius-md, 8px);
         color: #1e293b;
         text-decoration: none;
@@ -151,12 +172,15 @@ import { AuthService } from '../../services/auth.service';
       }
 
       .menuitem-link.active-menuitem {
-        background: var(--p-primary-color);
-        color: #fff;
+        background: var(--sidebar-active-bg);
+        color: var(--app-primary);
+        border-left: 3px solid var(--app-primary);
+        border-radius: 0 var(--p-border-radius-md, 8px) var(--p-border-radius-md, 8px) 0;
+        padding-left: calc(0.75rem - 3px);
       }
 
       .menuitem-link.active-menuitem i {
-        color: rgba(255, 255, 255, 0.95);
+        color: var(--app-primary);
       }
 
       .layout-sidebar-mask {

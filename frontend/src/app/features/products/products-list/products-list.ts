@@ -17,8 +17,6 @@ import { TableModule, TableLazyLoadEvent } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { TagModule } from 'primeng/tag';
-import { Toast } from 'primeng/toast';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { TooltipModule } from 'primeng/tooltip';
@@ -70,8 +68,6 @@ function slugify(text: string): string {
     ButtonModule,
     InputTextModule,
     InputNumberModule,
-    TagModule,
-    Toast,
     ConfirmDialog,
     TooltipModule,
     DialogModule,
@@ -80,7 +76,7 @@ function slugify(text: string): string {
     CheckboxModule,
     TextareaModule,
   ],
-  providers: [MessageService, ConfirmationService],
+  providers: [ConfirmationService],
   templateUrl: './products-list.html',
   styleUrl: './products-list.scss',
 })

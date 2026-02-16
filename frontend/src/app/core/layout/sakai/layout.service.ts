@@ -1,4 +1,5 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 export interface LayoutConfig {
   preset: string;
@@ -20,8 +21,8 @@ export interface LayoutState {
 @Injectable({ providedIn: 'root' })
 export class LayoutService {
   layoutConfig = signal<LayoutConfig>({
-    preset: 'Aura',
-    primary: 'emerald',
+    preset: 'Dropshipping',
+    primary: 'teal',
     surface: null,
     darkTheme: false,
     menuMode: 'static',
@@ -93,8 +94,11 @@ export class LayoutService {
     }
   }
 
+  private platformId = inject(PLATFORM_ID);
+
   isDesktop(): boolean {
-    return typeof window !== 'undefined' && window.innerWidth > 991;
+    if (!isPlatformBrowser(this.platformId)) return true;
+    return window.innerWidth > 991;
   }
 
   isMobile(): boolean {

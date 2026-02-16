@@ -1,10 +1,47 @@
+/* ==========================================================================
+   Design Tokens – Fase 1 (Identidade Visual)
+   ========================================================================== */
 :root {
-  --header-bg: #ffffff;
-  --header-text: #1e293b;
-  --sidebar-active-bg: #f1f5f9;
-  --sidebar-active-text: #1e293b;
-  --badge-active-color: #22c55e;
-  /* Sakai-style layout: topbar com gradiente na cor primária */
+  /* Cores – paleta teal profissional */
+  --app-primary: #0d9488;
+  --app-primary-hover: #0f766e;
+  --app-primary-muted: #2dd4bf;
+  --app-success: #059669;
+
+  /* Superfícies */
+  --app-surface-page: #f8fafc;
+  --app-surface-card: #ffffff;
+  --app-surface-sidebar: #f1f5f9;
+
+  /* Texto */
+  --app-text-primary: #1e293b;
+  --app-text-secondary: #334155;
+  --app-text-muted: #64748b;
+  --app-text-muted-light: #94a3b8;
+
+  /* Bordas */
+  --app-border-color: #e2e8f0;
+
+  /* Sombras */
+  --app-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --app-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --app-shadow-md: 0 4px 20px rgba(0, 0, 0, 0.12);
+
+  /* Radius */
+  --app-radius-md: 8px;
+
+  /* Fonte – Plus Jakarta Sans (Fase 3) */
+  --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, sans-serif;
+
+  /* Legado / compatibilidade */
+  --header-bg: var(--app-surface-card);
+  --header-text: var(--app-text-primary);
+  --sidebar-active-bg: #f0fdfa; /* teal-50 – fundo suave do item ativo */
+  --sidebar-active-text: var(--app-primary);
+  --badge-active-color: var(--app-success);
+
+  /* Sakai-style: topbar com gradiente na cor primária */
   --layout-topbar-bg: linear-gradient(135deg, var(--p-primary-color) 0%, #0d9488 100%);
 }
 
@@ -22,13 +59,201 @@ body {
 body {
   font-family: var(--font-family), -apple-system, BlinkMacSystemFont, 'Segoe UI',
     Roboto, sans-serif;
-  background-color: #f8fafc;
-  color: #1e293b;
+  background-color: var(--app-surface-page);
+  color: var(--app-text-primary);
+  font-size: 1rem;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Hierarquia tipográfica – Fase 1 */
+h1, .page-title { font-size: 1.5rem; font-weight: 700; color: var(--app-text-primary); }
+h2, .page-subtitle { font-size: 1.25rem; font-weight: 600; color: var(--app-text-primary); }
+p.page-description, .text-muted { font-size: 0.875rem; color: var(--app-text-muted); }
+label, .form-label { font-size: 0.875rem; font-weight: 500; color: var(--app-text-secondary); }
+
+/* Page badge – usa tokens de identidade */
+.page-badge .badge-dot { background: var(--app-success); }
+.page-badge .badge-value { color: var(--app-success); }
+.page-badge .badge-label { color: var(--app-text-muted); }
+
+/* Paginador: label "Itens por página" no slot left */
+.paginator-rows-label {
+  margin-right: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--app-text-muted);
+}
+
+/* ==========================================================================
+   Fase 2 – page-header e page-toolbar padronizados
+   ========================================================================== */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--app-border-color);
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.page-title-block {
+  flex: 1;
+  min-width: 0;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--app-text-primary);
+}
+
+.page-description {
+  margin: 0.25rem 0 0;
+  font-size: 0.875rem;
+  color: var(--app-text-muted);
+}
+
+.page-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.875rem;
+  border-radius: 999px;
+  border: 1px solid var(--app-border-color);
+  background: var(--app-surface-card);
+  flex-shrink: 0;
+}
+
+.page-badge .badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.page-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.page-toolbar .search-wrapper {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  max-width: 20rem;
+}
+
+.page-toolbar .search-wrapper .search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--app-text-muted-light);
+  font-size: 0.875rem;
+  pointer-events: none;
+}
+
+.page-toolbar .search-wrapper .search-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem 0.5rem 2.25rem;
+  border-radius: var(--p-border-radius, var(--app-radius-md));
+  border: 1px solid var(--app-border-color);
+  font-size: 0.875rem;
+  background: var(--app-surface-card);
+  color: var(--app-text-primary);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.page-toolbar .search-wrapper .search-input::placeholder {
+  color: var(--app-text-muted-light);
+}
+
+.page-toolbar .search-wrapper .search-input:focus {
+  outline: none;
+  border-color: var(--app-primary);
+  box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.2);
+}
+
+.page-toolbar .filters,
+.page-toolbar .toolbar-filters {
+  flex-shrink: 0;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.page-toolbar .toolbar-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.table-card {
+  background: var(--app-surface-card);
+  border-radius: var(--p-border-radius, var(--app-radius-md));
+  border: 1px solid var(--app-border-color);
+  overflow: hidden;
+  box-shadow: var(--app-shadow-card);
+}
+
+/* Status – texto simples, igual aos demais campos */
+.status-text {
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+/* Empty e loading states padronizados */
+.empty-message,
+.loading-message {
+  text-align: center;
+  padding: 2.5rem 1.5rem !important;
+  color: var(--app-text-muted);
+  font-size: 0.9375rem;
+}
+
+.loading-message i {
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+/* Cards – Fase 3: sombra e borda suave */
+.p-card,
+.p-card .p-card,
+.p-card.p-component {
+  background: var(--app-surface-card) !important;
+  border: 1px solid var(--app-border-color) !important;
+  border-radius: var(--p-border-radius, var(--app-radius-md)) !important;
+  box-shadow: var(--app-shadow-card) !important;
 }
 
 body.blocked-scroll {
   overflow: hidden;
+}
+
+/* Layout principal: sem scrollbar no body; rolagem apenas em .layout-main */
+body.layout-main-active {
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* Fase 4 – Acessibilidade: focus visible */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--app-primary);
+  outline-offset: 2px;
 }
 
 /* Layout Sakai: topbar – botões só ícone, sem fundo cinza */
@@ -42,17 +267,18 @@ body.blocked-scroll {
   background: rgba(255, 255, 255, 0.12) !important;
 }
 
-/* Layout Sakai: área principal com fundo neutro */
+/* Layout Sakai: área principal – fundo neutro, ocupa toda a largura disponível */
 .layout-main {
-  background: var(--p-surface-0, #ffffff) !important;
+  background: var(--app-surface-page) !important;
+  width: 100%;
 }
 
-/* Menu popup do topbar (avatar) - fundo claro, item Sair sem fundo preto (PrimeNG 19) */
+/* Menu popup do topbar (avatar) - PM6.1 fundo claro, borda e sombra suave */
 .p-menu.p-menu-overlay.topbar-user-menu,
 .p-menu-overlay.topbar-user-menu {
-  background: #ffffff !important;
-  border: 1px solid #e2e8f0 !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
+  background: var(--app-surface-card) !important;
+  border: 1px solid var(--app-border-color) !important;
+  box-shadow: var(--app-shadow-md) !important;
 }
 /* só itens dentro do overlay do topbar (não afeta sidebar nem outros menus) */
 .p-menu.p-menu-overlay.topbar-user-menu .p-menu-item .p-menu-item-content,
@@ -72,12 +298,13 @@ body.blocked-scroll {
   color: #334155 !important;
 }
 
-/* Dropdown/Select - fundo claro (overlay renderizado no body) */
+/* Dropdown/Select - PM6.1 fundo claro (overlay renderizado no body) */
 .p-select-overlay,
 .p-select-overlay.p-component {
-  background: #ffffff !important;
-  border-color: #dde2e7 !important;
-  color: #334155 !important;
+  background: var(--app-surface-card) !important;
+  border-color: var(--app-border-color) !important;
+  color: var(--app-text-secondary) !important;
+  box-shadow: var(--app-shadow-md) !important;
 }
 
 .p-select-overlay .p-select-list-container,
@@ -108,7 +335,7 @@ body.blocked-scroll {
   color: #5d6c7f !important;
 }
 
-/* Dialog / Modal - fundo claro */
+/* Dialog / Modal - PM6.1 fundo claro, borda e sombra */
 .p-dialog-mask {
   background: rgba(0, 0, 0, 0.4) !important;
 }
@@ -117,9 +344,10 @@ body.blocked-scroll {
 .p-dialog .p-dialog,
 .p-dialog.p-component,
 .p-component.p-dialog {
-  background: #ffffff !important;
-  border-color: #e2e8f0 !important;
-  color: #334155 !important;
+  background: var(--app-surface-card) !important;
+  border-color: var(--app-border-color) !important;
+  color: var(--app-text-secondary) !important;
+  box-shadow: var(--app-shadow-md) !important;
 }
 
 .p-dialog .p-dialog-header,
@@ -179,7 +407,7 @@ body.blocked-scroll {
 }
 
 .p-dialog .p-tab.p-tab-active {
-  color: #22c55e !important;
+  color: var(--app-primary) !important;
 }
 
 .p-dialog .p-tab:not(.p-tab-active):hover {
@@ -350,7 +578,7 @@ body.blocked-scroll {
   color: #94a3b8 !important;
 }
 
-/* DataTable/Grid - remover cores escuras, fundo claro em todas as linhas */
+/* DataTable/Grid - C4.4 zebra sutil, fundo claro */
 .p-datatable,
 .p-datatable.p-component,
 .p-datatable .p-datatable-wrapper,
@@ -366,6 +594,8 @@ body.blocked-scroll {
   background: #f8fafc !important;
   color: #475569 !important;
   border-color: #e2e8f0 !important;
+  font-size: 0.8125rem;
+  font-weight: 500;
 }
 
 /* Coluna Ações: botões visíveis e em uma linha */
@@ -405,6 +635,7 @@ body.blocked-scroll {
   background: inherit !important;
   color: #334155 !important;
   border-color: #e2e8f0 !important;
+  font-size: 0.8125rem;
 }
 
 .p-datatable .p-datatable-tbody > tr:nth-child(even) > td {
@@ -420,9 +651,22 @@ body.blocked-scroll {
   background: #ffffff !important;
   border-color: #e2e8f0 !important;
   color: #64748b !important;
+  font-size: 0.8125rem;
+  justify-content: flex-start;
+  gap: 0.75rem;
+}
+
+.p-datatable .p-paginator .p-paginator-content-start {
+  margin-inline-end: 0;
 }
 
 .p-datatable .p-paginator .p-link,
 .p-datatable .p-paginator .p-paginator-current {
   color: #64748b !important;
+}
+
+.p-datatable .p-paginator .p-link.p-highlight {
+  background: var(--app-primary) !important;
+  color: #fff !important;
+  border-radius: 50%;
 }

@@ -27,11 +27,12 @@ import type { MenuItem } from 'primeng/api';
           (click)="layoutService.onMenuToggle()"
           pTooltip="Menu"
           tooltipPosition="bottom"
+          aria-label="Abrir ou fechar menu"
         >
-          <i class="pi pi-bars"></i>
+          <i class="pi pi-bars" aria-hidden="true"></i>
         </button>
         <a routerLink="/" class="topbar-logo">
-          <span class="topbar-logo-icon">📦</span>
+          <i class="pi pi-box topbar-logo-icon" aria-hidden="true"></i>
           <span class="topbar-logo-text">Dropshipping</span>
         </a>
       </div>
@@ -40,14 +41,16 @@ import type { MenuItem } from 'primeng/api';
           type="button"
           class="topbar-button user-button"
           (click)="userMenu.toggle($event)"
-          [pTooltip]="currentUser()?.name ?? 'Usuário'"
+          pTooltip="Clique para abrir o menu"
           tooltipPosition="bottom"
+          [attr.aria-label]="'Menu do usuário ' + (currentUser()?.name ?? '')"
         >
           <p-avatar
             [label]="currentUser()?.name?.charAt(0) ?? '?'"
             shape="circle"
             styleClass="topbar-avatar"
           />
+          <span class="topbar-user-name">{{ currentUser()?.name ?? 'Usuário' }}</span>
         </button>
         <p-menu
           #userMenu
@@ -64,7 +67,7 @@ import type { MenuItem } from 'primeng/api';
         height: 4rem;
         padding: 0 1.5rem;
         background: var(--layout-topbar-bg, var(--p-primary-color));
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -120,21 +123,26 @@ import type { MenuItem } from 'primeng/api';
       .topbar-logo-icon {
         font-size: 1.5rem;
         opacity: 0.95;
+        color: rgba(255, 255, 255, 0.95);
       }
 
       .topbar-end {
         display: flex;
         align-items: center;
-        gap: 0.125rem;
+        gap: 0.5rem;
+        padding-left: 1rem;
+        border-left: 1px solid rgba(255, 255, 255, 0.2);
       }
 
       .topbar-button {
-        width: 2.5rem;
+        min-width: 2.5rem;
         height: 2.5rem;
-        border-radius: 50%;
+        border-radius: 999px;
         display: flex;
         align-items: center;
         justify-content: center;
+        gap: 0.5rem;
+        padding: 0 0.5rem;
         background: transparent;
         color: rgba(255, 255, 255, 0.9);
         transition: background-color 0.2s, color 0.2s;
@@ -153,6 +161,22 @@ import type { MenuItem } from 'primeng/api';
 
       .user-button {
         margin-left: 0.375rem;
+      }
+
+      .topbar-user-name {
+        font-weight: 600;
+        font-size: 0.9375rem;
+        color: rgba(255, 255, 255, 0.95);
+        max-width: 10rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      @media (max-width: 575px) {
+        .topbar-user-name {
+          display: none;
+        }
       }
 
       .topbar-avatar {

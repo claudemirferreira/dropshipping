@@ -1,4 +1,4 @@
-import { Component, inject, effect } from '@angular/core';
+import { Component, inject, effect, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { LayoutService } from '../sakai/layout.service';
@@ -40,14 +40,16 @@ import { SakaiFooterComponent } from '../sakai/sakai-footer.component';
   styles: [
     `
       .layout-wrapper {
-        min-height: 100vh;
+        height: 100vh;
+        overflow: hidden;
         display: flex;
         flex-direction: column;
-        background: var(--p-surface-50);
+        background: var(--app-surface-page);
       }
 
       .layout-main-container {
         flex: 1;
+        min-height: 0;
         display: flex;
         flex-direction: column;
         margin-left: 0;
@@ -56,15 +58,21 @@ import { SakaiFooterComponent } from '../sakai/sakai-footer.component';
 
       .layout-main {
         flex: 1;
+        min-height: 0;
         padding: 1.5rem 2rem;
         overflow: auto;
-        background: var(--p-surface-0);
-        min-height: calc(100vh - 4rem);
+        background: var(--app-surface-page);
+      }
+
+      @media (min-width: 1200px) {
+        .layout-main {
+          padding: 1.75rem 2.5rem;
+        }
       }
 
       @media (min-width: 992px) {
         .layout-wrapper.layout-static .layout-main-container {
-          margin-left: 17rem;
+          margin-left: 11rem;
         }
 
         .layout-wrapper.layout-static.layout-static-inactive .layout-main-container {
@@ -75,8 +83,16 @@ import { SakaiFooterComponent } from '../sakai/sakai-footer.component';
     `,
   ],
 })
-export class MainLayoutComponent {
+export class MainLayoutComponent implements OnInit, OnDestroy {
   layoutService = inject(LayoutService);
+
+  ngOnInit() {
+    document.body.classList.add('layout-main-active');
+  }
+
+  ngOnDestroy() {
+    document.body.classList.remove('layout-main-active');
+  }
 
   constructor() {
     effect(() => {
