@@ -1,6 +1,5 @@
 package com.srv.setebit.dropshipping.infrastructure.persistence.jpa;
 
-import com.srv.setebit.dropshipping.domain.user.UserProfile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,9 +20,10 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
     @Query("SELECT u FROM UserEntity u WHERE " +
             "LOWER(u.name) LIKE LOWER(CONCAT('%', COALESCE(:name, ''), '%')) AND " +
             "LOWER(u.email) LIKE LOWER(CONCAT('%', COALESCE(:email, ''), '%')) AND " +
-            "(:profile IS NULL OR u.profile = :profile)")
+            "(:perfilCode IS NULL OR :perfilCode = '' OR u.id IN (" +
+            "SELECT up.id.userId FROM UserPerfilEntity up JOIN up.perfil p WHERE p.code = :perfilCode))")
     Page<UserEntity> findAllByFilter(@Param("name") String name,
                                      @Param("email") String email,
-                                     @Param("profile") UserProfile profile,
+                                     @Param("perfilCode") String perfilCode,
                                      Pageable pageable);
 }

@@ -41,7 +41,7 @@ public class ListPerfisUseCase {
                 ? p.getRotinas().stream().map(this::toRotinaResponse).collect(Collectors.toSet())
                 : new HashSet<>();
         return new PerfilResponse(
-                p.getId(), p.getCode(), p.getName(), p.getDescription(),
+                p.getId(), p.getCode(), p.getName(),
                 p.getIcon(), p.isActive(), p.getDisplayOrder(), rotinas,
                 p.getCreatedAt(), p.getUpdatedAt()
         );

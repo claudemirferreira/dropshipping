@@ -1,9 +1,9 @@
 package com.srv.setebit.dropshipping.application.user.dto.response;
 
-import com.srv.setebit.dropshipping.domain.user.UserProfile;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Schema(description = "Dados do usuário")
@@ -23,8 +23,8 @@ public record UserResponse(
         @Schema(description = "Usuário ativo")
         boolean active,
 
-        @Schema(description = "Perfil do usuário")
-        UserProfile profile,
+        @Schema(description = "Códigos dos perfis do usuário")
+        List<String> perfilCodes,
 
         @Schema(description = "Data de criação")
         Instant createdAt,

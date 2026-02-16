@@ -35,6 +35,11 @@ public class UserPerfilRepositoryAdapter implements UserPerfilRepositoryPort {
     }
 
     @Override
+    public List<String> findPerfilCodesByUserId(UUID userId) {
+        return userPerfilRepository.findPerfilCodesByUserId(userId);
+    }
+
+    @Override
     public Set<UUID> findPerfilIdsByUserId(UUID userId) {
         return new HashSet<>(userPerfilRepository.findPerfilIdsByUserId(userId));
     }

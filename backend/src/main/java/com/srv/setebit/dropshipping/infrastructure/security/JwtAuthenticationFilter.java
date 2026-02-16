@@ -2,7 +2,6 @@ package com.srv.setebit.dropshipping.infrastructure.security;
 
 import com.srv.setebit.dropshipping.domain.access.port.UserPerfilRepositoryPort;
 import com.srv.setebit.dropshipping.domain.user.User;
-import com.srv.setebit.dropshipping.domain.user.UserProfile;
 import com.srv.setebit.dropshipping.domain.user.port.UserRepositoryPort;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -55,7 +54,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if (userOpt.isPresent() && userOpt.get().isActive()) {
                     User user = userOpt.get();
                     List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-                    authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getProfile().name()));
+                    for (String code : userPerfilRepository.findPerfilCodesByUserId(user.getId())) {
+                        authorities.add(new SimpleGrantedAuthority("ROLE_" + code));
+                    }
                     List<String> rotinaCodes = userPerfilRepository.findRotinaCodesByUserId(user.getId());
                     for (String code : rotinaCodes) {
                         authorities.add(new SimpleGrantedAuthority(code));

@@ -4,8 +4,6 @@ import { FormControl, FormBuilder, ReactiveFormsModule, Validators } from '@angu
 import { TableModule, TableLazyLoadEvent } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { TagModule } from 'primeng/tag';
-import { Toast } from 'primeng/toast';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { TooltipModule } from 'primeng/tooltip';
@@ -35,8 +33,6 @@ const STATUS_OPTIONS = [
     TableModule,
     ButtonModule,
     InputTextModule,
-    TagModule,
-    Toast,
     ConfirmDialog,
     TooltipModule,
     DialogModule,
@@ -44,22 +40,13 @@ const STATUS_OPTIONS = [
     CheckboxModule,
     TextareaModule,
   ],
-  providers: [MessageService, ConfirmationService],
+  providers: [ConfirmationService],
   template: `
-    <p-toast />
     <p-confirmDialog />
 
     <div class="page-header">
       <div class="page-title-block">
-        <h1 class="page-title">Rotinas</h1>
-        <p class="page-description">
-          Funcionalidades do sistema. Defina quais ações cada perfil pode executar.
-        </p>
-      </div>
-      <div class="page-badge">
-        <span class="badge-dot"></span>
-        <span class="badge-value">{{ totalRecords() }}</span>
-        <span class="badge-label">rotinas cadastradas</span>
+        <h1 class="page-title">Lista de rotinas</h1>
       </div>
     </div>
 
@@ -89,20 +76,11 @@ const STATUS_OPTIONS = [
       </div>
       <div class="toolbar-actions">
         <p-button
-          label="Nova rotina"
+          label="Nova"
           icon="pi pi-plus"
           size="small"
-          severity="success"
+          severity="primary"
           (onClick)="openCreateDialog()"
-        />
-        <p-button
-          icon="pi pi-refresh"
-          [rounded]="true"
-          [text]="true"
-          severity="secondary"
-          size="small"
-          (onClick)="refresh()"
-          pTooltip="Atualizar"
         />
       </div>
     </div>
@@ -116,10 +94,13 @@ const STATUS_OPTIONS = [
         [totalRecords]="totalRecords()"
         [loading]="loading()"
         (onLazyLoad)="onLazyLoad($event)"
-        [rowsPerPageOptions]="[10, 25, 50]"
+        [rowsPerPageOptions]="[10, 25, 50, { showAll: 'Todos' }]"
         dataKey="id"
         currentPageReportTemplate="{first} - {last} de {totalRecords}"
-        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+        [showCurrentPageReport]="true"
+        paginatorTemplate="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink"
+        [showFirstLastIcon]="false"
+        [paginatorDropdownAppendTo]="'body'"
         styleClass="p-datatable-sm"
       >
         <ng-template pTemplate="header">
@@ -127,10 +108,9 @@ const STATUS_OPTIONS = [
             <th style="width: 3rem"></th>
             <th>Código</th>
             <th>Nome</th>
-            <th>Descrição</th>
             <th>Path</th>
             <th>Status</th>
-            <th style="width: 100px">Ações</th>
+            <th style="width: 170px">Ações</th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-row>
@@ -140,33 +120,31 @@ const STATUS_OPTIONS = [
             </td>
             <td><code class="code-cell">{{ row.code }}</code></td>
             <td class="name-cell">{{ row.name }}</td>
-            <td>{{ (row.description || '-') | slice : 0 : 50 }}{{ (row.description?.length ?? 0) > 50 ? '...' : '' }}</td>
             <td>{{ row.path || '-' }}</td>
             <td>
-              <p-tag
-                [value]="row.active ? 'Ativo' : 'Inativo'"
-                [severity]="row.active ? 'success' : 'danger'"
-              />
+              <span class="status-text">{{ row.active ? 'Ativo' : 'Inativo' }}</span>
             </td>
-            <td>
-              <p-button
-                icon="pi pi-pencil"
-                [rounded]="true"
-                [text]="true"
-                severity="secondary"
-                size="small"
-                (onClick)="openEditDialog(row)"
-                pTooltip="Editar"
-              />
-              <p-button
-                icon="pi pi-trash"
-                [rounded]="true"
-                [text]="true"
-                severity="secondary"
-                size="small"
-                (onClick)="confirmDelete(row)"
-                pTooltip="Excluir"
-              />
+            <td class="actions-cell">
+              <div class="actions-buttons">
+                <p-button
+                  icon="pi pi-pencil"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="secondary"
+                  size="small"
+                  (onClick)="openEditDialog(row)"
+                  pTooltip="Editar"
+                />
+                <p-button
+                  icon="pi pi-trash"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="secondary"
+                  size="small"
+                  (onClick)="confirmDelete(row)"
+                  pTooltip="Excluir"
+                />
+              </div>
             </td>
           </tr>
         </ng-template>
@@ -181,6 +159,9 @@ const STATUS_OPTIONS = [
               <i class="pi pi-spin pi-spinner"></i> Carregando...
             </td>
           </tr>
+        </ng-template>
+        <ng-template pTemplate="paginatorleft">
+          <span class="paginator-rows-label">Itens por página:</span>
         </ng-template>
       </p-table>
     </div>
@@ -240,116 +221,16 @@ const STATUS_OPTIONS = [
   `,
   styles: [
     `
-      .page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 1.5rem;
-        gap: 1rem;
-        flex-wrap: wrap;
-      }
-
-      .page-title {
-        margin: 0;
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #1e293b;
-      }
-
-      .page-description {
-        margin: 0.25rem 0 0;
-        font-size: 0.875rem;
-        color: #64748b;
-      }
-
-      .page-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.375rem 0.875rem;
-        border-radius: 999px;
-        border: 1px solid #e2e8f0;
-        background: #ffffff;
-      }
-
-      .page-badge .badge-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: var(--badge-active-color);
-        flex-shrink: 0;
-      }
-
-      .page-badge .badge-value {
-        color: var(--badge-active-color);
-        font-weight: 600;
-        font-size: 0.875rem;
-      }
-
-      .page-badge .badge-label {
-        color: #64748b;
-        font-size: 0.875rem;
-      }
-
-      .page-toolbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-        gap: 1rem;
-        flex-wrap: wrap;
-      }
-
-      .search-wrapper {
-        position: relative;
-        flex: 1;
-        min-width: 12rem;
-        max-width: 20rem;
-      }
-
-      .search-wrapper .search-icon {
-        position: absolute;
-        left: 0.75rem;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #94a3b8;
-        font-size: 0.875rem;
-      }
-
-      .search-wrapper .search-input {
-        width: 100%;
-        padding: 0.5rem 0.75rem 0.5rem 2.25rem;
-        border-radius: var(--p-border-radius);
-        border: 1px solid #e2e8f0;
-        font-size: 0.875rem;
-        background: #ffffff;
-        color: #1e293b;
-      }
-
-      .search-wrapper .search-input::placeholder {
-        color: #94a3b8;
-      }
-
-      .toolbar-filters {
-        display: flex;
-        gap: 0.5rem;
-      }
-
       .toolbar-filters .status-dropdown {
         min-width: 8rem;
-      }
-
-      .toolbar-actions {
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
       }
 
       .table-card {
         background: #ffffff;
         border-radius: var(--p-border-radius);
         border: 1px solid #e2e8f0;
-        overflow: hidden;
+        overflow-x: auto;
+        overflow-y: hidden;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
       }
 
@@ -396,9 +277,22 @@ const STATUS_OPTIONS = [
       }
 
       .table-card ::ng-deep .p-paginator .p-link.p-highlight {
-        background: #22c55e;
+        background: var(--app-primary) !important;
         color: white !important;
         border-radius: 50%;
+      }
+
+      .actions-cell {
+        overflow: visible;
+      }
+      .actions-buttons {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+      }
+      .actions-buttons ::ng-deep .p-button {
+        flex-shrink: 0;
+        color: #475569;
       }
 
       .rotina-icon {

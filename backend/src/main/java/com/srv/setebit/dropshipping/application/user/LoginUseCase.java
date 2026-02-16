@@ -1,5 +1,6 @@
 package com.srv.setebit.dropshipping.application.user;
 
+import com.srv.setebit.dropshipping.application.access.GetUserPerfisUseCase;
 import com.srv.setebit.dropshipping.application.user.dto.request.LoginRequest;
 import com.srv.setebit.dropshipping.application.user.dto.response.TokenResponse;
 import com.srv.setebit.dropshipping.application.user.port.JwtProviderPort;
@@ -14,7 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class LoginUseCase {
@@ -23,6 +26,7 @@ public class LoginUseCase {
     private final RefreshTokenRepositoryPort refreshTokenRepository;
     private final PasswordEncoderPort passwordEncoder;
     private final JwtProviderPort jwtProvider;
+    private final GetUserPerfisUseCase getUserPerfisUseCase;
 
     @Value("${jwt.access-token-expiration-ms:900000}")
     private long accessTokenExpirationMs;
@@ -33,11 +37,13 @@ public class LoginUseCase {
     public LoginUseCase(UserRepositoryPort userRepository,
                         RefreshTokenRepositoryPort refreshTokenRepository,
                         PasswordEncoderPort passwordEncoder,
-                        JwtProviderPort jwtProvider) {
+                        JwtProviderPort jwtProvider,
+                        GetUserPerfisUseCase getUserPerfisUseCase) {
         this.userRepository = userRepository;
         this.refreshTokenRepository = refreshTokenRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtProvider = jwtProvider;
+        this.getUserPerfisUseCase = getUserPerfisUseCase;
     }
 
     @Transactional
@@ -53,7 +59,10 @@ public class LoginUseCase {
             throw new InvalidCredentialsException();
         }
 
-        String accessToken = jwtProvider.generateAccessToken(user);
+        List<String> perfilCodes = getUserPerfisUseCase.execute(user.getId()).stream()
+                .map(p -> p.code())
+                .collect(Collectors.toList());
+        String accessToken = jwtProvider.generateAccessToken(user, perfilCodes);
         String refreshTokenValue = jwtProvider.generateRefreshToken(user);
 
         RefreshToken refreshToken = new RefreshToken();

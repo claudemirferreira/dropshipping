@@ -9,6 +9,9 @@ public interface UserPerfilRepositoryPort {
     /** Retorna os códigos das rotinas acessíveis pelo usuário (via perfis). */
     List<String> findRotinaCodesByUserId(UUID userId);
 
+    /** Retorna os códigos dos perfis do usuário. */
+    List<String> findPerfilCodesByUserId(UUID userId);
+
     /** Retorna os IDs dos perfis do usuário. */
     Set<UUID> findPerfilIdsByUserId(UUID userId);
 

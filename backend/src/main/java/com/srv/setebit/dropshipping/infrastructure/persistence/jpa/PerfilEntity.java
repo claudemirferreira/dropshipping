@@ -27,9 +27,6 @@ public class PerfilEntity {
     @Column(name = "name", nullable = false, length = 255)
     private String name;
 
-    @Column(name = "description", length = 500)
-    private String description;
-
     @Column(name = "icon", length = 100)
     private String icon;
 

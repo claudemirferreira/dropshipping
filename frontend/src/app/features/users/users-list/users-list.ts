@@ -4,8 +4,6 @@ import { FormControl, FormBuilder, ReactiveFormsModule, Validators } from '@angu
 import { TableModule, TableLazyLoadEvent } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { TagModule } from 'primeng/tag';
-import { Toast } from 'primeng/toast';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
@@ -13,6 +11,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { AvatarModule } from 'primeng/avatar';
 import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
+import { MultiSelectModule } from 'primeng/multiselect';
 import { PasswordModule } from 'primeng/password';
 import { PickListModule } from 'primeng/picklist';
 import { UsersService, CreateUserRequest } from '../../../core/services/users.service';
@@ -25,13 +24,6 @@ interface PerfilOption {
   value: string;
 }
 
-const PROFILE_OPTIONS = [
-  { label: 'Administrador', value: 'ADMIN' },
-  { label: 'Gerente', value: 'MANAGER' },
-  { label: 'Vendedor', value: 'SELLER' },
-  { label: 'Operador', value: 'OPERATOR' },
-];
-
 const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
 
 @Component({
@@ -43,31 +35,24 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
     TableModule,
     ButtonModule,
     InputTextModule,
-    TagModule,
-    Toast,
     ConfirmDialog,
     ConfirmPopupModule,
     TooltipModule,
     AvatarModule,
     DialogModule,
     DropdownModule,
+    MultiSelectModule,
     PasswordModule,
     PickListModule,
   ],
-  providers: [MessageService, ConfirmationService],
+  providers: [ConfirmationService],
   template: `
-    <p-toast />
     <p-confirmDialog/>
 
     <div class="page-header">
       <div class="page-title-block">
-        <h1 class="page-title">Usuários</h1>
-        <p class="page-description">Lista de todos os usuários do sistema. Gerencie perfis e permissões.</p>
-      </div>
-      <div class="page-badge">
-        <span class="badge-dot"></span>
-        <span class="badge-value">{{ totalRecords() }}</span>
-        <span class="badge-label">usuários cadastrados</span>
+        <h1 class="page-title">Lista   de usuários</h1>
+        
       </div>
     </div>
 
@@ -85,20 +70,11 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
       </div>
       <div class="toolbar-actions">
         <p-button
-          label="Novo usuário"
+          label="Novo "
           icon="pi pi-plus"
           size="small"
-          severity="success"
+          severity="primary"
           (onClick)="openCreateDialog()"
-        />
-        <p-button
-          icon="pi pi-refresh"
-          [rounded]="true"
-          [text]="true"
-          severity="secondary"
-          size="small"
-          (onClick)="refresh()"
-          pTooltip="Atualizar"
         />
       </div>
     </div>
@@ -112,19 +88,21 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
         [totalRecords]="totalRecords()"
         [loading]="loading()"
         (onLazyLoad)="onLazyLoad($event)"
-        [rowsPerPageOptions]="[10, 25, 50]"
+        [rowsPerPageOptions]="[10, 25, 50, { showAll: 'Todos' }]"
         dataKey="id"
         currentPageReportTemplate="{first} - {last} de {totalRecords}"
-        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+        [showCurrentPageReport]="true"
+        paginatorTemplate="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink"
+        [showFirstLastIcon]="false"
+        [paginatorDropdownAppendTo]="'body'"
         styleClass="p-datatable-sm"
       >
         <ng-template pTemplate="header">
           <tr>
             <th>Nome</th>
             <th>E-mail</th>
-            <th>Perfil</th>
             <th>Status</th>
-            <th style="width: 130px">Ações</th>
+            <th style="width: 170px">Ações</th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-user>
@@ -141,45 +119,41 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
             </td>
             <td>{{ user.email }}</td>
             <td>
-              <p-tag [value]="user.profile" [severity]="getProfileSeverity(user.profile)" />
+              <span class="status-text">{{ user.active ? 'Ativo' : 'Inativo' }}</span>
             </td>
-            <td>
-              <p-tag
-                [value]="user.active ? 'Ativo' : 'Inativo'"
-                [severity]="user.active ? 'success' : 'danger'"
-              />
-            </td>
-            <td>
-              <p-button
-                icon="pi pi-id-card"
-                [rounded]="true"
-                [text]="true"
-                severity="secondary"
-                size="small"
-                (onClick)="openPerfisDialog(user)"
-                pTooltip="Gerenciar perfis"
-              />
-              @if (user.active) {
+            <td class="actions-cell">
+              <div class="actions-buttons">
                 <p-button
-                  icon="pi pi-ban"
+                  icon="pi pi-id-card"
                   [rounded]="true"
                   [text]="true"
                   severity="secondary"
                   size="small"
-                  (onClick)="deactivate(user)"
-                  pTooltip="Desativar"
+                  (onClick)="openPerfisDialog(user)"
+                  pTooltip="Perfis"
                 />
-              } @else {
-                <p-button
-                  icon="pi pi-check"
-                  [rounded]="true"
-                  [text]="true"
-                  severity="secondary"
-                  size="small"
-                  (onClick)="activate(user)"
-                  pTooltip="Ativar"
-                />
-              }
+                @if (user.active) {
+                  <p-button
+                    icon="pi pi-ban"
+                    [rounded]="true"
+                    [text]="true"
+                    severity="secondary"
+                    size="small"
+                    (onClick)="deactivate(user)"
+                    pTooltip="Desativar"
+                  />
+                } @else {
+                  <p-button
+                    icon="pi pi-check"
+                    [rounded]="true"
+                    [text]="true"
+                    severity="secondary"
+                    size="small"
+                    (onClick)="activate(user)"
+                    pTooltip="Ativar"
+                  />
+                }
+              </div>
             </td>
           </tr>
         </ng-template>
@@ -194,6 +168,9 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
               <i class="pi pi-spin pi-spinner"></i> Carregando...
             </td>
           </tr>
+        </ng-template>
+        <ng-template pTemplate="paginatorleft">
+          <span class="paginator-rows-label">Itens por página:</span>
         </ng-template>
       </p-table>
     </div>
@@ -241,19 +218,16 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
           <input id="create-phone" pInputText formControlName="phone" placeholder="(00) 00000-0000" />
         </div>
         <div class="form-field">
-          <label for="create-profile">Perfil</label>
-          <p-dropdown
-            id="create-profile"
-            formControlName="profile"
-            [options]="profileOptions"
-            placeholder="Selecione o perfil"
+          <label for="create-perfis">Perfis (opcional)</label>
+          <p-multiSelect
+            id="create-perfis"
+            formControlName="perfilIds"
+            [options]="perfisOptions()"
+            placeholder="Selecione os perfis"
             optionLabel="label"
             optionValue="value"
             styleClass="w-full"
           />
-          @if (createForm.get('profile')?.invalid && createForm.get('profile')?.touched) {
-            <small class="field-error">Perfil é obrigatório</small>
-          }
         </div>
       </form>
       <ng-template pTemplate="footer">
@@ -304,107 +278,12 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
   `,
   styles: [
     `
-      .page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 1.5rem;
-        gap: 1rem;
-        flex-wrap: wrap;
-      }
-
-      .page-title {
-        margin: 0;
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #1e293b;
-      }
-
-      .page-description {
-        margin: 0.25rem 0 0;
-        font-size: 0.875rem;
-        color: #64748b;
-      }
-
-      .page-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.375rem 0.875rem;
-        border-radius: 999px;
-        border: 1px solid #e2e8f0;
-        background: #ffffff;
-      }
-
-      .page-badge .badge-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: var(--badge-active-color);
-        flex-shrink: 0;
-      }
-
-      .page-badge .badge-value {
-        color: var(--badge-active-color);
-        font-weight: 600;
-        font-size: 0.875rem;
-      }
-
-      .page-badge .badge-label {
-        color: #64748b;
-        font-size: 0.875rem;
-      }
-
-      .badge-value {
-        font-size: 0.875rem;
-      }
-
-      .badge-label {
-        font-size: 0.875rem;
-      }
-
-      .page-toolbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-        gap: 1rem;
-      }
-
-      .search-wrapper {
-        position: relative;
-        flex: 1;
-        max-width: 20rem;
-      }
-
-      .search-wrapper .search-icon {
-        position: absolute;
-        left: 0.75rem;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #94a3b8;
-        font-size: 0.875rem;
-      }
-
-      .search-wrapper .search-input {
-        width: 100%;
-        padding: 0.5rem 0.75rem 0.5rem 2.25rem;
-        border-radius: var(--p-border-radius);
-        border: 1px solid #e2e8f0;
-        font-size: 0.875rem;
-        background: #ffffff;
-        color: #1e293b;
-      }
-
-      .search-wrapper .search-input::placeholder {
-        color: #94a3b8;
-      }
-
       .table-card {
         background: #ffffff;
         border-radius: var(--p-border-radius);
         border: 1px solid #e2e8f0;
-        overflow: hidden;
+        overflow-x: auto;
+        overflow-y: hidden;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
       }
 
@@ -434,6 +313,19 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
         color: #334155;
         padding: 0.5rem 1rem;
         background: inherit !important;
+      }
+
+      .actions-cell {
+        overflow: visible;
+      }
+      .actions-buttons {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+      }
+      .actions-buttons ::ng-deep .p-button {
+        flex-shrink: 0;
+        color: #475569;
       }
 
       .table-card ::ng-deep .p-datatable .p-datatable-tbody > tr:nth-child(even) {
@@ -490,7 +382,7 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
       }
 
       .table-card ::ng-deep .p-paginator .p-link.p-highlight {
-        background: #22c55e;
+        background: var(--app-primary) !important;
         color: white !important;
         border-radius: 50%;
       }
@@ -512,16 +404,6 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
         color: #334155;
       }
 
-      .empty-message,
-      .loading-message {
-        text-align: center;
-        padding: 2rem !important;
-        color: #64748b;
-      }
-
-      .loading-message i {
-        margin-right: 0.5rem;
-      }
 
       .create-form {
         display: flex;
@@ -589,13 +471,13 @@ export class UsersListComponent {
   pickListTarget: PerfilOption[] = [];
   savingPerfis = signal(false);
   searchControl = new FormControl('', { nonNullable: true });
-  profileOptions = PROFILE_OPTIONS;
+  perfisOptions = signal<PerfilOption[]>([]);
   createForm = this.fb.nonNullable.group({
     name: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(8), Validators.pattern(PASSWORD_PATTERN)]],
     phone: [''],
-    profile: ['', Validators.required],
+    perfilIds: [[] as string[]],
   });
   private currentPage = 0;
   private currentSize = 10;
@@ -691,11 +573,18 @@ export class UsersListComponent {
   }
 
   openCreateDialog(): void {
+    this.perfisService.list({ active: true }).subscribe({
+      next: (res) => {
+        this.perfisOptions.set(
+          res.content.map((p) => ({ label: `${p.code} - ${p.name}`, value: p.id }))
+        );
+      },
+    });
     this.createDialogVisible = true;
   }
 
   resetCreateForm(): void {
-    this.createForm.reset({ name: '', email: '', password: '', phone: '', profile: '' });
+    this.createForm.reset({ name: '', email: '', password: '', phone: '', perfilIds: [] });
   }
 
   submitCreate(): void {
@@ -705,9 +594,9 @@ export class UsersListComponent {
       name: value.name,
       email: value.email,
       password: value.password,
-      profile: value.profile as 'ADMIN' | 'MANAGER' | 'SELLER' | 'OPERATOR',
     };
     if (value.phone?.trim()) data.phone = value.phone.trim();
+    if (value.perfilIds?.length) data.perfilIds = value.perfilIds;
     this.creating.set(true);
     this.usersService.create(data).subscribe({
       next: () => {
@@ -729,16 +618,6 @@ export class UsersListComponent {
       },
       complete: () => this.creating.set(false),
     });
-  }
-
-  getProfileSeverity(profile: string): string {
-    const map: Record<string, string> = {
-      ADMIN: 'danger',
-      MANAGER: 'info',
-      SELLER: 'success',
-      OPERATOR: 'secondary',
-    };
-    return map[profile] ?? 'secondary';
   }
 
   openPerfisDialog(user: User): void {
