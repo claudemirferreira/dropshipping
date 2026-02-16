@@ -1,0 +1,164 @@
+.toolbar-filters .status-dropdown {
+  min-width: 8rem;
+}
+
+.table-card {
+  background: #ffffff;
+  border-radius: var(--p-border-radius);
+  border: 1px solid #e2e8f0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.table-card ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+  background: #f8fafc !important;
+  color: #475569 !important;
+  font-weight: 600;
+  border-color: #e2e8f0;
+  font-size: 0.8125rem;
+  padding: 0.5rem 1rem;
+}
+
+.table-card ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
+  border-color: #e2e8f0;
+  color: #334155;
+  padding: 0.5rem 1rem;
+}
+
+.actions-cell {
+  overflow: visible;
+}
+.actions-buttons {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.actions-buttons ::ng-deep .p-button {
+  flex-shrink: 0;
+  color: #475569;
+}
+
+.table-card ::ng-deep .p-datatable .p-datatable-tbody > tr:nth-child(even) {
+  background: #f8fafc !important;
+}
+
+.table-card ::ng-deep .p-datatable .p-datatable-tbody > tr:hover {
+  background: #f1f5f9 !important;
+}
+
+.table-card ::ng-deep .p-paginator {
+  background: #ffffff;
+  border-color: #dde2e7;
+  border-top: 1px solid #dde2e7;
+  color: #5d6c7f;
+}
+
+.table-card ::ng-deep .p-paginator .p-link,
+.table-card ::ng-deep .p-paginator .p-paginator-current,
+.table-card ::ng-deep .p-paginator .p-dropdown,
+.table-card ::ng-deep .p-paginator .p-paginator-pages .p-link {
+  color: #5d6c7f !important;
+}
+
+.table-card ::ng-deep .p-paginator .p-link:hover {
+  background: #f1f5f9;
+  color: #5d6c7f;
+}
+
+.table-card ::ng-deep .p-paginator .p-link.p-highlight {
+  background: var(--app-primary) !important;
+  color: white !important;
+  border-radius: 50%;
+}
+
+.perfil-icon {
+  color: #64748b;
+  font-size: 1rem;
+}
+
+.code-cell {
+  font-size: 0.8125rem;
+  background: #f1f5f9;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+}
+
+.name-cell {
+  font-weight: 500;
+  color: #334155;
+}
+
+.empty-message,
+.loading-message {
+  text-align: center;
+  padding: 2rem !important;
+  color: #64748b;
+}
+
+.loading-message i {
+  margin-right: 0.5rem;
+}
+
+.create-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.form-field label {
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.form-field-checkbox {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-field-checkbox label {
+  margin: 0;
+}
+
+.field-error {
+  color: var(--p-red-500);
+  font-size: 0.75rem;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.rotinas-dialog-subtitle {
+  margin: 0 0 1rem;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.picklist-item {
+  padding: 0.25rem 0;
+  font-size: 0.875rem;
+}
+
+.form-picklist,
+.rotinas-picklist {
+  min-height: 18rem;
+}
+
+::ng-deep .form-picklist .p-picklist-list,
+::ng-deep .rotinas-picklist .p-picklist-list {
+  min-height: 16rem;
+}
