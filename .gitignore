@@ -1,9 +1,10 @@
 # Dependencies
 node_modules/
 
-# Angular
+# Angular (cache e build)
 .angular/
 frontend/.angular/
+frontend/.angular/cache/
 frontend/dist/
 frontend/node_modules/
 

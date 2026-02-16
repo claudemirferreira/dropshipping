@@ -69,7 +69,8 @@ import type { Perfil } from '../../services/perfis.service';
         <!-- Header -->
         <header class="app-header">
           <div class="header-left">
-            <span class="header-title">Dropshipping</span>
+            <img src="/assets/logo-email.jpeg" alt="Logo" class="brand-logo" />
+            <span class="header-title">DropSeller</span>
             <div class="header-search">
               <i class="pi pi-search search-icon"></i>
               <input
@@ -229,6 +230,11 @@ import type { Perfil } from '../../services/perfis.service';
         display: flex;
         align-items: center;
         gap: 2rem;
+      }
+
+      .brand-logo {
+        height: 28px;
+        object-fit: contain;
       }
 
       .header-title {
