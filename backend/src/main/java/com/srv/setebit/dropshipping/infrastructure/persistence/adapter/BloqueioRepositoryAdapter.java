@@ -8,6 +8,7 @@ import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.BloqueioRepos
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -35,7 +36,7 @@ public class BloqueioRepositoryAdapter implements BloqueioRepositoryPort {
 
     @Override
     public void closeActiveByUserId(UUID userId, String auditorName, boolean selfService) {
-        jpaRepository.closeActiveByUserId(userId, auditorName, selfService, BloqueioStatus.ATIVO, BloqueioStatus.INATIVO);
+        jpaRepository.closeActiveByUserId(userId, auditorName, selfService, Instant.now(), BloqueioStatus.ATIVO, BloqueioStatus.INATIVO);
     }
 
     private BloqueioEntity toEntity(Bloqueio b) {

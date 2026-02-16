@@ -65,7 +65,7 @@ class LoginUseCaseTest {
     private User user;
     private LoginRequest request;
     private static final PerfilResponse ADMIN_PERFIL = new PerfilResponse(
-            UUID.randomUUID(), "ADMIN", "Administrador", null, null, true, 0, Set.of(), Instant.now(), Instant.now());
+            UUID.randomUUID(), "ADMIN", "Administrador", null, true, 0, Collections.emptySet(), Instant.now(), Instant.now());
 
     @BeforeEach
     void setUp() {

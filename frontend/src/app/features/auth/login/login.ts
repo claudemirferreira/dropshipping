@@ -182,6 +182,7 @@ import { AuthService } from '../../../core/services/auth.service';
         width: 100%;
       }
     `,
+  ],
 })
 export class LoginComponent {
   private fb = inject(FormBuilder);

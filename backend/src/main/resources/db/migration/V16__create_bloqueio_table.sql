@@ -15,4 +15,3 @@ CREATE TABLE IF NOT EXISTS dropshipping.bloqueio (
 
 CREATE INDEX IF NOT EXISTS idx_bloqueio_user ON dropshipping.bloqueio(user_id);
 CREATE INDEX IF NOT EXISTS idx_bloqueio_status ON dropshipping.bloqueio(status);
-

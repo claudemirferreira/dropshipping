@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,10 +15,11 @@ public interface BloqueioRepository extends JpaRepository<BloqueioEntity, UUID> 
     Optional<BloqueioEntity> findTopByUserIdAndStatusOrderByDataDoBloqueioDesc(@Param("userId") UUID userId, @Param("status") BloqueioStatus status);
 
     @Modifying
-    @Query("UPDATE BloqueioEntity b SET b.status = :status, b.dataDoDesbloqueio = CURRENT_TIMESTAMP, b.dataDoUsuarioDesbloqueou = CASE WHEN :selfService = true THEN CURRENT_TIMESTAMP ELSE b.dataDoUsuarioDesbloqueou END, b.desbloqueadoPor = :auditorName WHERE b.userId = :userId AND b.status = :fromStatus")
+    @Query("UPDATE BloqueioEntity b SET b.status = :status, b.dataDoDesbloqueio = :now, b.dataDoUsuarioDesbloqueou = CASE WHEN :selfService = true THEN :now ELSE b.dataDoUsuarioDesbloqueou END, b.desbloqueadoPor = :auditorName WHERE b.userId = :userId AND b.status = :fromStatus")
     void closeActiveByUserId(@Param("userId") UUID userId,
                              @Param("auditorName") String auditorName,
                              @Param("selfService") boolean selfService,
+                             @Param("now") Instant now,
                              @Param("fromStatus") BloqueioStatus fromStatus,
                              @Param("status") BloqueioStatus status);
 }
