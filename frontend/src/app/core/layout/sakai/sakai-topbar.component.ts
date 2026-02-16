@@ -1,7 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { AvatarModule } from 'primeng/avatar';
 import { MenuModule } from 'primeng/menu';
 import { TooltipModule } from 'primeng/tooltip';
 import { LayoutService } from './layout.service';
@@ -14,7 +13,6 @@ import type { MenuItem } from 'primeng/api';
   imports: [
     CommonModule,
     RouterModule,
-    AvatarModule,
     MenuModule,
     TooltipModule,
   ],
@@ -45,11 +43,6 @@ import type { MenuItem } from 'primeng/api';
           tooltipPosition="bottom"
           [attr.aria-label]="'Menu do usuário ' + (currentUser()?.name ?? '')"
         >
-          <p-avatar
-            [label]="currentUser()?.name?.charAt(0) ?? '?'"
-            shape="circle"
-            styleClass="topbar-avatar"
-          />
           <span class="topbar-user-name">{{ currentUser()?.name ?? 'Usuário' }}</span>
         </button>
         <p-menu
@@ -177,21 +170,6 @@ import type { MenuItem } from 'primeng/api';
         .topbar-user-name {
           display: none;
         }
-      }
-
-      .topbar-avatar {
-        width: 2rem !important;
-        height: 2rem !important;
-        min-width: 2rem !important;
-        min-height: 2rem !important;
-        font-size: 0.8125rem !important;
-        font-weight: 600 !important;
-        background: transparent !important;
-        color: rgba(255, 255, 255, 0.95) !important;
-      }
-
-      .user-button:hover .topbar-avatar {
-        background: rgba(255, 255, 255, 0.12) !important;
       }
     `,
   ],

@@ -88,12 +88,13 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
         [totalRecords]="totalRecords()"
         [loading]="loading()"
         (onLazyLoad)="onLazyLoad($event)"
-        [rowsPerPageOptions]="[10, 25, 50]"
+        [rowsPerPageOptions]="[10, 25, 50, { showAll: 'Todos' }]"
         dataKey="id"
         currentPageReportTemplate="{first} - {last} de {totalRecords}"
         [showCurrentPageReport]="true"
         paginatorTemplate="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink"
         [showFirstLastIcon]="false"
+        [paginatorDropdownAppendTo]="'body'"
         styleClass="p-datatable-sm"
       >
         <ng-template pTemplate="header">
@@ -281,7 +282,8 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
         background: #ffffff;
         border-radius: var(--p-border-radius);
         border: 1px solid #e2e8f0;
-        overflow: hidden;
+        overflow-x: auto;
+        overflow-y: hidden;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
       }
 

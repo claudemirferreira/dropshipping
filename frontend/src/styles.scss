@@ -200,7 +200,8 @@ label, .form-label { font-size: 0.875rem; font-weight: 500; color: var(--app-tex
   background: var(--app-surface-card);
   border-radius: var(--p-border-radius, var(--app-radius-md));
   border: 1px solid var(--app-border-color);
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
   box-shadow: var(--app-shadow-card);
 }
 

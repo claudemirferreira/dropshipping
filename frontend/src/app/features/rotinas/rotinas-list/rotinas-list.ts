@@ -94,12 +94,13 @@ const STATUS_OPTIONS = [
         [totalRecords]="totalRecords()"
         [loading]="loading()"
         (onLazyLoad)="onLazyLoad($event)"
-        [rowsPerPageOptions]="[10, 25, 50]"
+        [rowsPerPageOptions]="[10, 25, 50, { showAll: 'Todos' }]"
         dataKey="id"
         currentPageReportTemplate="{first} - {last} de {totalRecords}"
         [showCurrentPageReport]="true"
         paginatorTemplate="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink"
         [showFirstLastIcon]="false"
+        [paginatorDropdownAppendTo]="'body'"
         styleClass="p-datatable-sm"
       >
         <ng-template pTemplate="header">
@@ -107,7 +108,6 @@ const STATUS_OPTIONS = [
             <th style="width: 3rem"></th>
             <th>Código</th>
             <th>Nome</th>
-            <th>Descrição</th>
             <th>Path</th>
             <th>Status</th>
             <th style="width: 170px">Ações</th>
@@ -120,7 +120,6 @@ const STATUS_OPTIONS = [
             </td>
             <td><code class="code-cell">{{ row.code }}</code></td>
             <td class="name-cell">{{ row.name }}</td>
-            <td>{{ (row.description || '-') | slice : 0 : 50 }}{{ (row.description?.length ?? 0) > 50 ? '...' : '' }}</td>
             <td>{{ row.path || '-' }}</td>
             <td>
               <span class="status-text">{{ row.active ? 'Ativo' : 'Inativo' }}</span>
@@ -230,7 +229,8 @@ const STATUS_OPTIONS = [
         background: #ffffff;
         border-radius: var(--p-border-radius);
         border: 1px solid #e2e8f0;
-        overflow: hidden;
+        overflow-x: auto;
+        overflow-y: hidden;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
       }
 
