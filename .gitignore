@@ -27,4 +27,3 @@ uploads/
 # Environment (descomente se tiver secrets locais)
 # .env
 # .env.local
-/frontend/.angular/

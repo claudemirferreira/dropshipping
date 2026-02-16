@@ -1,6 +1,5 @@
 package com.srv.setebit.dropshipping.infrastructure.persistence.jpa;
 
-import com.srv.setebit.dropshipping.domain.user.UserProfile;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -36,10 +35,6 @@ public class UserEntity {
 
     @Column(name = "active", nullable = false)
     private boolean active = true;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "profile", nullable = false, length = 50)
-    private UserProfile profile;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

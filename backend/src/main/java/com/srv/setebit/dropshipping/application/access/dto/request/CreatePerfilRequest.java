@@ -19,10 +19,6 @@ public record CreatePerfilRequest(
         @Schema(description = "Nome legível", required = true)
         String name,
 
-        @Length(max = 500)
-        @Schema(description = "Descrição")
-        String description,
-
         @Length(max = 100)
         @Schema(description = "Ícone (classe CSS)")
         String icon,

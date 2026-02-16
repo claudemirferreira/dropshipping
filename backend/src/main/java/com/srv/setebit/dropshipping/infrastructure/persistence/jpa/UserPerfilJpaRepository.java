@@ -13,6 +13,9 @@ public interface UserPerfilJpaRepository extends JpaRepository<UserPerfilEntity,
     @Query("SELECT up.perfil.id FROM UserPerfilEntity up WHERE up.id.userId = :userId")
     List<UUID> findPerfilIdsByUserId(@Param("userId") UUID userId);
 
+    @Query("SELECT p.code FROM UserPerfilEntity up JOIN up.perfil p WHERE up.id.userId = :userId")
+    List<String> findPerfilCodesByUserId(@Param("userId") UUID userId);
+
     @Query("SELECT DISTINCT r.code FROM UserPerfilEntity up " +
             "JOIN PerfilRotinaEntity pr ON pr.id.perfilId = up.perfil.id " +
             "JOIN RotinaEntity r ON r.id = pr.rotina.id " +

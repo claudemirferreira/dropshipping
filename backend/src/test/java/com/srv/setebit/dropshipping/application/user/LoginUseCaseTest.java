@@ -1,12 +1,13 @@
 package com.srv.setebit.dropshipping.application.user;
 
+import com.srv.setebit.dropshipping.application.access.GetUserPerfisUseCase;
+import com.srv.setebit.dropshipping.application.access.dto.response.PerfilResponse;
 import com.srv.setebit.dropshipping.application.user.dto.request.LoginRequest;
 import com.srv.setebit.dropshipping.application.user.dto.response.TokenResponse;
 import com.srv.setebit.dropshipping.application.user.port.JwtProviderPort;
 import com.srv.setebit.dropshipping.application.user.port.PasswordEncoderPort;
 import com.srv.setebit.dropshipping.domain.user.RefreshToken;
 import com.srv.setebit.dropshipping.domain.user.User;
-import com.srv.setebit.dropshipping.domain.user.UserProfile;
 import com.srv.setebit.dropshipping.domain.user.exception.InvalidCredentialsException;
 import com.srv.setebit.dropshipping.domain.user.port.BloqueioRepositoryPort;
 import com.srv.setebit.dropshipping.domain.user.port.RefreshTokenRepositoryPort;
@@ -20,7 +21,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Instant;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,6 +48,9 @@ class LoginUseCaseTest {
     private JwtProviderPort jwtProvider;
 
     @Mock
+    private GetUserPerfisUseCase getUserPerfisUseCase;
+
+    @Mock
     private BloqueioRepositoryPort bloqueioRepository;
 
     @Mock
@@ -57,6 +64,8 @@ class LoginUseCaseTest {
 
     private User user;
     private LoginRequest request;
+    private static final PerfilResponse ADMIN_PERFIL = new PerfilResponse(
+            UUID.randomUUID(), "ADMIN", "Administrador", null, null, true, 0, Set.of(), Instant.now(), Instant.now());
 
     @BeforeEach
     void setUp() {
@@ -66,7 +75,6 @@ class LoginUseCaseTest {
         user.setPasswordHash("hashed");
         user.setName("Admin");
         user.setActive(true);
-        user.setProfile(UserProfile.ADMIN);
         user.setCreatedAt(Instant.now());
         user.setUpdatedAt(Instant.now());
 
@@ -77,7 +85,8 @@ class LoginUseCaseTest {
     void deve_retornar_tokens_quando_credenciais_validas() {
         when(userRepository.findByEmail("admin@test.com")).thenReturn(Optional.of(user));
         when(passwordEncoder.matches(any(), any())).thenReturn(true);
-        when(jwtProvider.generateAccessToken(any())).thenReturn("accessToken");
+        when(getUserPerfisUseCase.execute(user.getId())).thenReturn(List.of(ADMIN_PERFIL));
+        when(jwtProvider.generateAccessToken(any(), any())).thenReturn("accessToken");
         when(jwtProvider.generateRefreshToken(any())).thenReturn("refreshToken");
         when(refreshTokenRepository.save(any(RefreshToken.class))).thenAnswer(inv -> inv.getArgument(0));
 

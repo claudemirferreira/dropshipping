@@ -17,9 +17,6 @@ public record PerfilResponse(
         @Schema(description = "Nome")
         String name,
 
-        @Schema(description = "Descrição")
-        String description,
-
         @Schema(description = "Ícone")
         String icon,
 

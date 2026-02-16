@@ -130,7 +130,6 @@ public class PerfilRepositoryAdapter implements PerfilRepositoryPort {
         e.setId(p.getId());
         e.setCode(p.getCode());
         e.setName(p.getName());
-        e.setDescription(p.getDescription());
         e.setIcon(p.getIcon());
         e.setActive(p.isActive());
         e.setDisplayOrder(p.getDisplayOrder());
@@ -141,7 +140,7 @@ public class PerfilRepositoryAdapter implements PerfilRepositoryPort {
 
     private Perfil toDomain(PerfilEntity e) {
         return new Perfil(
-                e.getId(), e.getCode(), e.getName(), e.getDescription(),
+                e.getId(), e.getCode(), e.getName(),
                 e.getIcon(), e.isActive(), e.getDisplayOrder(),
                 e.getCreatedAt(), e.getUpdatedAt(),
                 null

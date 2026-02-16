@@ -36,7 +36,6 @@ public class UpdatePerfilUseCase {
 
         perfil.setCode(request.code().trim());
         perfil.setName(request.name().trim());
-        perfil.setDescription(request.description() != null ? request.description().trim() : null);
         perfil.setIcon(request.icon() != null ? request.icon().trim() : null);
         if (request.active() != null) {
             perfil.setActive(request.active());
@@ -57,7 +56,7 @@ public class UpdatePerfilUseCase {
                 ? p.getRotinas().stream().map(this::toRotinaResponse).collect(Collectors.toSet())
                 : new HashSet<>();
         return new PerfilResponse(
-                p.getId(), p.getCode(), p.getName(), p.getDescription(),
+                p.getId(), p.getCode(), p.getName(),
                 p.getIcon(), p.isActive(), p.getDisplayOrder(), rotinas,
                 p.getCreatedAt(), p.getUpdatedAt()
         );

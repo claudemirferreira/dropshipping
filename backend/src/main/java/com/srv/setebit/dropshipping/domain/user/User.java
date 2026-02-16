@@ -18,7 +18,6 @@ public class User {
     private String name;
     private String phone;
     private boolean active;
-    private UserProfile profile;
     private Instant createdAt;
     private Instant updatedAt;
     private int failedLoginAttempts;

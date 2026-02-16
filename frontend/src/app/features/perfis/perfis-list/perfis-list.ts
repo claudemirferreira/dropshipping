@@ -4,8 +4,6 @@ import { FormControl, FormBuilder, ReactiveFormsModule, Validators } from '@angu
 import { TableModule, TableLazyLoadEvent } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { TagModule } from 'primeng/tag';
-import { Toast } from 'primeng/toast';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { TooltipModule } from 'primeng/tooltip';
@@ -13,7 +11,6 @@ import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
 import { CheckboxModule } from 'primeng/checkbox';
 import { PickListModule } from 'primeng/picklist';
-import { TextareaModule } from 'primeng/textarea';
 import {
   PerfisService,
   Perfil,
@@ -42,32 +39,21 @@ interface RotinaOption {
     TableModule,
     ButtonModule,
     InputTextModule,
-    TagModule,
-    Toast,
     ConfirmDialog,
     TooltipModule,
     DialogModule,
     DropdownModule,
     CheckboxModule,
     PickListModule,
-    TextareaModule,
   ],
-  providers: [MessageService, ConfirmationService],
+  providers: [ConfirmationService],
   template: `
-    <p-toast />
     <p-confirmDialog />
 
     <div class="page-header">
       <div class="page-title-block">
-        <h1 class="page-title">Perfis</h1>
-        <p class="page-description">
-          Agrupe rotinas em perfis. Usuários recebem acesso conforme os perfis atribuídos.
-        </p>
-      </div>
-      <div class="page-badge">
-        <span class="badge-dot"></span>
-        <span class="badge-value">{{ totalRecords() }}</span>
-        <span class="badge-label">perfis cadastrados</span>
+        <h1 class="page-title">Lista de perfis</h1>
+
       </div>
     </div>
 
@@ -97,20 +83,11 @@ interface RotinaOption {
       </div>
       <div class="toolbar-actions">
         <p-button
-          label="Novo perfil"
+          label="Novo "
           icon="pi pi-plus"
           size="small"
-          severity="success"
+          severity="primary"
           (onClick)="openCreateDialog()"
-        />
-        <p-button
-          icon="pi pi-refresh"
-          [rounded]="true"
-          [text]="true"
-          severity="secondary"
-          size="small"
-          (onClick)="refresh()"
-          pTooltip="Atualizar"
         />
       </div>
     </div>
@@ -127,7 +104,9 @@ interface RotinaOption {
         [rowsPerPageOptions]="[10, 25, 50]"
         dataKey="id"
         currentPageReportTemplate="{first} - {last} de {totalRecords}"
-        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+        [showCurrentPageReport]="true"
+        paginatorTemplate="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink"
+        [showFirstLastIcon]="false"
         styleClass="p-datatable-sm"
       >
         <ng-template pTemplate="header">
@@ -138,7 +117,7 @@ interface RotinaOption {
             <th>Descrição</th>
             <th>Rotinas</th>
             <th>Status</th>
-            <th style="width: 100px">Ações</th>
+            <th style="width: 170px">Ações</th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-row>
@@ -148,56 +127,57 @@ interface RotinaOption {
             </td>
             <td><code class="code-cell">{{ row.code }}</code></td>
             <td class="name-cell">{{ row.name }}</td>
-            <td>{{ (row.description || '-') | slice : 0 : 50 }}{{ (row.description?.length ?? 0) > 50 ? '...' : '' }}</td>
             <td>{{ row.rotinas?.length ?? 0 }}</td>
             <td>
-              <p-tag
-                [value]="row.active ? 'Ativo' : 'Inativo'"
-                [severity]="row.active ? 'success' : 'danger'"
-              />
+              <span class="status-text">{{ row.active ? 'Ativo' : 'Inativo' }}</span>
             </td>
-            <td>
-              <p-button
-                icon="pi pi-link"
-                [rounded]="true"
-                [text]="true"
-                severity="secondary"
-                size="small"
-                (onClick)="openRotinasDialog(row)"
-                pTooltip="Rotinas"
-              />
-              <p-button
-                icon="pi pi-pencil"
-                [rounded]="true"
-                [text]="true"
-                severity="secondary"
-                size="small"
-                (onClick)="openEditDialog(row)"
-                pTooltip="Editar"
-              />
-              <p-button
-                icon="pi pi-trash"
-                [rounded]="true"
-                [text]="true"
-                severity="secondary"
-                size="small"
-                (onClick)="confirmDelete(row)"
-                pTooltip="Excluir"
-              />
+            <td class="actions-cell">
+              <div class="actions-buttons">
+                <p-button
+                  icon="pi pi-link"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="secondary"
+                  size="small"
+                  (onClick)="openRotinasDialog(row)"
+                  pTooltip="Rotinas"
+                />
+                <p-button
+                  icon="pi pi-pencil"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="secondary"
+                  size="small"
+                  (onClick)="openEditDialog(row)"
+                  pTooltip="Editar"
+                />
+                <p-button
+                  icon="pi pi-trash"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="secondary"
+                  size="small"
+                  (onClick)="confirmDelete(row)"
+                  pTooltip="Excluir"
+                />
+              </div>
             </td>
           </tr>
         </ng-template>
         <ng-template pTemplate="emptymessage">
           <tr>
-            <td colspan="7" class="empty-message">Nenhum perfil encontrado.</td>
+            <td colspan="6" class="empty-message">Nenhum perfil encontrado.</td>
           </tr>
         </ng-template>
         <ng-template pTemplate="loadingbody">
           <tr>
-            <td colspan="7" class="loading-message">
+            <td colspan="6" class="loading-message">
               <i class="pi pi-spin pi-spinner"></i> Carregando...
             </td>
           </tr>
+        </ng-template>
+        <ng-template pTemplate="paginatorleft">
+          <span class="paginator-rows-label">Itens por página:</span>
         </ng-template>
       </p-table>
     </div>
@@ -213,27 +193,31 @@ interface RotinaOption {
       (onHide)="closeDialog()"
     >
       <form [formGroup]="form" class="create-form">
-        <div class="form-field">
-          <label for="code">Código</label>
-          <input id="code" pInputText formControlName="code" placeholder="ADMIN" />
-          @if (form.get('code')?.invalid && form.get('code')?.touched) {
-            <small class="field-error">Código é obrigatório</small>
-          }
+        <div class="form-row">
+          <div class="form-field">
+            <label for="code">Código</label>
+            <input id="code" pInputText formControlName="code" placeholder="ADMIN" />
+            @if (form.get('code')?.invalid && form.get('code')?.touched) {
+              <small class="field-error">Código é obrigatório</small>
+            }
+          </div>
+          <div class="form-field">
+            <label for="name">Nome</label>
+            <input id="name" pInputText formControlName="name" placeholder="Administrador" />
+            @if (form.get('name')?.invalid && form.get('name')?.touched) {
+              <small class="field-error">Nome é obrigatório</small>
+            }
+          </div>
         </div>
-        <div class="form-field">
-          <label for="name">Nome</label>
-          <input id="name" pInputText formControlName="name" placeholder="Administrador" />
-          @if (form.get('name')?.invalid && form.get('name')?.touched) {
-            <small class="field-error">Nome é obrigatório</small>
-          }
-        </div>
-        <div class="form-field">
-          <label for="description">Descrição (opcional)</label>
-          <textarea id="description" pInputTextarea formControlName="description" rows="2" placeholder="Descrição do perfil"></textarea>
-        </div>
-        <div class="form-field">
-          <label for="icon">Ícone (opcional)</label>
-          <input id="icon" pInputText formControlName="icon" placeholder="pi pi-shield" />
+        <div class="form-row">
+          <div class="form-field">
+            <label for="icon">Ícone (opcional)</label>
+            <input id="icon" pInputText formControlName="icon" placeholder="pi pi-shield" />
+          </div>
+          <div class="form-field form-field-checkbox">
+            <p-checkbox formControlName="active" [binary]="true" inputId="active" />
+            <label for="active">Ativo</label>
+          </div>
         </div>
         <div class="form-field">
           <label>Rotinas do perfil</label>
@@ -253,10 +237,6 @@ interface RotinaOption {
               <div class="picklist-item">{{ item.label }}</div>
             </ng-template>
           </p-pickList>
-        </div>
-        <div class="form-field form-field-checkbox">
-          <p-checkbox formControlName="active" [binary]="true" inputId="active" />
-          <label for="active">Ativo</label>
         </div>
       </form>
       <ng-template pTemplate="footer">
@@ -313,109 +293,8 @@ interface RotinaOption {
   `,
   styles: [
     `
-      .page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 1.5rem;
-        gap: 1rem;
-        flex-wrap: wrap;
-      }
-
-      .page-title {
-        margin: 0;
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #1e293b;
-      }
-
-      .page-description {
-        margin: 0.25rem 0 0;
-        font-size: 0.875rem;
-        color: #64748b;
-      }
-
-      .page-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.375rem 0.875rem;
-        border-radius: 999px;
-        border: 1px solid #e2e8f0;
-        background: #ffffff;
-      }
-
-      .page-badge .badge-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: var(--badge-active-color);
-        flex-shrink: 0;
-      }
-
-      .page-badge .badge-value {
-        color: var(--badge-active-color);
-        font-weight: 600;
-        font-size: 0.875rem;
-      }
-
-      .page-badge .badge-label {
-        color: #64748b;
-        font-size: 0.875rem;
-      }
-
-      .page-toolbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-        gap: 1rem;
-        flex-wrap: wrap;
-      }
-
-      .search-wrapper {
-        position: relative;
-        flex: 1;
-        min-width: 12rem;
-        max-width: 20rem;
-      }
-
-      .search-wrapper .search-icon {
-        position: absolute;
-        left: 0.75rem;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #94a3b8;
-        font-size: 0.875rem;
-      }
-
-      .search-wrapper .search-input {
-        width: 100%;
-        padding: 0.5rem 0.75rem 0.5rem 2.25rem;
-        border-radius: var(--p-border-radius);
-        border: 1px solid #e2e8f0;
-        font-size: 0.875rem;
-        background: #ffffff;
-        color: #1e293b;
-      }
-
-      .search-wrapper .search-input::placeholder {
-        color: #94a3b8;
-      }
-
-      .toolbar-filters {
-        display: flex;
-        gap: 0.5rem;
-      }
-
       .toolbar-filters .status-dropdown {
         min-width: 8rem;
-      }
-
-      .toolbar-actions {
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
       }
 
       .table-card {
@@ -439,6 +318,19 @@ interface RotinaOption {
         border-color: #e2e8f0;
         color: #334155;
         padding: 0.5rem 1rem;
+      }
+
+      .actions-cell {
+        overflow: visible;
+      }
+      .actions-buttons {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+      }
+      .actions-buttons ::ng-deep .p-button {
+        flex-shrink: 0;
+        color: #475569;
       }
 
       .table-card ::ng-deep .p-datatable .p-datatable-tbody > tr:nth-child(even) {
@@ -469,7 +361,7 @@ interface RotinaOption {
       }
 
       .table-card ::ng-deep .p-paginator .p-link.p-highlight {
-        background: #22c55e;
+        background: var(--app-primary) !important;
         color: white !important;
         border-radius: 50%;
       }
@@ -505,6 +397,12 @@ interface RotinaOption {
       .create-form {
         display: flex;
         flex-direction: column;
+        gap: 1rem;
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         gap: 1rem;
       }
 
@@ -588,7 +486,6 @@ export class PerfisListComponent {
   form = this.fb.nonNullable.group({
     code: ['', [Validators.required, Validators.maxLength(50)]],
     name: ['', [Validators.required, Validators.maxLength(255)]],
-    description: [''],
     icon: [''],
     active: [true],
     rotinaIds: [[] as string[]],
@@ -682,7 +579,6 @@ export class PerfisListComponent {
     this.form.reset({
       code: '',
       name: '',
-      description: '',
       icon: '',
       active: true,
       rotinaIds: [],
@@ -702,7 +598,6 @@ export class PerfisListComponent {
         this.form.patchValue({
           code: perfil.code,
           name: perfil.name,
-          description: perfil.description ?? '',
           icon: perfil.icon ?? '',
           active: perfil.active,
           rotinaIds,
@@ -756,7 +651,6 @@ export class PerfisListComponent {
     this.perfisService.update(perfil.id, {
       code: perfil.code,
       name: perfil.name,
-      description: perfil.description ?? undefined,
       icon: perfil.icon ?? undefined,
       active: perfil.active,
       rotinaIds,
@@ -789,7 +683,6 @@ export class PerfisListComponent {
     const data: CreatePerfilRequest | UpdatePerfilRequest = {
       code: value.code,
       name: value.name,
-      description: value.description?.trim() || undefined,
       icon: value.icon?.trim() || undefined,
       active: value.active,
       rotinaIds,

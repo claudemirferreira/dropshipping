@@ -17,7 +17,7 @@ public interface UserRepositoryPort {
 
     Page<User> findAll(Pageable pageable);
 
-    Page<User> findAllByFilter(String name, String email, String profile, Pageable pageable);
+    Page<User> findAllByFilter(String name, String email, String perfilCode, Pageable pageable);
 
     boolean existsByEmail(String email);
 

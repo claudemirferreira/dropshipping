@@ -1,9 +1,11 @@
 package com.srv.setebit.dropshipping.application.user.dto.request;
 
-import com.srv.setebit.dropshipping.domain.user.UserProfile;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.Length;
+
+import java.util.List;
+import java.util.UUID;
 
 @Schema(description = "Dados para criação de usuário")
 public record CreateUserRequest(
@@ -28,8 +30,7 @@ public record CreateUserRequest(
         @Schema(description = "Telefone")
         String phone,
 
-        @NotNull(message = "Perfil é obrigatório")
-        @Schema(description = "Perfil do usuário", required = true)
-        UserProfile profile
+        @Schema(description = "IDs dos perfis a atribuir ao usuário")
+        List<UUID> perfilIds
 ) {
 }

@@ -1,7 +1,6 @@
 package com.srv.setebit.dropshipping.infrastructure.persistence.adapter;
 
 import com.srv.setebit.dropshipping.domain.user.User;
-import com.srv.setebit.dropshipping.domain.user.UserProfile;
 import com.srv.setebit.dropshipping.domain.user.port.UserRepositoryPort;
 import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.UserEntity;
 import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.UserRepository;
@@ -45,15 +44,8 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
     }
 
     @Override
-    public Page<User> findAllByFilter(String name, String email, String profile, Pageable pageable) {
-        UserProfile profileEnum = null;
-        if (profile != null && !profile.isBlank()) {
-            try {
-                profileEnum = UserProfile.valueOf(profile.toUpperCase());
-            } catch (IllegalArgumentException ignored) {
-            }
-        }
-        return jpaRepository.findAllByFilter(name, email, profileEnum, pageable).map(this::toDomain);
+    public Page<User> findAllByFilter(String name, String email, String perfilCode, Pageable pageable) {
+        return jpaRepository.findAllByFilter(name, email, perfilCode != null && !perfilCode.isBlank() ? perfilCode.trim() : null, pageable).map(this::toDomain);
     }
 
     @Override
@@ -79,18 +71,22 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
         entity.setName(user.getName());
         entity.setPhone(user.getPhone());
         entity.setActive(user.isActive());
-        entity.setProfile(user.getProfile());
         entity.setCreatedAt(user.getCreatedAt());
         entity.setUpdatedAt(user.getUpdatedAt());
-        entity.setFailedLoginAttempts(user.getFailedLoginAttempts());
-        entity.setLocked(user.isLocked());
-        entity.setLockedReason(user.getLockedReason());
-        entity.setLockedAt(user.getLockedAt());
-        entity.setUnlockedAt(user.getUnlockedAt());
         return entity;
     }
 
     private User toDomain(UserEntity entity) {
+        return new User(
+                entity.getId(),
+                entity.getEmail(),
+                entity.getPasswordHash(),
+                entity.getName(),
+                entity.getPhone(),
+                entity.isActive(),
+                entity.getCreatedAt(),
+                entity.getUpdatedAt()
+        );
         User user = new User();
         user.setId(entity.getId());
         user.setEmail(entity.getEmail());

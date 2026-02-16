@@ -1,13 +1,10 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, inject, effect, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { ButtonModule } from 'primeng/button';
-import { AvatarModule } from 'primeng/avatar';
-import { TooltipModule } from 'primeng/tooltip';
-import { InputTextModule } from 'primeng/inputtext';
-import { AuthService } from '../../services/auth.service';
-import type { Rotina } from '../../services/rotinas.service';
-import type { Perfil } from '../../services/perfis.service';
+import { RouterOutlet } from '@angular/router';
+import { LayoutService } from '../sakai/layout.service';
+import { SakaiTopbarComponent } from '../sakai/sakai-topbar.component';
+import { SakaiSidebarComponent } from '../sakai/sakai-sidebar.component';
+import { SakaiFooterComponent } from '../sakai/sakai-footer.component';
 
 @Component({
   selector: 'app-main-layout',
@@ -15,14 +12,12 @@ import type { Perfil } from '../../services/perfis.service';
   imports: [
     CommonModule,
     RouterOutlet,
-    RouterLink,
-    RouterLinkActive,
-    ButtonModule,
-    AvatarModule,
-    TooltipModule,
-    InputTextModule,
+    SakaiTopbarComponent,
+    SakaiSidebarComponent,
+    SakaiFooterComponent,
   ],
   template: `
+<<<<<<< HEAD
     <div class="app-layout">
       <!-- Sidebar -->
       <aside class="sidebar">
@@ -104,118 +99,39 @@ import type { Perfil } from '../../services/perfis.service';
 
         <!-- Content -->
         <main class="app-content">
+=======
+    <div
+      class="layout-wrapper"
+      [ngClass]="{
+        'layout-static': layoutService.layoutConfig().menuMode === 'static',
+        'layout-static-inactive':
+          layoutService.layoutState().staticMenuDesktopInactive &&
+          layoutService.layoutConfig().menuMode === 'static',
+        'layout-mobile-active': layoutService.layoutState().mobileMenuActive
+      }"
+    >
+      <app-sakai-topbar />
+      <app-sakai-sidebar />
+      <div class="layout-main-container">
+        <main class="layout-main">
+>>>>>>> refs/remotes/origin/develop
           <router-outlet />
         </main>
+        <app-sakai-footer />
       </div>
     </div>
   `,
   styles: [
     `
-      .app-layout {
-        display: flex;
-        min-height: 100vh;
-        background: #ffffff;
-      }
-
-      .sidebar {
-        width: 14rem;
-        min-width: 14rem;
-        background: #f8fafc;
-        border-right: 1px solid #e2e8f0;
-        display: flex;
-        flex-direction: column;
-        padding: 1rem 0;
-        overflow-y: auto;
-      }
-
-      .sidebar-brand {
-        margin-bottom: 1.5rem;
-        padding: 0 1rem;
-        .brand-icon {
-          font-size: 1.5rem;
-        }
-      }
-
-      .sidebar-nav {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        padding: 0 0.5rem;
-      }
-
-      .menu-group {
-        display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
-      }
-
-      .menu-group-header {
-        font-size: 0.6875rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: #94a3b8;
-        padding: 0.5rem 0.75rem 0.25rem;
-      }
-
-      .nav-item {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 0.5rem 0.75rem;
-        border-radius: var(--p-border-radius);
-        color: #64748b;
-        text-decoration: none;
-        transition: all 0.2s;
-        font-size: 0.875rem;
-      }
-
-      .nav-item i {
-        flex-shrink: 0;
-        width: 1.25rem;
-        text-align: center;
-      }
-
-      .nav-item-label {
-        white-space: nowrap;
+      .layout-wrapper {
+        height: 100vh;
         overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      .nav-item:hover {
-        background: #e2e8f0;
-        color: #1e293b;
-      }
-
-      .nav-item.active {
-        background: var(--sidebar-active-bg);
-        color: var(--sidebar-active-text);
-      }
-
-      .sidebar-footer {
-        padding: 1rem;
-        border-top: 1px solid #e2e8f0;
-      }
-
-      .sidebar-avatar {
-        width: 2rem !important;
-        height: 2rem !important;
-        font-size: 0.75rem !important;
-      }
-
-      .user-avatar {
-        width: auto;
-        padding: 0.25rem;
-      }
-
-      .main-wrapper {
-        flex: 1;
         display: flex;
         flex-direction: column;
-        min-width: 0;
+        background: var(--app-surface-page);
       }
 
+<<<<<<< HEAD
       .app-header {
         height: 4rem;
         padding: 0 1.5rem;
@@ -286,50 +202,63 @@ import type { Perfil } from '../../services/perfis.service';
       }
 
       .app-content {
+=======
+      .layout-main-container {
+>>>>>>> refs/remotes/origin/develop
         flex: 1;
-        padding: 1.5rem 2rem;
-        overflow: auto;
-        background: #ffffff;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        margin-left: 0;
+        transition: margin-left 0.3s ease;
       }
 
-      @media (max-width: 768px) {
-        .header-search {
-          display: none;
+      .layout-main {
+        flex: 1;
+        min-height: 0;
+        padding: 1.5rem 2rem;
+        overflow: auto;
+        background: var(--app-surface-page);
+      }
+
+      @media (min-width: 1200px) {
+        .layout-main {
+          padding: 1.75rem 2.5rem;
         }
       }
+
+      @media (min-width: 992px) {
+        .layout-wrapper.layout-static .layout-main-container {
+          margin-left: 11rem;
+        }
+
+        .layout-wrapper.layout-static.layout-static-inactive .layout-main-container {
+          margin-left: 0;
+        }
+      }
+
     `,
   ],
 })
-export class MainLayoutComponent {
-  private auth = inject(AuthService);
-  currentUser = this.auth.currentUser;
+export class MainLayoutComponent implements OnInit, OnDestroy {
+  layoutService = inject(LayoutService);
 
-  menuGroups = computed(() => {
-    const perfis = [...this.auth.currentUserPerfis()].sort(
-      (a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0)
-    );
-
-    return perfis.map((perfil) => {
-      const rotinasWithPath = (perfil.rotinas ?? [])
-        .filter((r) => r.path?.trim() && r.active)
-        .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0))
-        .map((r) => ({
-          path: r.path!,
-          name: r.name,
-          icon: r.icon || 'pi pi-circle',
-        }));
-      return {
-        perfil: { code: perfil.code, name: perfil.name },
-        rotinas: rotinasWithPath,
-      };
-    }).filter((g) => g.rotinas.length > 0);
-  });
-
-  logout(): void {
-    this.auth.logout();
+  ngOnInit() {
+    document.body.classList.add('layout-main-active');
   }
 
-  refresh(): void {
-    window.location.reload();
+  ngOnDestroy() {
+    document.body.classList.remove('layout-main-active');
+  }
+
+  constructor() {
+    effect(() => {
+      const state = this.layoutService.layoutState();
+      if (state.mobileMenuActive) {
+        document.body.classList.add('blocked-scroll');
+      } else {
+        document.body.classList.remove('blocked-scroll');
+      }
+    });
   }
 }

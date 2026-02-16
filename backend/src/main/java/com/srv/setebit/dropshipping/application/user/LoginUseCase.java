@@ -1,5 +1,6 @@
 package com.srv.setebit.dropshipping.application.user;
 
+import com.srv.setebit.dropshipping.application.access.GetUserPerfisUseCase;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -20,6 +21,14 @@ import com.srv.setebit.dropshipping.domain.user.port.BloqueioRepositoryPort;
 import com.srv.setebit.dropshipping.domain.user.port.RefreshTokenRepositoryPort;
 import com.srv.setebit.dropshipping.domain.user.port.TemporaryPasswordRepositoryPort;
 import com.srv.setebit.dropshipping.domain.user.port.UserRepositoryPort;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class LoginUseCase {
@@ -28,6 +37,7 @@ public class LoginUseCase {
     private final RefreshTokenRepositoryPort refreshTokenRepository;
     private final PasswordEncoderPort passwordEncoder;
     private final JwtProviderPort jwtProvider;
+    private final GetUserPerfisUseCase getUserPerfisUseCase;
     private final BloqueioRepositoryPort bloqueioRepository;
     private final TemporaryPasswordRepositoryPort tempPasswordRepository;
     private final LoginAttemptService loginAttemptService;
@@ -42,6 +52,8 @@ public class LoginUseCase {
                         RefreshTokenRepositoryPort refreshTokenRepository,
                         PasswordEncoderPort passwordEncoder,
                         JwtProviderPort jwtProvider,
+                        GetUserPerfisUseCase getUserPerfisUseCase) {
+                        JwtProviderPort jwtProvider,
                         BloqueioRepositoryPort bloqueioRepository,
                         TemporaryPasswordRepositoryPort tempPasswordRepository,
                         LoginAttemptService loginAttemptService) {
@@ -49,6 +61,7 @@ public class LoginUseCase {
         this.refreshTokenRepository = refreshTokenRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtProvider = jwtProvider;
+        this.getUserPerfisUseCase = getUserPerfisUseCase;
         this.bloqueioRepository = bloqueioRepository;
         this.tempPasswordRepository = tempPasswordRepository;
         this.loginAttemptService = loginAttemptService;
@@ -103,6 +116,10 @@ public class LoginUseCase {
             }
         }
 
+        List<String> perfilCodes = getUserPerfisUseCase.execute(user.getId()).stream()
+                .map(p -> p.code())
+                .collect(Collectors.toList());
+        String accessToken = jwtProvider.generateAccessToken(user, perfilCodes);
         String accessToken = needsPasswordChange
                 ? jwtProvider.generateAccessTokenWithFlags(user, true)
                 : jwtProvider.generateAccessToken(user);

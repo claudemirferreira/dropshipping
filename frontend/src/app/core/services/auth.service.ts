@@ -12,7 +12,7 @@ export interface User {
   name: string;
   phone?: string;
   active: boolean;
-  profile: 'ADMIN' | 'MANAGER' | 'SELLER' | 'OPERATOR';
+  perfilCodes: string[];
   createdAt: string;
   updatedAt: string;
 }

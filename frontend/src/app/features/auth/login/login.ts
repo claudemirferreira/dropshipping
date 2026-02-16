@@ -111,7 +111,7 @@ import { AuthService } from '../../../core/services/auth.service';
         align-items: center;
         justify-content: center;
         padding: 1rem;
-        background: #f8fafc;
+        background: var(--app-surface-page);
       }
 
       .login-card {
@@ -121,13 +121,15 @@ import { AuthService } from '../../../core/services/auth.service';
 
       :host ::ng-deep .login-card,
       :host ::ng-deep .login-card .p-card {
-        background: #ffffff !important;
+        background: var(--app-surface-card) !important;
+        border: 1px solid var(--app-border-color) !important;
+        box-shadow: var(--app-shadow-card) !important;
       }
 
       :host ::ng-deep .login-card .p-card-body,
       :host ::ng-deep .login-card .p-card-content {
-        background: #ffffff !important;
-        color: #334155;
+        background: var(--app-surface-card) !important;
+        color: var(--app-text-secondary);
       }
 
       .login-header {
@@ -141,11 +143,11 @@ import { AuthService } from '../../../core/services/auth.service';
         h1 {
           margin: 0;
           font-size: 1.75rem;
-          color: var(--p-text-color);
+          color: var(--app-text-primary);
         }
         p {
           margin: 0.5rem 0 0;
-          color: var(--p-text-muted-color);
+          color: var(--app-text-muted);
         }
       }
 
@@ -163,12 +165,12 @@ import { AuthService } from '../../../core/services/auth.service';
 
         label {
           font-weight: 500;
-          color: var(--p-text-color);
+          color: var(--app-text-secondary);
         }
       }
 
       .error {
-        color: var(--p-red-500);
+        color: var(--p-red-500, #ef4444);
         font-size: 0.875rem;
       }
       :host ::ng-deep .p-message .p-message-text {
