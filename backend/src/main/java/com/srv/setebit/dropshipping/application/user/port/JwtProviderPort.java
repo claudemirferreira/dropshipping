@@ -9,6 +9,7 @@ public interface JwtProviderPort {
 
     /** Gera o access token. perfilCodes: códigos dos perfis do usuário (para claim "profile" / "perfilCodes"). */
     String generateAccessToken(User user, List<String> perfilCodes);
+    String generateAccessTokenWithFlags(User user, boolean needsPasswordChange);
 
     String generateRefreshToken(User user);
 

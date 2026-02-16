@@ -9,7 +9,9 @@ import com.srv.setebit.dropshipping.application.user.port.PasswordEncoderPort;
 import com.srv.setebit.dropshipping.domain.user.RefreshToken;
 import com.srv.setebit.dropshipping.domain.user.User;
 import com.srv.setebit.dropshipping.domain.user.exception.InvalidCredentialsException;
+import com.srv.setebit.dropshipping.domain.user.port.BloqueioRepositoryPort;
 import com.srv.setebit.dropshipping.domain.user.port.RefreshTokenRepositoryPort;
+import com.srv.setebit.dropshipping.domain.user.port.TemporaryPasswordRepositoryPort;
 import com.srv.setebit.dropshipping.domain.user.port.UserRepositoryPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,13 +50,22 @@ class LoginUseCaseTest {
     @Mock
     private GetUserPerfisUseCase getUserPerfisUseCase;
 
+    @Mock
+    private BloqueioRepositoryPort bloqueioRepository;
+
+    @Mock
+    private TemporaryPasswordRepositoryPort tempPasswordRepository;
+
+    @Mock
+    private LoginAttemptService loginAttemptService;
+
     @InjectMocks
     private LoginUseCase loginUseCase;
 
     private User user;
     private LoginRequest request;
     private static final PerfilResponse ADMIN_PERFIL = new PerfilResponse(
-            UUID.randomUUID(), "ADMIN", "Administrador", null, null, true, 0, Set.of(), Instant.now(), Instant.now());
+            UUID.randomUUID(), "ADMIN", "Administrador", null, true, 0, Collections.emptySet(), Instant.now(), Instant.now());
 
     @BeforeEach
     void setUp() {
@@ -101,6 +112,7 @@ class LoginUseCaseTest {
     void deve_lancar_excecao_quando_senha_invalida() {
         when(userRepository.findByEmail(any())).thenReturn(Optional.of(user));
         when(passwordEncoder.matches(any(), any())).thenReturn(false);
+        when(tempPasswordRepository.findActiveByUserId(any(UUID.class))).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> loginUseCase.execute(request))
                 .isInstanceOf(InvalidCredentialsException.class);

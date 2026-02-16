@@ -10,19 +10,11 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
-
+public class TemporaryPassword {
     private UUID id;
-    private String email;
+    private UUID userId;
     private String passwordHash;
-    private String name;
-    private String phone;
-    private boolean active;
+    private Instant expiresAt;
+    private boolean used;
     private Instant createdAt;
-    private Instant updatedAt;
-    private int failedLoginAttempts;
-    private boolean locked;
-    private String lockedReason;
-    private Instant lockedAt;
-    private Instant unlockedAt;
 }

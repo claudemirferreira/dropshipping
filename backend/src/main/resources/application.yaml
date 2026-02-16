@@ -25,6 +25,17 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
         default_schema: dropshipping
+  mail:
+    host: smtp.gmail.com
+    port: 8080
+    username: moliveiraferreira247@gmail.com
+    password: ipnpmvuaqbpuuhiu
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 server:
   port: 8080

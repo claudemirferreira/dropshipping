@@ -45,6 +45,8 @@ export class AuthService {
   private userPerfis = signal<Perfil[]>([]);
   loading = signal(false);
   errorMessage = signal<string | null>(null);
+  accountLocked = signal<boolean>(false);
+  lastErrorStatus = signal<number | null>(null);
 
   currentUser = computed(() => this.user());
   currentUserPerfis = computed(() => this.userPerfis());
@@ -66,6 +68,8 @@ export class AuthService {
   login(credentials: LoginRequest): Observable<TokenResponse> {
     this.loading.set(true);
     this.errorMessage.set(null);
+    this.accountLocked.set(false);
+    this.lastErrorStatus.set(null);
     return this.http.post<TokenResponse>(`${this.api}/login`, credentials).pipe(
       tap((res) => {
         this.setTokens(res.accessToken, res.refreshToken);
@@ -86,9 +90,15 @@ export class AuthService {
           });
       }),
       catchError((err) => {
-        this.errorMessage.set(
-          err.error?.message ?? 'E-mail ou senha inválidos. Tente novamente.'
-        );
+        const msg =
+          err.error?.message ?? 'E-mail ou senha inválidos. Tente novamente.';
+        this.errorMessage.set(msg);
+        this.lastErrorStatus.set(err.status ?? null);
+        const lockedByStatus = err.status === 423;
+        const lockedByMessage = /bloquead/i.test(msg) || /invalid[aá]?\s*3/i.test(msg);
+        if (lockedByStatus || lockedByMessage) {
+          this.accountLocked.set(true);
+        }
         return throwError(() => err);
       }),
       finalize(() => this.loading.set(false))
@@ -124,6 +134,22 @@ export class AuthService {
   private setTokens(access: string, refresh: string): void {
     localStorage.setItem(this.accessTokenKey, access);
     localStorage.setItem(this.refreshTokenKey, refresh);
+  }
+
+  forgotPassword(email: string): Observable<void> {
+    this.loading.set(true);
+    this.errorMessage.set(null);
+    return this.http
+      .post<void>(`${this.api}/forgot-password`, { email })
+      .pipe(
+        catchError((err) => {
+          this.errorMessage.set(
+            err.error?.message ?? 'Não foi possível solicitar a senha temporária.'
+          );
+          return throwError(() => err);
+        }),
+        finalize(() => this.loading.set(false))
+      );
   }
 
   private loadStoredUser(): void {

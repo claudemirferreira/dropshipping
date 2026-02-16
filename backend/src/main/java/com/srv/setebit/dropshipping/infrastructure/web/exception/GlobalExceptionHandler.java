@@ -80,6 +80,12 @@ public class GlobalExceptionHandler {
                 new ErrorResponse(Instant.now(), 401, "Unauthorized", ex.getMessage(), null));
     }
 
+    @ExceptionHandler(UserLockedException.class)
+    public ResponseEntity<ErrorResponse> handleUserLocked(UserLockedException ex) {
+        return ResponseEntity.status(HttpStatus.LOCKED).body(
+                new ErrorResponse(Instant.now(), 423, "Locked", ex.getMessage(), null));
+    }
+
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(

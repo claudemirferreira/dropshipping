@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -26,13 +26,17 @@ import { AuthService } from '../../../core/services/auth.service';
       <p-card styleClass="login-card">
         <ng-template pTemplate="header">
           <div class="login-header">
-            <h1>Dropshipping</h1>
+            <img src="/assets/logo-email.jpeg" alt="Logo" class="brand-logo" />
+            <h1>DropSeller</h1>
             <p>Entre com suas credenciais</p>
           </div>
         </ng-template>
 
         @if (errorMessage()) {
           <p-message severity="error" [text]="errorMessage()!" />
+        }
+        @if (infoMessage()) {
+          <p-message severity="info" [text]="infoMessage()!" />
         }
 
         <form [formGroup]="form" (ngSubmit)="onSubmit()" class="login-form">
@@ -74,6 +78,27 @@ import { AuthService } from '../../../core/services/auth.service';
             [disabled]="form.invalid || loading()"
             styleClass="w-full"
           />
+          @if (!locked()) {
+            <p-button
+              type="button"
+              label="Esqueceu a senha?"
+              icon="pi pi-question-circle"
+              [text]="true"
+              [disabled]="loading()"
+              styleClass="w-full"
+              (onClick)="onForgotPassword()"
+            />
+          } @else {
+            <p-button
+              type="button"
+              label="Clique aqui para resolver ou entrar em contato com a equipe"
+              icon="pi pi-lock"
+              [text]="true"
+              [disabled]="loading()"
+              styleClass="w-full"
+              (onClick)="onResolveIssue()"
+            />
+          }
         </form>
       </p-card>
     </div>
@@ -110,6 +135,11 @@ import { AuthService } from '../../../core/services/auth.service';
       .login-header {
         padding: 2rem 2rem 1rem;
         text-align: center;
+        .brand-logo {
+          height: 44px;
+          margin-bottom: 0.5rem;
+          object-fit: contain;
+        }
         h1 {
           margin: 0;
           font-size: 1.75rem;
@@ -143,6 +173,10 @@ import { AuthService } from '../../../core/services/auth.service';
         color: var(--p-red-500, #ef4444);
         font-size: 0.875rem;
       }
+      :host ::ng-deep .p-message .p-message-text {
+        white-space: normal;
+        word-break: break-word;
+      }
 
       :host ::ng-deep .p-password-input {
         width: 100%;
@@ -162,6 +196,8 @@ export class LoginComponent {
 
   loading = this.auth.loading;
   errorMessage = this.auth.errorMessage;
+  infoMessage = signal<string | null>(null);
+  locked = this.auth.accountLocked;
 
   onSubmit(): void {
     if (this.form.invalid) return;
@@ -169,6 +205,16 @@ export class LoginComponent {
     this.auth.login(this.form.getRawValue()).subscribe({
       next: () => this.router.navigate(['/']),
       error: () => {},
+    });
+  }
+
+  onForgotPassword(): void {
+    this.router.navigate(['/forgot-password']);
+  }
+
+  onResolveIssue(): void {
+    this.router.navigate(['/forgot-password'], {
+      queryParams: { reason: 'locked' },
     });
   }
 }
