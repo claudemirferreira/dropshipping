@@ -5,7 +5,7 @@
 #   VPS_HOST        - IP ou hostname da VPS (ex: 187.77.46.9)
 #   VPS_USER        - Usuário SSH (ex: root ou ubuntu)
 #   VPS_SSH_KEY     - Chave privada SSH (conteúdo de ~/.ssh/id_rsa)
-#   VPS_DEPLOY_PATH - (opcional) Caminho do repositório na VPS (default: /home/ubuntu/dev)
+#   VPS_DEPLOY_PATH - (opcional) Caminho do repositório na VPS (default: /root/dev)
 
 name: Deploy na VPS
 
@@ -31,13 +31,23 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
             set -e
-            DEPLOY_PATH="${{ secrets.VPS_DEPLOY_PATH || '/home/ubuntu/dev' }}"
+            DEPLOY_PATH="${{ secrets.VPS_DEPLOY_PATH || '/root/dev' }}"
             cd "$DEPLOY_PATH"
+
+            # Backup .env antes do git (não versionado, bloqueia checkout)
+            if [ -f backend/.env ]; then
+              cp backend/.env /tmp/dropshipping-backend.env
+            fi
 
             echo ">>> Atualizando repositório (branch: ${{ github.ref_name }})..."
             git fetch origin
             git checkout ${{ github.ref_name }}
             git pull origin ${{ github.ref_name }}
+
+            # Restaurar .env
+            if [ -f /tmp/dropshipping-backend.env ]; then
+              cp /tmp/dropshipping-backend.env backend/.env
+            fi
 
             echo ">>> Deploy do backend..."
             cd backend
