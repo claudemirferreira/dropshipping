@@ -27,7 +27,7 @@ class AuthControllerIntegrationTest {
 
     @Test
     void deve_fazer_login_com_admin_e_retornar_tokens() throws Exception {
-        LoginRequest request = new LoginRequest("admin@test.com", "Senha@123");
+        LoginRequest request = new LoginRequest("admin@test.com", "Senha@123", false);
 
         mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -40,7 +40,7 @@ class AuthControllerIntegrationTest {
 
     @Test
     void deve_retornar_401_quando_credenciais_invalidas() throws Exception {
-        LoginRequest request = new LoginRequest("admin@test.com", "SenhaErrada");
+        LoginRequest request = new LoginRequest("admin@test.com", "SenhaErrada", false);
 
         mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)

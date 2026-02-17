@@ -78,7 +78,7 @@ class LoginUseCaseTest {
         user.setCreatedAt(Instant.now());
         user.setUpdatedAt(Instant.now());
 
-        request = new LoginRequest("admin@test.com", "Senha@123");
+        request = new LoginRequest("admin@test.com", "Senha@123", false);
     }
 
     @Test
