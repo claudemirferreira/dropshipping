@@ -1,0 +1,60 @@
+<app-public-header></app-public-header>
+<div class="public-page">
+  <header class="public-header">
+    <h1 class="page-title">Planos</h1>
+    <p class="page-subtitle">
+      Escolha o plano ideal para o estágio atual do seu negócio.
+    </p>
+  </header>
+
+  <section class="plans-grid">
+    <article class="plan-card">
+      <h2 class="plan-name">Grátis</h2>
+      <p class="plan-price">R$ 0<span>/mês</span></p>
+      <p class="plan-tagline">Para começar a testar o sistema.</p>
+      <ul class="plan-features">
+        <li>Até 50 produtos</li>
+        <li>1 integração de vendas</li>
+        <li>Gestão básica de pedidos</li>
+      </ul>
+      <button pButton type="button" label="Começar agora" class="w-full"></button>
+    </article>
+
+    <article class="plan-card plan-card--highlight">
+      <h2 class="plan-name">Profissional</h2>
+      <p class="plan-price">R$ 99,90<span>/mês</span></p>
+      <p class="plan-tagline">Para quem já vende com consistência.</p>
+      <ul class="plan-features">
+        <li>Produtos ilimitados</li>
+        <li>Integrações ilimitadas</li>
+        <li>Gestão de pedidos e estoque em tempo real</li>
+        <li>Atendimento prioritário</li>
+      </ul>
+      <button
+        pButton
+        type="button"
+        label="Assinar plano Profissional"
+        class="w-full"
+      ></button>
+    </article>
+
+    <article class="plan-card">
+      <h2 class="plan-name">Enterprise</h2>
+      <p class="plan-price">Sob consulta</p>
+      <p class="plan-tagline">Para operações de grande volume.</p>
+      <ul class="plan-features">
+        <li>Onboarding dedicado</li>
+        <li>Recursos avançados de integrações</li>
+        <li>Suporte e SLA personalizados</li>
+      </ul>
+      <button
+        pButton
+        type="button"
+        label="Falar com vendas"
+        class="w-full p-button-outlined"
+        routerLink="/contato"
+      ></button>
+    </article>
+  </section>
+</div>
+

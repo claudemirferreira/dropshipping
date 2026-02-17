@@ -46,6 +46,13 @@ app:
   api:
     base-url: ${API_BASE_URL:http://localhost:8080}
 
+oci:
+  object-storage:
+    namespace: ${OCI_OS_NAMESPACE:SEU_NAMESPACE_DO_BUCKET}
+    bucket-name: ${OCI_OS_BUCKET:SEU_BUCKET}
+    region: ${OCI_OS_REGION:sa-saopaulo-1}
+    config-profile: ${OCI_OS_PROFILE:DEFAULT}
+
 # Para ver no console se o Flyway está rodando e quais migrações aplica (opcional)
 logging:
   level:

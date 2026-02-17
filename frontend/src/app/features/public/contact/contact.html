@@ -1,0 +1,63 @@
+<app-public-header></app-public-header>
+<div class="public-page">
+  <header class="public-header">
+    <h1 class="page-title">Contato</h1>
+    <p class="page-subtitle">
+      Fale com nossa equipe para dúvidas, sugestões ou parcerias.
+    </p>
+  </header>
+
+  <section class="contact-content">
+    <div class="contact-info">
+      <h2>Como podemos ajudar?</h2>
+      <p>
+        Envie sua mensagem pelo formulário ao lado e retornaremos o mais breve possível.
+      </p>
+      <ul>
+        <li><strong>E-mail:</strong> suporte@seudominio.com</li>
+        <li><strong>WhatsApp:</strong> (00) 00000-0000</li>
+      </ul>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="contact-form">
+      <div class="form-field">
+        <label for="name">Nome completo</label>
+        <input id="name" pInputText formControlName="name" />
+        @if (form.get('name')?.invalid && form.get('name')?.touched) {
+          <small class="field-error">Informe seu nome.</small>
+        }
+      </div>
+
+      <div class="form-field">
+        <label for="email">E-mail</label>
+        <input id="email" pInputText formControlName="email" />
+        @if (form.get('email')?.invalid && form.get('email')?.touched) {
+          <small class="field-error">Informe um e-mail válido.</small>
+        }
+      </div>
+
+      <div class="form-field">
+        <label for="message">Mensagem</label>
+        <textarea
+          id="message"
+          pInputTextarea
+          rows="5"
+          formControlName="message"
+          placeholder="Descreva como podemos ajudar..."
+        ></textarea>
+        @if (form.get('message')?.invalid && form.get('message')?.touched) {
+          <small class="field-error">A mensagem é obrigatória.</small>
+        }
+      </div>
+
+      <button
+        pButton
+        type="submit"
+        label="Enviar mensagem"
+        class="submit-button"
+        [disabled]="form.invalid"
+      ></button>
+    </form>
+  </section>
+</div>
+

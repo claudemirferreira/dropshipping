@@ -15,6 +15,18 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'planos',
+    loadComponent: () =>
+      import('./features/public/plans/plans').then((m) => m.PlansComponent),
+  },
+  {
+    path: 'contato',
+    loadComponent: () =>
+      import('./features/public/contact/contact').then(
+        (m) => m.ContactComponent,
+      ),
+  },
+  {
     path: '',
     canActivate: [authGuard],
     loadComponent: () =>
