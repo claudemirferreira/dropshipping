@@ -1,0 +1,54 @@
+# CI/CD - Deploy na VPS
+# Dispara em push em main ou feature/deploy e publica backend + frontend na VPS via SSH.
+#
+# Secrets necessários no GitHub (Settings → Secrets and variables → Actions):
+#   VPS_HOST        - IP ou hostname da VPS (ex: 187.77.46.9)
+#   VPS_USER        - Usuário SSH (ex: root ou ubuntu)
+#   VPS_SSH_KEY     - Chave privada SSH (conteúdo de ~/.ssh/id_rsa)
+#   VPS_DEPLOY_PATH - (opcional) Caminho do repositório na VPS (default: /home/ubuntu/dev)
+
+name: Deploy na VPS
+
+on:
+  push:
+    branches:
+      - main
+      - homolog
+      - feature/deploy
+  workflow_dispatch: # Permite disparar manualmente
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy na VPS via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            set -e
+            DEPLOY_PATH="${{ secrets.VPS_DEPLOY_PATH || '/home/ubuntu/dev' }}"
+            cd "$DEPLOY_PATH"
+
+            echo ">>> Atualizando repositório (branch: ${{ github.ref_name }})..."
+            git fetch origin
+            git checkout ${{ github.ref_name }}
+            git pull origin ${{ github.ref_name }}
+
+            echo ">>> Deploy do backend..."
+            cd backend
+            if [ ! -f .env ]; then
+              echo "ERRO: backend/.env não encontrado. Crie o arquivo .env na VPS antes do deploy."
+              exit 1
+            fi
+            docker compose -f docker-compose.prod.yml --env-file .env up -d --build
+
+            echo ">>> Deploy do frontend..."
+            cd "$DEPLOY_PATH/frontend"
+            docker compose up -d --build
+
+            echo ">>> Deploy concluído."
