@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.UUID;
 
@@ -70,8 +71,12 @@ public class AuthController {
 
     @PostMapping("/forgot-password")
     @Operation(summary = "Esqueceu senha", description = "Gera uma senha temporária e envia instruções")
-    public ResponseEntity<Void> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
-        generateTemporaryPasswordUseCase.execute(request);
+    public ResponseEntity<Void> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request, HttpServletRequest httpRequest) {
+        String ip = httpRequest.getHeader("X-Forwarded-For");
+        if (ip == null || ip.isBlank()) {
+            ip = httpRequest.getRemoteAddr();
+        }
+        generateTemporaryPasswordUseCase.execute(request, ip);
         return ResponseEntity.noContent().build();
     }
 

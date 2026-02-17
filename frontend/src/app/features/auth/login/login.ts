@@ -78,17 +78,16 @@ import { AuthService } from '../../../core/services/auth.service';
             [disabled]="form.invalid || loading()"
             styleClass="w-full"
           />
-          @if (!locked()) {
-            <p-button
-              type="button"
-              label="Esqueceu a senha?"
-              icon="pi pi-question-circle"
-              [text]="true"
-              [disabled]="loading()"
-              styleClass="w-full"
-              (onClick)="onForgotPassword()"
-            />
-          } @else {
+          <p-button
+            type="button"
+            label="Esqueceu a senha?"
+            icon="pi pi-question-circle"
+            [text]="true"
+            [disabled]="loading()"
+            styleClass="w-full"
+            (onClick)="onForgotPassword()"
+          />
+          @if (locked()) {
             <p-button
               type="button"
               label="Clique aqui para resolver ou entrar em contato com a equipe"

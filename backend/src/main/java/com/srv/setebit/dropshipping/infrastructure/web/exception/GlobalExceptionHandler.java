@@ -85,6 +85,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.LOCKED).body(
                 new ErrorResponse(Instant.now(), 423, "Locked", ex.getMessage(), null));
     }
+    
+    @ExceptionHandler(RateLimitExceededException.class)
+    public ResponseEntity<ErrorResponse> handleRateLimit(RateLimitExceededException ex) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(
+                new ErrorResponse(Instant.now(), 429, "Too Many Requests", ex.getMessage(), null));
+    }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex) {

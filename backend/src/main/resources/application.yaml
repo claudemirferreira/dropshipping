@@ -56,10 +56,10 @@ jwt:
   access-token-expiration-ms: 1800000
   refresh-token-expiration-ms: 604800000
 
-# auth:
-#   forgot-password-rate-limit-window-minutes: 15
-#   forgot-password-rate-limit-per-email: 5
-#   forgot-password-rate-limit-per-ip: 20
+auth:
+  forgot-password-rate-limit-window-minutes: 15
+  forgot-password-rate-limit-per-email: 5
+  forgot-password-rate-limit-per-ip: 20
 
 springdoc:
   api-docs:
