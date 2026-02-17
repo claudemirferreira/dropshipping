@@ -1,0 +1,26 @@
+# Apenas Postgres para VPS (ou quando só precisa do banco)
+# Uso na VPS: docker compose -f docker-compose.db.yml up -d
+#
+# Opcional: crie .env com DB_PASSWORD=<sua-senha> ou use a senha padrão abaixo.
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: dropshipping-db
+    restart: always
+    environment:
+      POSTGRES_DB: dropshipping
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-Pg7b1tPr0dXk9mN2vL8pQ4wR7jF5zT3}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres} -d dropshipping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

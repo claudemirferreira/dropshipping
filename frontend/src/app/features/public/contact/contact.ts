@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
@@ -14,13 +14,15 @@ import { PublicHeaderComponent } from '../public-header/public-header';
   styleUrl: './contact.scss',
 })
 export class ContactComponent {
-  constructor(private fb: FormBuilder) {}
+  form: FormGroup;
 
-  form = this.fb.nonNullable.group({
-    name: ['', [Validators.required, Validators.maxLength(255)]],
-    email: ['', [Validators.required, Validators.email, Validators.maxLength(255)]],
-    message: ['', [Validators.required, Validators.maxLength(2000)]],
-  });
+  constructor(private fb: FormBuilder) {
+    this.form = this.fb.nonNullable.group({
+      name: ['', [Validators.required, Validators.maxLength(255)]],
+      email: ['', [Validators.required, Validators.email, Validators.maxLength(255)]],
+      message: ['', [Validators.required, Validators.maxLength(2000)]],
+    });
+  }
 
   submit(): void {
     if (this.form.invalid) {
