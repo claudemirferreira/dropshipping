@@ -7,6 +7,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { CardModule } from 'primeng/card';
 import { MessageModule } from 'primeng/message';
+import { CheckboxModule } from 'primeng/checkbox';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
@@ -20,6 +21,7 @@ import { AuthService } from '../../../core/services/auth.service';
     PasswordModule,
     CardModule,
     MessageModule,
+    CheckboxModule,
   ],
   template: `
     <div class="login-container">
@@ -68,6 +70,15 @@ import { AuthService } from '../../../core/services/auth.service';
             @if (form.get('password')?.invalid && form.get('password')?.touched) {
               <small class="error">Senha é obrigatória</small>
             }
+          </div>
+
+          <div class="field field-inline">
+            <p-checkbox
+              inputId="remember"
+              formControlName="rememberMe"
+              [binary]="true"
+            />
+            <label for="remember">Manter conectado</label>
           </div>
 
           <p-button
@@ -167,6 +178,11 @@ import { AuthService } from '../../../core/services/auth.service';
           color: var(--app-text-secondary);
         }
       }
+      .field-inline {
+        flex-direction: row;
+        align-items: center;
+        gap: 0.5rem;
+      }
 
       .error {
         color: var(--p-red-500, #ef4444);
@@ -191,6 +207,7 @@ export class LoginComponent {
   form = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', Validators.required],
+    rememberMe: [false],
   });
 
   loading = this.auth.loading;

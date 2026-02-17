@@ -13,6 +13,9 @@ public record LoginRequest(
 
         @NotBlank(message = "Senha é obrigatória")
         @Schema(description = "Senha do usuário", example = "Senha@123", required = true)
-        String password
+        String password,
+
+        @Schema(description = "Manter conectado (sessão persistente)", example = "true", required = false)
+        Boolean rememberMe
 ) {
 }

@@ -27,6 +27,7 @@ export interface TokenResponse {
 export interface LoginRequest {
   email: string;
   password: string;
+  rememberMe?: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -36,6 +37,8 @@ export class AuthService {
   private readonly refreshTokenKey = 'refresh_token';
   private readonly userKey = 'current_user';
   private readonly userPerfisKey = 'user_perfis';
+  private readonly rememberKey = 'remember_me';
+  private readonly lastActivityKey = 'last_activity';
 
   private http = inject(HttpClient);
   private router = inject(Router);
@@ -54,15 +57,15 @@ export class AuthService {
 
   constructor() {
     this.loadStoredUser();
-    if (this.getAccessToken() && this.user()) {
+    if (this.getAccessToken()) {
       this.usersService.getMyPerfis().subscribe({
         next: (perfis) => this.setUserPerfis(perfis),
         error: () => {
-          // Mantém os perfis do localStorage em caso de falha (ex: token expirado ainda não tratado)
-          // Não limpar para evitar menu vazio até o refresh do token
+          // Mantém os perfis do storage em caso de falha
         },
       });
     }
+    setInterval(() => this.checkIdleTimeout(), 60_000);
   }
 
   login(credentials: LoginRequest): Observable<TokenResponse> {
@@ -72,7 +75,9 @@ export class AuthService {
     this.lastErrorStatus.set(null);
     return this.http.post<TokenResponse>(`${this.api}/login`, credentials).pipe(
       tap((res) => {
-        this.setTokens(res.accessToken, res.refreshToken);
+        const remember = !!credentials.rememberMe;
+        this.setRemember(remember);
+        this.setTokens(res.accessToken, res.refreshToken, remember);
         this.fetchCurrentUser()
           .pipe(
             switchMap((user) =>
@@ -85,9 +90,10 @@ export class AuthService {
           .subscribe({
             next: (user) => {
               this.user.set(user);
-              localStorage.setItem(this.userKey, JSON.stringify(user));
+              this.storage(remember).setItem(this.userKey, JSON.stringify(user));
             },
           });
+        this.touchActivity();
       }),
       catchError((err) => {
         const msg =
@@ -118,22 +124,63 @@ export class AuthService {
     return this.http.get<User>(`${this.api}/me`).pipe(
       tap((user) => {
         this.user.set(user);
-        localStorage.setItem(this.userKey, JSON.stringify(user));
+        this.storage(this.getRemember()).setItem(this.userKey, JSON.stringify(user));
+        this.touchActivity();
       })
     );
   }
 
   getAccessToken(): string | null {
-    return localStorage.getItem(this.accessTokenKey);
+    return sessionStorage.getItem(this.accessTokenKey) ?? localStorage.getItem(this.accessTokenKey);
+  }
+
+  getRefreshToken(): string | null {
+    return sessionStorage.getItem(this.refreshTokenKey) ?? localStorage.getItem(this.refreshTokenKey);
   }
 
   isAuthenticated(): boolean {
     return !!this.getAccessToken();
   }
 
-  private setTokens(access: string, refresh: string): void {
-    localStorage.setItem(this.accessTokenKey, access);
-    localStorage.setItem(this.refreshTokenKey, refresh);
+  setTokens(access: string, refresh: string, remember: boolean): void {
+    const store = this.storage(remember);
+    store.setItem(this.accessTokenKey, access);
+    store.setItem(this.refreshTokenKey, refresh);
+  }
+
+  setRemember(remember: boolean): void {
+    (remember ? localStorage : sessionStorage).setItem(this.rememberKey, String(remember));
+    if (!remember) {
+      localStorage.removeItem(this.accessTokenKey);
+      localStorage.removeItem(this.refreshTokenKey);
+      localStorage.removeItem(this.userKey);
+      localStorage.removeItem(this.userPerfisKey);
+    }
+  }
+
+  getRemember(): boolean {
+    const val = localStorage.getItem(this.rememberKey) ?? sessionStorage.getItem(this.rememberKey);
+    return val === 'true';
+  }
+
+  private storage(remember: boolean): Storage {
+    return remember ? localStorage : sessionStorage;
+  }
+
+  touchActivity(): void {
+    const store = this.storage(this.getRemember());
+    store.setItem(this.lastActivityKey, String(Date.now()));
+  }
+
+  private checkIdleTimeout(): void {
+    const idleMinutes = 30; // configurável: pode vir de environment
+    const store = this.storage(this.getRemember());
+    const last = Number(store.getItem(this.lastActivityKey) ?? '0');
+    if (!last) return;
+    const diffMin = (Date.now() - last) / 60000;
+    if (diffMin > idleMinutes) {
+      this.logout();
+    }
   }
 
   forgotPassword(email: string): Observable<void> {
@@ -153,7 +200,8 @@ export class AuthService {
   }
 
   private loadStoredUser(): void {
-    const stored = localStorage.getItem(this.userKey);
+    const store = this.storage(this.getRemember());
+    const stored = store.getItem(this.userKey);
     if (stored) {
       try {
         this.user.set(JSON.parse(stored));
@@ -161,7 +209,7 @@ export class AuthService {
         this.clearSession();
       }
     }
-    const storedPerfis = localStorage.getItem(this.userPerfisKey);
+    const storedPerfis = store.getItem(this.userPerfisKey);
     if (storedPerfis) {
       try {
         this.userPerfis.set(JSON.parse(storedPerfis));
@@ -173,7 +221,7 @@ export class AuthService {
 
   private setUserPerfis(perfis: Perfil[]): void {
     this.userPerfis.set(perfis);
-    localStorage.setItem(this.userPerfisKey, JSON.stringify(perfis));
+    this.storage(this.getRemember()).setItem(this.userPerfisKey, JSON.stringify(perfis));
   }
 
   private clearSession(): void {
@@ -181,6 +229,12 @@ export class AuthService {
     localStorage.removeItem(this.refreshTokenKey);
     localStorage.removeItem(this.userKey);
     localStorage.removeItem(this.userPerfisKey);
+    sessionStorage.removeItem(this.accessTokenKey);
+    sessionStorage.removeItem(this.refreshTokenKey);
+    sessionStorage.removeItem(this.userKey);
+    sessionStorage.removeItem(this.userPerfisKey);
+    sessionStorage.removeItem(this.rememberKey);
+    localStorage.removeItem(this.rememberKey);
     this.user.set(null);
     this.userPerfis.set([]);
   }
