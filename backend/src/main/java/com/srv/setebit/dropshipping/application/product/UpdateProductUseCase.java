@@ -2,28 +2,22 @@ package com.srv.setebit.dropshipping.application.product;
 
 import com.srv.setebit.dropshipping.application.product.dto.request.UpdateProductRequest;
 import com.srv.setebit.dropshipping.application.product.dto.response.ProductDetailResponse;
-import com.srv.setebit.dropshipping.application.product.dto.response.ProductImageResponse;
 import com.srv.setebit.dropshipping.domain.product.Product;
 import com.srv.setebit.dropshipping.domain.product.exception.DuplicateSlugException;
 import com.srv.setebit.dropshipping.domain.product.exception.ProductNotFoundException;
-import com.srv.setebit.dropshipping.domain.product.port.ProductImageRepositoryPort;
 import com.srv.setebit.dropshipping.domain.product.port.ProductRepositoryPort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
 public class UpdateProductUseCase {
 
     private final ProductRepositoryPort productRepository;
-    private final ProductImageRepositoryPort productImageRepository;
 
-    public UpdateProductUseCase(ProductRepositoryPort productRepository,
-                               ProductImageRepositoryPort productImageRepository) {
+    public UpdateProductUseCase(ProductRepositoryPort productRepository) {
         this.productRepository = productRepository;
-        this.productImageRepository = productImageRepository;
     }
 
     @Transactional
@@ -67,10 +61,6 @@ public class UpdateProductUseCase {
     }
 
     private ProductDetailResponse toDetailResponse(Product product) {
-        List<ProductImageResponse> images = productImageRepository.findByProductIdOrderByPosition(product.getId())
-                .stream()
-                .map(img -> new ProductImageResponse(img.getId(), img.getUrl(), img.getPosition(), img.isMain(), img.getAltText()))
-                .toList();
         return new ProductDetailResponse(
                 product.getId(), product.getSku(), product.getName(), product.getShortDescription(),
                 product.getFullDescription(), product.getSalePrice(), product.getCostPrice(),
@@ -79,7 +69,7 @@ public class UpdateProductUseCase {
                 product.isDropship(), product.getWeight(), product.getLength(), product.getWidth(),
                 product.getHeight(), product.getSlug(), product.getCategoryId(), product.getBrand(),
                 product.getMetaTitle(), product.getMetaDescription(), product.getCompareAtPrice(),
-                product.getStockQuantity(), images, product.getCreatedAt(), product.getUpdatedAt()
+                product.getStockQuantity(), product.getCreatedAt(), product.getUpdatedAt()
         );
     }
 

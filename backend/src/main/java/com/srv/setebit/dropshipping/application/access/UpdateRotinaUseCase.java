@@ -31,7 +31,6 @@ public class UpdateRotinaUseCase {
 
         rotina.setCode(request.code().trim());
         rotina.setName(request.name().trim());
-        rotina.setDescription(request.description() != null ? request.description().trim() : null);
         rotina.setIcon(request.icon() != null ? request.icon().trim() : null);
         rotina.setPath(request.path() != null ? request.path().trim() : null);
         if (request.active() != null) {
@@ -44,7 +43,7 @@ public class UpdateRotinaUseCase {
 
     private RotinaResponse toResponse(Rotina r) {
         return new RotinaResponse(
-                r.getId(), r.getCode(), r.getName(), r.getDescription(),
+                r.getId(), r.getCode(), r.getName(),
                 r.getIcon(), r.getPath(), r.isActive(), r.getDisplayOrder(),
                 r.getCreatedAt(), r.getUpdatedAt()
         );

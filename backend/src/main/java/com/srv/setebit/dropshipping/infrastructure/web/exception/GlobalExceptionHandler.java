@@ -4,7 +4,9 @@ import com.srv.setebit.dropshipping.domain.access.exception.DuplicatePerfilCodeE
 import com.srv.setebit.dropshipping.domain.access.exception.DuplicateRotinaCodeException;
 import com.srv.setebit.dropshipping.domain.access.exception.PerfilNotFoundException;
 import com.srv.setebit.dropshipping.domain.access.exception.RotinaNotFoundException;
-import com.srv.setebit.dropshipping.domain.product.exception.*;
+import com.srv.setebit.dropshipping.domain.product.exception.DuplicateSkuException;
+import com.srv.setebit.dropshipping.domain.product.exception.DuplicateSlugException;
+import com.srv.setebit.dropshipping.domain.product.exception.ProductNotFoundException;
 import com.srv.setebit.dropshipping.domain.user.exception.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,12 +42,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ProductNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleProductNotFound(ProductNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                new ErrorResponse(Instant.now(), 404, "Not Found", ex.getMessage(), null));
-    }
-
-    @ExceptionHandler(ProductImageNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleProductImageNotFound(ProductImageNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 new ErrorResponse(Instant.now(), 404, "Not Found", ex.getMessage(), null));
     }

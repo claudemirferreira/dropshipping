@@ -5,10 +5,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
 
-@Schema(description = "Dados completos do produto (inclui imagens)")
+@Schema(description = "Dados completos do produto")
 public record ProductDetailResponse(
         @Schema(description = "ID do produto")
         UUID id,
@@ -84,9 +83,6 @@ public record ProductDetailResponse(
 
         @Schema(description = "Quantidade em estoque")
         Integer stockQuantity,
-
-        @Schema(description = "Imagens do produto")
-        List<ProductImageResponse> images,
 
         @Schema(description = "Data de criação")
         Instant createdAt,

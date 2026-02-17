@@ -70,7 +70,6 @@ public class RotinaRepositoryAdapter implements RotinaRepositoryPort {
         e.setId(r.getId());
         e.setCode(r.getCode());
         e.setName(r.getName());
-        e.setDescription(r.getDescription());
         e.setIcon(r.getIcon());
         e.setPath(r.getPath());
         e.setActive(r.isActive());
@@ -82,7 +81,7 @@ public class RotinaRepositoryAdapter implements RotinaRepositoryPort {
 
     private Rotina toDomain(RotinaEntity e) {
         return new Rotina(
-                e.getId(), e.getCode(), e.getName(), e.getDescription(),
+                e.getId(), e.getCode(), e.getName(),
                 e.getIcon(), e.getPath(), e.isActive(),
                 e.getDisplayOrder(),
                 e.getCreatedAt(), e.getUpdatedAt()

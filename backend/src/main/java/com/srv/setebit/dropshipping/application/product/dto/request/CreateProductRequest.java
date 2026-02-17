@@ -109,9 +109,7 @@ public record CreateProductRequest(
 
         @Min(0)
         @Schema(description = "Quantidade em estoque")
-        Integer stockQuantity,
+        Integer stockQuantity
 
-        @Schema(description = "Imagens do produto")
-        List<CreateProductImageRequest> images
 ) {
 }

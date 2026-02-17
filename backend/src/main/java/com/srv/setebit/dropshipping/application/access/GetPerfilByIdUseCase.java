@@ -41,7 +41,7 @@ public class GetPerfilByIdUseCase {
 
     private RotinaResponse toRotinaResponse(Rotina r) {
         return new RotinaResponse(
-                r.getId(), r.getCode(), r.getName(), r.getDescription(),
+                r.getId(), r.getCode(), r.getName(),
                 r.getIcon(), r.getPath(), r.isActive(), r.getDisplayOrder(),
                 r.getCreatedAt(), r.getUpdatedAt()
         );

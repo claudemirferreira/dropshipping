@@ -66,7 +66,7 @@ public class CreatePerfilUseCase {
 
     private com.srv.setebit.dropshipping.application.access.dto.response.RotinaResponse toRotinaResponse(Rotina r) {
         return new com.srv.setebit.dropshipping.application.access.dto.response.RotinaResponse(
-                r.getId(), r.getCode(), r.getName(), r.getDescription(),
+                r.getId(), r.getCode(), r.getName(),
                 r.getIcon(), r.getPath(), r.isActive(), r.getDisplayOrder(),
                 r.getCreatedAt(), r.getUpdatedAt()
         );

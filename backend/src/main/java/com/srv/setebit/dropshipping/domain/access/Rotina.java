@@ -15,7 +15,6 @@ public class Rotina {
     private UUID id;
     private String code;
     private String name;
-    private String description;
     private String icon;
     private String path;
     private boolean active;

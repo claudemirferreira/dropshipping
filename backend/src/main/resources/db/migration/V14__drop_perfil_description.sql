@@ -1,1 +1,0 @@
-ALTER TABLE perfil DROP COLUMN IF EXISTS description;
