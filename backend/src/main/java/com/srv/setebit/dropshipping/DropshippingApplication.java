@@ -6,7 +6,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
-//@EntityScan(basePackages = "com.srv.setebit.dropshipping.infrastructure.persistence.jpa")
 @EnableJpaRepositories(basePackages = "com.srv.setebit.dropshipping.infrastructure.persistence.jpa",
         entityManagerFactoryRef = "entityManagerFactory")
 public class DropshippingApplication {
