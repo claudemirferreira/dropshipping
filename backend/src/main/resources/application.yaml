@@ -28,8 +28,11 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 8080
-    username: moliveiraferreira247@gmail.com
-    password: ipnpmvuaqbpuuhiu
+    username: ${MAIL_FROM:moliveiraferreira247@gmail.com}
+    password: ${MAIL_PASSWORD:ipnpmvuaqbpuuhiu}
+    recipient: ${MAIL_FIXED_RECIPIENT:moliveiraferreira247@gmail.com}
+    base-url: ${APP_BASE_URL:http://localhost:8080}
+    logo-path: ${APP_EMAIL_LOGO_PATH:d:\\Dropshipping\\dropshipping\\frontend\\public\\assets\\logo-email.jpeg}
     properties:
       mail:
         smtp:

@@ -23,10 +23,10 @@ public class GmailEmailSenderAdapter implements EmailSenderPort {
 
   public GmailEmailSenderAdapter(
       JavaMailSender mailSender,
-      @Value("${MAIL_FROM}") String from,
-      @Value("${MAIL_FIXED_RECIPIENT}") String fixedRecipient,
-      @Value("${APP_BASE_URL:http://localhost:8080}") String baseUrl,
-      @Value("${APP_EMAIL_LOGO_PATH:d:\\Dropshipping\\dropshipping\\frontend\\public\\assets\\logo-email.jpeg}") String logoPath) {
+      @Value("${spring.mail.username}") String from,
+      @Value("${spring.mail.recipient}") String fixedRecipient,
+      @Value("${spring.mail.base-url}") String baseUrl,
+      @Value("${spring.mail.logo-path}") String logoPath) {
     this.mailSender = mailSender;
     this.from = from;
     this.fixedRecipient = fixedRecipient;
