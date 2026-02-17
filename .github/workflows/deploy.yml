@@ -45,6 +45,10 @@ jobs:
               exit 1
             fi
 
+            echo ">>> Parando containers antigos..."
+            docker compose --env-file "$ENV_FILE" down 2>/dev/null || true
+            docker rm -f dropshipping-frontend dropshipping-app dropshipping-db 2>/dev/null || true
+
             echo ">>> Deploy (Postgres + Backend + Frontend)..."
             export ENV_FILE="$ENV_FILE"
             docker compose --env-file "$ENV_FILE" up -d --build
