@@ -89,7 +89,7 @@ tar -xzvf frontend.tar.gz
 Deve aparecer a pasta **`frontend`**. Confira:
 
 ```bash
-ls -la frontend/Dockerfile frontend/nginx.conf frontend/docker-compose.yml
+ls -la frontend/Dockerfile frontend/nginx.conf frontend/nginx.docker.conf
 ```
 
 ---
@@ -109,11 +109,11 @@ ufw status
 
 ### Passo 2.4 – Postgres (Docker)
 
-Se o banco ainda não estiver rodando, use o compose só do banco. Na pasta onde está o `docker-compose.db.yml` (por exemplo `/home/ubuntu/dev`):
+Se precisar só do banco (ex.: backend roda local na máquina):
 
 ```bash
-cd /home/ubuntu/dev
-docker compose -f docker-compose.db.yml up -d
+cd /root/dev
+docker compose up postgres -d
 ```
 
 Verifique:

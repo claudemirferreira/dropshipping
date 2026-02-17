@@ -1,11 +1,10 @@
 # CI/CD - Deploy na VPS
-# Dispara em push em main ou feature/deploy e publica backend + frontend na VPS via SSH.
+# Dispara em push em main, homolog ou feature/deploy.
 #
-# Secrets necessários no GitHub (Settings → Secrets and variables → Actions):
-#   VPS_HOST        - IP ou hostname da VPS (ex: 187.77.46.9)
-#   VPS_USER        - Usuário SSH (ex: root ou ubuntu)
-#   VPS_SSH_KEY     - Chave privada SSH (conteúdo de ~/.ssh/id_rsa)
-#   VPS_DEPLOY_PATH - (opcional) Caminho do repositório na VPS (default: /root/dev)
+# Secrets: VPS_HOST, VPS_USER, VPS_SSH_KEY
+# Opcional: VPS_DEPLOY_PATH (default: /root/dev), VPS_ENV_FILE (default: /root/dropshipping.env)
+#
+# Pré-requisito na VPS: criar /root/dropshipping.env com DB_PASSWORD, JWT_SECRET, etc.
 
 name: Deploy na VPS
 
@@ -15,7 +14,7 @@ on:
       - main
       - homolog
       - feature/deploy
-  workflow_dispatch: # Permite disparar manualmente
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -32,33 +31,22 @@ jobs:
           script: |
             set -e
             DEPLOY_PATH="${{ secrets.VPS_DEPLOY_PATH || '/root/dev' }}"
-            cd "$DEPLOY_PATH"
+            ENV_FILE="${{ secrets.VPS_ENV_FILE || '/root/dropshipping.env' }}"
 
-            # Backup .env antes do git (não versionado, bloqueia checkout)
-            if [ -f backend/.env ]; then
-              cp backend/.env /tmp/dropshipping-backend.env
-            fi
+            cd "$DEPLOY_PATH"
 
             echo ">>> Atualizando repositório (branch: ${{ github.ref_name }})..."
             git fetch origin
-            git checkout ${{ github.ref_name }}
+            git checkout -f ${{ github.ref_name }}
             git pull origin ${{ github.ref_name }}
 
-            # Restaurar .env
-            if [ -f /tmp/dropshipping-backend.env ]; then
-              cp /tmp/dropshipping-backend.env backend/.env
-            fi
-
-            echo ">>> Deploy do backend..."
-            cd backend
-            if [ ! -f .env ]; then
-              echo "ERRO: backend/.env não encontrado. Crie o arquivo .env na VPS antes do deploy."
+            if [ ! -f "$ENV_FILE" ]; then
+              echo "ERRO: $ENV_FILE não encontrado. Crie o arquivo na VPS antes do deploy."
               exit 1
             fi
-            docker compose -f docker-compose.prod.yml --env-file .env up -d --build
 
-            echo ">>> Deploy do frontend..."
-            cd "$DEPLOY_PATH/frontend"
-            docker compose up -d --build
+            echo ">>> Deploy (Postgres + Backend + Frontend)..."
+            export ENV_FILE="$ENV_FILE"
+            docker compose --env-file "$ENV_FILE" up -d --build
 
             echo ">>> Deploy concluído."

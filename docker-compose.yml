@@ -1,17 +1,21 @@
-# Docker Compose para PRODUÇÃO
-# Uso: docker compose -f docker-compose.prod.yml --env-file .env up -d
+# Docker Compose unificado
 #
-# Senha padrão do banco (redefinida para produção). Para trocar, defina DB_PASSWORD no .env.
+# Dev (só Postgres, backend roda local):
+#   docker compose up postgres -d
+#
+# Prod (tudo):
+#   export ENV_FILE=/root/dropshipping.env
+#   docker compose --env-file $ENV_FILE up -d --build
 
 services:
   postgres:
     image: postgres:17-alpine
     container_name: dropshipping-db
-    restart: always
+    restart: unless-stopped
     environment:
       POSTGRES_DB: dropshipping
       POSTGRES_USER: ${DB_USERNAME:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-Pg7b1tPr0dXk9mN2vL8pQ4wR7jF5zT3}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
     ports:
       - "5432:5432"
     volumes:
@@ -22,11 +26,11 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - backend
+      - app
 
   app:
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
     container_name: dropshipping-app
     restart: always
@@ -34,19 +38,30 @@ services:
       postgres:
         condition: service_healthy
     env_file:
-      - .env
+      - ${ENV_FILE:-backend/.env}
     environment:
-      DB_USERNAME: ${DB_USERNAME:-postgres}
-      DB_PASSWORD: ${DB_PASSWORD:-Pg7b1tPr0dXk9mN2vL8pQ4wR7jF5zT3}
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/dropshipping?currentSchema=dropshipping
-    ports:
-      - "8080:8080"
     networks:
-      - backend
+      - app
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NGINX_CONFIG: nginx.docker.conf
+    container_name: dropshipping-frontend
+    restart: always
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+    networks:
+      - app
 
 volumes:
   postgres_data:
 
 networks:
-  backend:
+  app:
     driver: bridge

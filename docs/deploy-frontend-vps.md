@@ -9,7 +9,7 @@ Guia para publicar o frontend Angular na VPS (ex.: Hostinger), com Docker e Ngin
 - Backend já rodando na VPS na porta **8080** (ex.: `java -jar` ou serviço).
 - **Docker** e **Docker Compose** instalados na VPS.
 - Acesso SSH à VPS (ex.: `ssh root@187.77.46.9`).
-- Na sua máquina: projeto do repositório (pasta `frontend` com `Dockerfile`, `nginx.conf`, `docker-compose.yml`).
+- Na sua máquina: projeto do repositório (raiz com `docker-compose.yml`, pasta `frontend` com `Dockerfile` e `nginx.docker.conf`).
 
 ---
 
@@ -57,7 +57,7 @@ cd frontend
 Confira se existem os arquivos necessários:
 
 ```bash
-ls -la Dockerfile nginx.conf docker-compose.yml package.json
+ls -la Dockerfile nginx.conf nginx.docker.conf package.json
 ```
 
 Todos devem aparecer na listagem.

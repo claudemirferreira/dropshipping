@@ -12,8 +12,8 @@ Sistema de vendas com controle de produtos, vendas, usuários e comissão de ven
 ## Execução local
 
 ```bash
-# 1. Subir o banco PostgreSQL
-docker compose up -d
+# 1. Subir o banco PostgreSQL (a partir da raiz do projeto)
+docker compose up postgres -d
 
 # 2. Aguardar o banco estar pronto (healthcheck)
 

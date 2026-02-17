@@ -9,21 +9,22 @@ Guia para configurar o deploy automático na VPS via GitHub Actions.
 1. Dispara em **push nas branches `main`, `homolog` ou `feature/deploy`** (ou manualmente)
 2. Conecta na VPS via **SSH**
 3. Atualiza o repositório (`git pull` na branch que disparou)
-4. Faz **build e deploy** do backend (Docker Compose)
-5. Faz **build e deploy** do frontend (Docker Compose)
+4. Faz **build e deploy** completo: Postgres + Backend + Frontend (um único `docker compose`)
 
 ---
 
 ## Pré-requisitos na VPS
 
-1. **Repositório clonado** no caminho desejado (ex: `/home/ubuntu/dev`)
+1. **Repositório clonado** (ex: `/root/dev`)
    ```bash
-   git clone https://github.com/SEU_USER/SEU_REPO.git /home/ubuntu/dev
+   mkdir -p /root/dev
+   cd /root/dev
+   git clone https://github.com/claudemirferreira/dropshipping.git .
    ```
 
 2. **Docker e Docker Compose** instalados
 
-3. **Arquivo `.env`** em `backend/.env` com as variáveis de produção:
+3. **Arquivo de variáveis** em `/root/dropshipping.env` (fora do repositório):
    - `DB_USERNAME`, `DB_PASSWORD`
    - `JWT_SECRET`
    - `MAIL_FROM`, `MAIL_PASSWORD`, etc.
@@ -42,9 +43,10 @@ Em **Settings → Secrets and variables → Actions**, crie:
 | Secret | Obrigatório | Descrição |
 |--------|-------------|-----------|
 | `VPS_HOST` | Sim | IP ou hostname da VPS (ex: `187.77.46.9`) |
-| `VPS_USER` | Sim | Usuário SSH (ex: `root` ou `ubuntu`) |
-| `VPS_SSH_KEY` | Sim | Conteúdo da chave privada SSH (`cat ~/.ssh/id_rsa`) |
-| `VPS_DEPLOY_PATH` | Não | Caminho do repo na VPS (default: `/home/ubuntu/dev`) |
+| `VPS_USER` | Sim | Usuário SSH (ex: `root`) |
+| `VPS_SSH_KEY` | Sim | Conteúdo da chave privada SSH (`cat ~/.ssh/id_ed25519`) |
+| `VPS_DEPLOY_PATH` | Não | Caminho do repo na VPS (default: `/root/dev`) |
+| `VPS_ENV_FILE` | Não | Caminho do .env (default: `/root/dropshipping.env`) |
 
 ### Como obter o conteúdo da chave SSH
 
@@ -74,19 +76,34 @@ E use o conteúdo de `~/.ssh/github_actions` no secret.
 
 ## Primeiro deploy manual na VPS
 
-Antes do CI/CD funcionar, faça **uma vez** manualmente na VPS:
+Antes do CI/CD funcionar, faça **uma vez** na VPS:
 
 ```bash
-cd /home/ubuntu/dev
-# Crie backend/.env com as variáveis de produção
-cd backend
-docker compose -f docker-compose.prod.yml --env-file .env up -d --build
+# 1. Clone o repo
+mkdir -p /root/dev && cd /root/dev
+git clone https://github.com/claudemirferreira/dropshipping.git .
 
-cd ../frontend
-docker compose up -d --build
+# 2. Crie o arquivo de variáveis (fora do repo)
+nano /root/dropshipping.env
+# Cole DB_PASSWORD, JWT_SECRET, MAIL_*, etc.
+
+# 3. Suba tudo
+export ENV_FILE=/root/dropshipping.env && docker compose --env-file $ENV_FILE up -d --build
 ```
 
-Confirme que tudo sobe corretamente. Depois, o GitHub Actions repetirá esse processo em cada push na `main`.
+---
+
+## Migração da estrutura antiga
+
+Se você já tinha `backend/.env` na VPS:
+
+```bash
+# Copiar .env para fora do repo
+cp /root/dev/backend/.env /root/dropshipping.env
+
+# Parar containers antigos (se existirem)
+docker stop dropshipping-frontend dropshipping-app dropshipping-db 2>/dev/null || true
+```
 
 ---
 
@@ -99,17 +116,13 @@ Em **Actions → Deploy na VPS → Run workflow**, você pode disparar o deploy 
 ## Estrutura esperada na VPS
 
 ```
-/home/ubuntu/dev/          (ou VPS_DEPLOY_PATH)
-├── backend/
-│   ├── .env               ← criar manualmente
-│   ├── docker-compose.prod.yml
-│   ├── Dockerfile
-│   └── ...
-├── frontend/
-│   ├── docker-compose.yml
-│   ├── Dockerfile
-│   └── ...
-└── ...
+/root/
+├── dropshipping.env       ← variáveis (fora do repo)
+└── dev/                   (repositório)
+    ├── docker-compose.yml
+    ├── backend/
+    ├── frontend/
+    └── ...
 ```
 
 ---
@@ -119,6 +132,6 @@ Em **Actions → Deploy na VPS → Run workflow**, você pode disparar o deploy 
 | Erro | Solução |
 |------|---------|
 | `Permission denied (publickey)` | Verifique `VPS_SSH_KEY` e se a chave pública está em `~/.ssh/authorized_keys` na VPS |
-| `backend/.env não encontrado` | Crie o arquivo `.env` em `backend/` na VPS |
+| `.env não encontrado` | Crie o arquivo `/root/dropshipping.env` na VPS |
 | `git pull` falha | Confirme que o repo na VPS tem acesso ao GitHub (HTTPS ou SSH com chave deploy) |
 | Porta 80 ou 8080 em uso | Pare serviços conflitantes ou ajuste as portas no compose |
