@@ -41,6 +41,9 @@ services:
       - ${ENV_FILE:-backend/.env}
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/dropshipping?currentSchema=dropshipping
+      OCI_OBJECT_STORAGE_ENABLED: ${OCI_OBJECT_STORAGE_ENABLED:-false}
+    volumes:
+      - app_uploads:/app/uploads
     networks:
       - app
 
@@ -61,6 +64,7 @@ services:
 
 volumes:
   postgres_data:
+  app_uploads:
 
 networks:
   app:

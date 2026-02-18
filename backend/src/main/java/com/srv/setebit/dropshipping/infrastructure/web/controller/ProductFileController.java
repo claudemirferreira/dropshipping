@@ -5,8 +5,8 @@ import com.srv.setebit.dropshipping.domain.product.ProductFile;
 import com.srv.setebit.dropshipping.domain.product.ProductFileType;
 import com.srv.setebit.dropshipping.domain.product.exception.ProductNotFoundException;
 import com.srv.setebit.dropshipping.domain.product.port.ProductFileRepositoryPort;
+import com.srv.setebit.dropshipping.domain.product.port.ProductFileStoragePort;
 import com.srv.setebit.dropshipping.domain.product.port.ProductRepositoryPort;
-import com.srv.setebit.dropshipping.infrastructure.storage.ProductFileStorageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
@@ -28,11 +28,11 @@ public class ProductFileController {
 
     private final ProductRepositoryPort productRepository;
     private final ProductFileRepositoryPort productFileRepository;
-    private final ProductFileStorageService storageService;
+    private final ProductFileStoragePort storageService;
 
     public ProductFileController(ProductRepositoryPort productRepository,
                                  ProductFileRepositoryPort productFileRepository,
-                                 ProductFileStorageService storageService) {
+                                 ProductFileStoragePort storageService) {
         this.productRepository = productRepository;
         this.productFileRepository = productFileRepository;
         this.storageService = storageService;

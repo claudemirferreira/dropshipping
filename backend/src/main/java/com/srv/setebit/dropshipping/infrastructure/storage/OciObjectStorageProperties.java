@@ -1,9 +1,11 @@
 package com.srv.setebit.dropshipping.infrastructure.storage;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@ConditionalOnProperty(name = "oci.object-storage.enabled", havingValue = "true")
 @ConfigurationProperties(prefix = "oci.object-storage")
 public class OciObjectStorageProperties {
 
