@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
         entityManagerFactoryRef = "entityManagerFactory")
 public class DropshippingApplication {
 
+	
 	public static void main(String[] args) {
 		SpringApplication.run(DropshippingApplication.class, args);
 	}
