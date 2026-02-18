@@ -1,0 +1,73 @@
+# Docker Compose unificado
+#
+# Dev (só Postgres, backend roda local):
+#   docker compose up postgres -d
+#
+# Prod (tudo):
+#   export ENV_FILE=/root/dropshipping.env
+#   docker compose --env-file $ENV_FILE up -d --build
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: dropshipping-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: dropshipping
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres} -d dropshipping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app
+
+  app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: dropshipping-app
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - ${ENV_FILE:-backend/.env}
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/dropshipping?currentSchema=dropshipping
+      OCI_OBJECT_STORAGE_ENABLED: ${OCI_OBJECT_STORAGE_ENABLED:-false}
+    volumes:
+      - app_uploads:/app/uploads
+    ports:
+      - "8080:8080"
+    networks:
+      - app
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NGINX_CONFIG: nginx.docker.conf
+    container_name: dropshipping-frontend
+    restart: always
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+    networks:
+      - app
+
+volumes:
+  postgres_data:
+  app_uploads:
+
+networks:
+  app:
+    driver: bridge

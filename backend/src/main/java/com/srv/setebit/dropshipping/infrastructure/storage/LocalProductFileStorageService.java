@@ -1,11 +1,10 @@
 package com.srv.setebit.dropshipping.infrastructure.storage;
 
-import com.oracle.bmc.objectstorage.ObjectStorage;
-import com.oracle.bmc.objectstorage.requests.PutObjectRequest;
 import com.srv.setebit.dropshipping.domain.product.ProductFile;
 import com.srv.setebit.dropshipping.domain.product.ProductFileType;
 import com.srv.setebit.dropshipping.domain.product.port.ProductFileRepositoryPort;
 import com.srv.setebit.dropshipping.domain.product.port.ProductFileStoragePort;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -14,22 +13,21 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.util.UUID;
 
 @Service
-@ConditionalOnProperty(name = "oci.object-storage.enabled", havingValue = "true")
-public class ProductFileStorageService implements ProductFileStoragePort {
+@ConditionalOnProperty(name = "oci.object-storage.enabled", havingValue = "false", matchIfMissing = true)
+public class LocalProductFileStorageService implements ProductFileStoragePort {
 
-    private final ObjectStorage objectStorage;
-    private final OciObjectStorageProperties properties;
+    private final Path uploadDir;
     private final ProductFileRepositoryPort productFileRepository;
 
-    public ProductFileStorageService(ObjectStorage objectStorage,
-                                     OciObjectStorageProperties properties,
-                                     ProductFileRepositoryPort productFileRepository) {
-        this.objectStorage = objectStorage;
-        this.properties = properties;
+    public LocalProductFileStorageService(@Value("${app.upload.dir:uploads}") String uploadDirPath,
+                                         ProductFileRepositoryPort productFileRepository) {
+        this.uploadDir = Path.of(uploadDirPath).toAbsolutePath().normalize();
         this.productFileRepository = productFileRepository;
     }
 
@@ -44,18 +42,16 @@ public class ProductFileStorageService implements ProductFileStoragePort {
         String prefix = type == ProductFileType.IMAGE ? "imagem" : "video";
         String extension = guessExtension(contentType, file);
         String objectName = prefix + "/" + productId + "/" + UUID.randomUUID() + extension;
+        Path targetFile = uploadDir.resolve(objectName);
+
+        try {
+            Files.createDirectories(targetFile.getParent());
+        } catch (IOException e) {
+            throw new IOException("Não foi possível criar o diretório de upload", e);
+        }
 
         try (InputStream in = file.getInputStream()) {
-            PutObjectRequest request = PutObjectRequest.builder()
-                    .bucketName(properties.getBucketName())
-                    .namespaceName(properties.getNamespace())
-                    .objectName(objectName)
-                    .contentType(contentType)
-                    .contentLength(file.getSize())
-                    .putObjectBody(in)
-                    .build();
-
-            objectStorage.putObject(request);
+            Files.copy(in, targetFile);
         }
 
         ProductFile productFile = new ProductFile();
@@ -98,4 +94,3 @@ public class ProductFileStorageService implements ProductFileStoragePort {
         return "";
     }
 }
-
