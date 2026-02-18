@@ -44,6 +44,8 @@ services:
       OCI_OBJECT_STORAGE_ENABLED: ${OCI_OBJECT_STORAGE_ENABLED:-false}
     volumes:
       - app_uploads:/app/uploads
+    ports:
+      - "8080:8080"
     networks:
       - app
 
