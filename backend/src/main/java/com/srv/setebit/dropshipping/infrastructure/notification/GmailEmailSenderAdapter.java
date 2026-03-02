@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Profile;
 import jakarta.mail.internet.MimeMessage;
 import java.io.File;
 
+
 @Component
 @Profile("!test")
 public class GmailEmailSenderAdapter implements EmailSenderPort {
