@@ -1,5 +1,7 @@
 -- V1__create_schema.sql
 -- Criação completa do schema lógico da aplicação (tabelas + índices + FKs)
+-- Cria o schema para garantir que exista (ex.: banco recriado na VPS)
+CREATE SCHEMA IF NOT EXISTS dropshipping;
 
 CREATE TABLE users (
     id UUID PRIMARY KEY,

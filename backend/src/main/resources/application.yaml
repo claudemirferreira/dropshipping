@@ -2,8 +2,8 @@ spring:
   application:
     name: dropshipping
   datasource:
-    # Banco postgres + schema dropshipping (onde você está olhando no DBeaver)
-    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=dropshipping
+    # Banco postgres + schema dropshipping. Em produção com banco externo (ex.: Hostinger) defina DB_HOST, DB_PORT, DB_NAME no .env
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:postgres}?currentSchema=dropshipping
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
@@ -12,9 +12,10 @@ spring:
   flyway:
     enabled: true
     baseline-on-migrate: true
+    create-schemas: true
     locations: classpath:db/migration
     validate-on-migrate: true
-    # Cria as tabelas no schema dropshipping (postgres → dropshipping)
+    # Schema onde rodam as migrations (criado automaticamente se não existir)
     schemas: dropshipping
   jpa:
     hibernate:
