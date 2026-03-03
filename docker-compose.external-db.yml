@@ -1,0 +1,7 @@
+# Override para deploy com banco externo (ex.: PostgreSQL do painel Hostinger).
+# Uso: docker compose -f docker-compose.yml -f docker-compose.external-db.yml --env-file .env up -d --build app frontend
+# No .env defina DB_HOST, DB_PORT, DB_NAME, DB_USERNAME, DB_PASSWORD.
+
+services:
+  app:
+    depends_on: []
