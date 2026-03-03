@@ -1,0 +1,117 @@
+# CI + Deploy na VPS (Hostinger ou outra)
+# Ver docs/CI-CD-SETUP.md para secrets e pré-requisitos.
+
+name: CI e Deploy na VPS
+
+on:
+  push:
+    branches:
+      - main
+      - homolog
+      - feature/deploy
+  workflow_dispatch:
+    inputs:
+      skip_ci:
+        description: 'Pular build/test e ir direto ao deploy (apenas se confiar no código)'
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  JAVA_VERSION: '25'
+  NODE_VERSION: '20'
+
+jobs:
+  ci:
+    name: Build e Testes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pular CI (deploy direto)
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.skip_ci == 'true'
+        run: echo "Executando apenas deploy (skip_ci=true)"
+
+      - name: Checkout
+        if: github.event_name != 'workflow_dispatch' || github.event.inputs.skip_ci != 'true'
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        if: github.event_name != 'workflow_dispatch' || github.event.inputs.skip_ci != 'true'
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: 'maven'
+
+      - name: Build e testes (backend)
+        if: github.event_name != 'workflow_dispatch' || github.event.inputs.skip_ci != 'true'
+        run: ./mvnw verify -B -q
+        working-directory: backend
+
+      - name: Set up Node
+        if: github.event_name != 'workflow_dispatch' || github.event.inputs.skip_ci != 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Instalar dependências (frontend)
+        if: github.event_name != 'workflow_dispatch' || github.event.inputs.skip_ci != 'true'
+        run: npm ci
+        working-directory: frontend
+
+      - name: Build (frontend)
+        if: github.event_name != 'workflow_dispatch' || github.event.inputs.skip_ci != 'true'
+        run: npm run build
+        working-directory: frontend
+        env:
+          NODE_ENV: production
+
+  deploy:
+    name: Deploy na VPS
+    runs-on: ubuntu-latest
+    needs: ci
+    timeout-minutes: 15
+    steps:
+      - name: Deploy na VPS via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script_timeout: 10m
+          script: |
+            set -e
+            DEPLOY_PATH="${{ secrets.VPS_DEPLOY_PATH }}"
+            [ -z "$DEPLOY_PATH" ] && DEPLOY_PATH="/root/dev"
+            ENV_FILE="${{ secrets.VPS_ENV_FILE }}"
+            [ -z "$ENV_FILE" ] && ENV_FILE="/root/dropshipping.env"
+            USE_EXTERNAL_DB="${{ secrets.VPS_USE_EXTERNAL_DB }}"
+
+            cd "$DEPLOY_PATH"
+            git pull
+
+            export ENV_FILE="$ENV_FILE"
+
+            if [ "$USE_EXTERNAL_DB" = "true" ]; then
+              echo "Deploy com banco externo (apenas app + frontend)"
+              docker compose -f docker-compose.yml -f docker-compose.external-db.yml --env-file "$ENV_FILE" up -d --build app frontend
+            else
+              echo "Deploy completo (postgres + app + frontend)"
+              docker compose --env-file "$ENV_FILE" up -d --build
+            fi
+
+            echo "Aguardando aplicação subir..."
+            sleep 15
+
+            if docker compose --env-file "$ENV_FILE" ps --status running | grep -q dropshipping-app; then
+              if curl -sf http://localhost:8080/actuator/health > /dev/null; then
+                echo "Backend health check OK"
+              else
+                echo "Aviso: backend pode ainda estar iniciando ou health check falhou"
+              fi
+            fi
