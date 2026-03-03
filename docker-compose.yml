@@ -40,10 +40,7 @@ services:
     env_file:
       - ${ENV_FILE:-backend/.env}
     environment:
-      # Com banco no compose use defaults; com banco externo defina DB_* no ENV_FILE
-      DB_HOST: ${DB_HOST:-postgres}
-      DB_PORT: ${DB_PORT:-5432}
-      DB_NAME: ${DB_NAME:-dropshipping}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/dropshipping?currentSchema=dropshipping
       OCI_OBJECT_STORAGE_ENABLED: ${OCI_OBJECT_STORAGE_ENABLED:-false}
     volumes:
       - app_uploads:/app/uploads
