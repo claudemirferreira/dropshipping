@@ -77,6 +77,13 @@ jobs:
     needs: ci
     timeout-minutes: 15
     steps:
+      - name: Info do deploy (para conferir nos logs)
+        run: |
+          echo "=========================================="
+          echo "DEPLOY: branch=${{ github.ref_name }} commit=${{ github.sha }}"
+          echo "Trigger: ${{ github.event_name }}"
+          echo "=========================================="
+
       - name: Deploy na VPS via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -92,8 +99,16 @@ jobs:
             [ -z "$ENV_FILE" ] && ENV_FILE="/root/dropshipping.env"
             USE_EXTERNAL_DB="${{ secrets.VPS_USE_EXTERNAL_DB }}"
 
-            cd "$DEPLOY_PATH"
-            git pull
+            echo "========== INÍCIO DO DEPLOY NA VPS =========="
+            echo "Path: $DEPLOY_PATH | ENV: $ENV_FILE | External DB: $USE_EXTERNAL_DB"
+            echo "Branch/commit que será puxado: ${{ github.ref_name }} / ${{ github.sha }}"
+
+            cd "$DEPLOY_PATH" || { echo "ERRO: diretório $DEPLOY_PATH não existe"; exit 1; }
+            git fetch origin
+            git checkout ${{ github.ref_name }} 2>/dev/null || git checkout -b ${{ github.ref_name }} origin/${{ github.ref_name }}
+            git pull origin ${{ github.ref_name }}
+
+            echo "Commit atual no servidor após pull: $(git rev-parse HEAD)"
 
             export ENV_FILE="$ENV_FILE"
 
@@ -108,10 +123,17 @@ jobs:
             echo "Aguardando aplicação subir..."
             sleep 15
 
+            echo "========== STATUS DOS CONTAINERS =========="
+            docker compose --env-file "$ENV_FILE" ps -a
+
             if docker compose --env-file "$ENV_FILE" ps --status running | grep -q dropshipping-app; then
               if curl -sf http://localhost:8080/actuator/health > /dev/null; then
                 echo "Backend health check OK"
               else
                 echo "Aviso: backend pode ainda estar iniciando ou health check falhou"
               fi
+            else
+              echo "Aviso: container dropshipping-app não está em execução"
             fi
+
+            echo "========== FIM DO DEPLOY NA VPS =========="
