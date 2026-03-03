@@ -1,0 +1,56 @@
+# CI/CD - Deploy na VPS
+# Dispara em push em main, homolog ou feature/deploy.
+#
+# Secrets: VPS_HOST, VPS_USER, VPS_SSH_KEY
+# Opcional: VPS_DEPLOY_PATH (default: /root/dev), VPS_ENV_FILE (default: /root/dropshipping.env)
+#
+# Pré-requisito na VPS: criar /root/dropshipping.env com DB_PASSWORD, JWT_SECRET, etc.
+
+name: Deploy na VPS
+
+on:
+  push:
+    branches:
+      - main
+      - homolog
+      - feature/deploy
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy na VPS via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            set -e
+            DEPLOY_PATH="${{ secrets.VPS_DEPLOY_PATH || '/root/dev' }}"
+            ENV_FILE="${{ secrets.VPS_ENV_FILE || '/root/dropshipping.env' }}"
+
+            cd "$DEPLOY_PATH"
+
+            echo ">>> Atualizando repositório (branch: ${{ github.ref_name }})..."
+            git fetch origin
+            git checkout -f ${{ github.ref_name }}
+            git pull origin ${{ github.ref_name }}
+
+            if [ ! -f "$ENV_FILE" ]; then
+              echo "ERRO: $ENV_FILE não encontrado. Crie o arquivo na VPS antes do deploy."
+              exit 1
+            fi
+
+            echo ">>> Parando containers antigos..."
+            docker compose --env-file "$ENV_FILE" down 2>/dev/null || true
+            docker rm -f dropshipping-frontend dropshipping-app dropshipping-db 2>/dev/null || true
+
+            echo ">>> Deploy (Postgres + Backend + Frontend)..."
+            export ENV_FILE="$ENV_FILE"
+            docker compose --env-file "$ENV_FILE" up -d --build
+
+            echo ">>> Deploy concluído."
