@@ -4,7 +4,7 @@ Guia para configurar o deploy automático na VPS via GitHub Actions.
 
 - **Workflow:** `.github/workflows/deploy-vps.yml`
 - **Análise do pipeline:** [CI-CD-ANALISE.md](CI-CD-ANALISE.md)
-- **Recriar o banco na VPS (migrations):** [RECRIAR-BANCO-VPS.md](RECRIAR-BANCO-VPS.md)
+- **Recriar o banco na VPS (migrations):** [RECRIAR-BANCO-VPS.md](RECRIAR-BANCO-VPS.md) (inclui **por que o Flyway não roda** no deploy)
 
 ---
 
