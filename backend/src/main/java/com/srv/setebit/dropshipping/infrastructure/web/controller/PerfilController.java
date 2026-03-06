@@ -43,7 +43,7 @@ public class PerfilController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'SELLER')")
     @Operation(summary = "Listar perfis")
     public ResponseEntity<PagePerfilResponse> list(
             @RequestParam(required = false) String code,
