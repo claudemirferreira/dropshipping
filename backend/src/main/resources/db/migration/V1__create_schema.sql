@@ -1,7 +1,6 @@
 -- V1__create_schema.sql
 -- Criação completa do schema lógico da aplicação (tabelas + índices + FKs)
--- Cria o schema para garantir que exista (ex.: banco recriado na VPS)
-CREATE SCHEMA IF NOT EXISTS dropshipping;
+-- Não altere este arquivo após já ter sido aplicado em produção (Flyway valida checksum).
 
 CREATE TABLE users (
     id UUID PRIMARY KEY,
