@@ -2,10 +2,10 @@ spring:
   application:
     name: dropshipping
   datasource:
-    # Banco postgres + schema dropshipping. Em produção com banco externo (ex.: Hostinger) defina DB_HOST, DB_PORT, DB_NAME no .env
+    # Credenciais via variáveis de ambiente. Nunca commite valores reais no repositório.
     url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:postgres}?currentSchema=dropshipping
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:postgres}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10
@@ -27,13 +27,13 @@ spring:
         format_sql: true
         default_schema: dropshipping
   mail:
-    host: smtp.gmail.com
-    port: 587
-    username: ${MAIL_FROM:moliveiraferreira247@gmail.com}
-    password: ${MAIL_PASSWORD:ipnpmvuaqbpuuhiu}
-    recipient: ${MAIL_FIXED_RECIPIENT:moliveiraferreira247@gmail.com}
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_FROM}
+    password: ${MAIL_PASSWORD}
+    recipient: ${MAIL_FIXED_RECIPIENT}
     base-url: ${APP_BASE_URL:http://localhost:8080}
-    logo-path: ${APP_EMAIL_LOGO_PATH:d:\\Dropshipping\\dropshipping\\frontend\\public\\assets\\logo-email.jpeg}
+    logo-path: ${APP_EMAIL_LOGO_PATH:}
     properties:
       mail:
         smtp:
@@ -70,7 +70,8 @@ management:
       enabled: true
 
 jwt:
-  secret: ${JWT_SECRET:dropshipping-secret-key-for-jwt-signing-min-256-bits-required-for-hs256}
+  # Em produção use JWT_SECRET forte (min 256 bits). Defina via variável de ambiente.
+  secret: ${JWT_SECRET}
   access-token-expiration-ms: 1800000
   refresh-token-expiration-ms: 604800000
 

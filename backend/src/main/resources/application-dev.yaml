@@ -1,2 +1,16 @@
 # Perfil dev: ativa o DevDataLoader para criar usuário admin@dropshipping.com / Senha@123
 # Use: --spring.profiles.active=dev ou SPRING_PROFILES_ACTIVE=dev
+# Valores abaixo são apenas para desenvolvimento local. Em produção use variáveis de ambiente.
+server:
+  port: 8081
+
+spring:
+  datasource:
+    password: postgres
+  mail:
+    username: dev@local
+    password: ""
+    recipient: dev@local
+
+jwt:
+  secret: dev-only-secret-not-for-production-min-32-chars
