@@ -8,7 +8,13 @@ import com.srv.setebit.dropshipping.domain.access.exception.RotinaNotFoundExcept
 import com.srv.setebit.dropshipping.domain.product.exception.DuplicateSkuException;
 import com.srv.setebit.dropshipping.domain.product.exception.DuplicateSlugException;
 import com.srv.setebit.dropshipping.domain.product.exception.ProductNotFoundException;
-import com.srv.setebit.dropshipping.domain.user.exception.*;
+import com.srv.setebit.dropshipping.domain.user.exception.DuplicateEmailException;
+import com.srv.setebit.dropshipping.domain.user.exception.InvalidCredentialsException;
+import com.srv.setebit.dropshipping.domain.user.exception.InvalidRefreshTokenException;
+import com.srv.setebit.dropshipping.domain.user.exception.RateLimitExceededException;
+import com.srv.setebit.dropshipping.domain.user.exception.UserInactiveException;
+import com.srv.setebit.dropshipping.domain.user.exception.UserLockedException;
+import com.srv.setebit.dropshipping.domain.user.exception.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
