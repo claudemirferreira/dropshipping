@@ -15,6 +15,9 @@ public interface UserPerfilRepositoryPort {
     /** Retorna os IDs dos perfis do usuário. */
     Set<UUID> findPerfilIdsByUserId(UUID userId);
 
+    /** Verifica se existe algum usuário associado ao perfil. */
+    boolean existsUserWithPerfil(UUID perfilId);
+
     /** Substitui os perfis do usuário pelos IDs informados. */
     void assignPerfisToUser(UUID userId, Set<UUID> perfilIds);
 }

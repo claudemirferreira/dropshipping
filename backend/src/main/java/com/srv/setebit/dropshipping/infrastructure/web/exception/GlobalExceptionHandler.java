@@ -2,6 +2,7 @@ package com.srv.setebit.dropshipping.infrastructure.web.exception;
 
 import com.srv.setebit.dropshipping.domain.access.exception.DuplicatePerfilCodeException;
 import com.srv.setebit.dropshipping.domain.access.exception.DuplicateRotinaCodeException;
+import com.srv.setebit.dropshipping.domain.access.exception.PerfilEmUsoException;
 import com.srv.setebit.dropshipping.domain.access.exception.PerfilNotFoundException;
 import com.srv.setebit.dropshipping.domain.access.exception.RotinaNotFoundException;
 import com.srv.setebit.dropshipping.domain.product.exception.DuplicateSkuException;
@@ -54,6 +55,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({DuplicateRotinaCodeException.class, DuplicatePerfilCodeException.class})
     public ResponseEntity<ErrorResponse> handleDuplicateAccess(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                new ErrorResponse(Instant.now(), 409, "Conflict", ex.getMessage(), null));
+    }
+
+    @ExceptionHandler(PerfilEmUsoException.class)
+    public ResponseEntity<ErrorResponse> handlePerfilEmUso(PerfilEmUsoException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 new ErrorResponse(Instant.now(), 409, "Conflict", ex.getMessage(), null));
     }

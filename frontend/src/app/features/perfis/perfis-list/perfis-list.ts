@@ -308,6 +308,8 @@ export class PerfisListComponent {
       message: `Deseja excluir o perfil "${row.name}"?`,
       header: 'Confirmar exclusão',
       icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sim',
+      rejectLabel: 'Não',
       accept: () => {
         this.perfisService.delete(row.id).subscribe({
           next: () => {

@@ -415,6 +415,8 @@ export class ProductsListComponent {
       message: 'Remover esta foto do produto?',
       header: 'Confirmar',
       icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sim',
+      rejectLabel: 'Não',
       accept: () => {
         this.productsService.removeImage(productId, id).subscribe({
           next: () => {
@@ -623,6 +625,8 @@ export class ProductsListComponent {
       message: `Excluir o produto "${product.name}"? Esta ação não pode ser desfeita.`,
       header: 'Confirmar exclusão',
       icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sim',
+      rejectLabel: 'Não',
       acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
         this.productsService.delete(product.id).subscribe({

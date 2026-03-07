@@ -25,4 +25,6 @@ public interface UserPerfilJpaRepository extends JpaRepository<UserPerfilEntity,
     @Modifying
     @Query("DELETE FROM UserPerfilEntity up WHERE up.id.userId = :userId")
     void deleteByUserId(@Param("userId") UUID userId);
+
+    long countById_PerfilId(UUID perfilId);
 }
