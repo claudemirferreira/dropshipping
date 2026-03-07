@@ -81,6 +81,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.LOCKED).body(
                 new ErrorResponse(Instant.now(), 423, "Locked", ex.getMessage(), null));
     }
+
+    @ExceptionHandler(UserInactiveException.class)
+    public ResponseEntity<ErrorResponse> handleUserInactive(UserInactiveException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                new ErrorResponse(Instant.now(), 403, "Forbidden", "Usuário inativo", null));
+    }
     
     @ExceptionHandler(RateLimitExceededException.class)
     public ResponseEntity<ErrorResponse> handleRateLimit(RateLimitExceededException ex) {

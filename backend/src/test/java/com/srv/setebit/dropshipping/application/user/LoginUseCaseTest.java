@@ -9,6 +9,7 @@ import com.srv.setebit.dropshipping.application.user.port.PasswordEncoderPort;
 import com.srv.setebit.dropshipping.domain.user.RefreshToken;
 import com.srv.setebit.dropshipping.domain.user.User;
 import com.srv.setebit.dropshipping.domain.user.exception.InvalidCredentialsException;
+import com.srv.setebit.dropshipping.domain.user.exception.UserInactiveException;
 import com.srv.setebit.dropshipping.domain.user.port.BloqueioRepositoryPort;
 import com.srv.setebit.dropshipping.domain.user.port.RefreshTokenRepositoryPort;
 import com.srv.setebit.dropshipping.domain.user.port.TemporaryPasswordRepositoryPort;
@@ -124,6 +125,7 @@ class LoginUseCaseTest {
         when(userRepository.findByEmail(any())).thenReturn(Optional.of(user));
 
         assertThatThrownBy(() -> loginUseCase.execute(request))
-                .isInstanceOf(InvalidCredentialsException.class);
+                .isInstanceOf(UserInactiveException.class)
+                .hasMessage("Usuário inativo");
     }
 }

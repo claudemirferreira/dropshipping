@@ -9,6 +9,7 @@ import com.srv.setebit.dropshipping.domain.user.RefreshToken;
 import com.srv.setebit.dropshipping.domain.user.TemporaryPassword;
 import com.srv.setebit.dropshipping.domain.user.User;
 import com.srv.setebit.dropshipping.domain.user.exception.InvalidCredentialsException;
+import com.srv.setebit.dropshipping.domain.user.exception.UserInactiveException;
 import com.srv.setebit.dropshipping.domain.user.exception.UserLockedException;
 import com.srv.setebit.dropshipping.domain.user.port.BloqueioRepositoryPort;
 import com.srv.setebit.dropshipping.domain.user.port.RefreshTokenRepositoryPort;
@@ -61,7 +62,7 @@ public class LoginUseCase {
                 .orElseThrow(InvalidCredentialsException::new);
 
         if (!user.isActive()) {
-            throw new InvalidCredentialsException();
+            throw new UserInactiveException();
         }
 
         boolean needsPasswordChange = false;
