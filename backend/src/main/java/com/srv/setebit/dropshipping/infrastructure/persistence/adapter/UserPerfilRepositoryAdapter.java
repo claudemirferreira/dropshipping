@@ -45,6 +45,11 @@ public class UserPerfilRepositoryAdapter implements UserPerfilRepositoryPort {
     }
 
     @Override
+    public boolean existsUserWithPerfil(UUID perfilId) {
+        return userPerfilRepository.countById_PerfilId(perfilId) > 0;
+    }
+
+    @Override
     @Transactional
     public void assignPerfisToUser(UUID userId, Set<UUID> perfilIds) {
         userPerfilRepository.deleteByUserId(userId);

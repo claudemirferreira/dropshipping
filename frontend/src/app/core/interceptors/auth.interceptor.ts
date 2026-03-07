@@ -26,9 +26,12 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   auth['touchActivity']?.();
 
+  // Não tratar 401 de login/refresh como "sessão expirada" (são credenciais inválidas)
+  const isLoginOrRefresh = req.url.includes('auth/login') || req.url.includes('auth/refresh');
+
   return next(req).pipe(
     catchError((err: HttpErrorResponse) => {
-      if (err.status === 401) {
+      if (err.status === 401 && !isLoginOrRefresh) {
         const refresh = auth.getRefreshToken();
         if (refresh) {
           return http

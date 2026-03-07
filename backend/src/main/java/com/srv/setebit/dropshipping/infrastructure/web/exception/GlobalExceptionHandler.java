@@ -2,6 +2,7 @@ package com.srv.setebit.dropshipping.infrastructure.web.exception;
 
 import com.srv.setebit.dropshipping.domain.access.exception.DuplicatePerfilCodeException;
 import com.srv.setebit.dropshipping.domain.access.exception.DuplicateRotinaCodeException;
+import com.srv.setebit.dropshipping.domain.access.exception.PerfilEmUsoException;
 import com.srv.setebit.dropshipping.domain.access.exception.PerfilNotFoundException;
 import com.srv.setebit.dropshipping.domain.access.exception.RotinaNotFoundException;
 import com.srv.setebit.dropshipping.domain.product.exception.DuplicateSkuException;
@@ -58,6 +59,12 @@ public class GlobalExceptionHandler {
                 new ErrorResponse(Instant.now(), 409, "Conflict", ex.getMessage(), null));
     }
 
+    @ExceptionHandler(PerfilEmUsoException.class)
+    public ResponseEntity<ErrorResponse> handlePerfilEmUso(PerfilEmUsoException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                new ErrorResponse(Instant.now(), 409, "Conflict", ex.getMessage(), null));
+    }
+
     @ExceptionHandler({DuplicateSkuException.class, DuplicateSlugException.class})
     public ResponseEntity<ErrorResponse> handleDuplicateProduct(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
@@ -80,6 +87,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleUserLocked(UserLockedException ex) {
         return ResponseEntity.status(HttpStatus.LOCKED).body(
                 new ErrorResponse(Instant.now(), 423, "Locked", ex.getMessage(), null));
+    }
+
+    @ExceptionHandler(UserInactiveException.class)
+    public ResponseEntity<ErrorResponse> handleUserInactive(UserInactiveException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                new ErrorResponse(Instant.now(), 403, "Forbidden", "Usuário inativo", null));
     }
     
     @ExceptionHandler(RateLimitExceededException.class)
