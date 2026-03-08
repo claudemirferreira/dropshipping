@@ -172,6 +172,37 @@ import { ActivatedRoute } from '@angular/router';
         grid-template-columns: 1fr 1fr;
         gap: 0.5rem;
       }
+      /* Inputs alinhados com o tema (sem fundo preto) */
+      :host ::ng-deep .p-inputtext,
+      :host ::ng-deep .p-password input,
+      :host ::ng-deep .p-password .p-inputtext {
+        background-color: transparent !important;
+        box-shadow: none !important;
+        color: var(--app-text-primary) !important;
+        caret-color: var(--p-primary-color) !important;
+        -webkit-text-fill-color: var(--app-text-primary);
+      }
+      :host ::ng-deep .p-inputtext::placeholder,
+      :host ::ng-deep .p-password input::placeholder,
+      :host ::ng-deep .p-password .p-inputtext::placeholder {
+        color: var(--app-text-muted) !important;
+        opacity: 1;
+      }
+      :host ::ng-deep .p-inputtext:enabled:hover,
+      :host ::ng-deep .p-inputtext:enabled:focus,
+      :host ::ng-deep .p-password input:focus,
+      :host ::ng-deep .p-password .p-inputtext:focus {
+        background-color: transparent !important;
+        box-shadow: none !important;
+      }
+      :host ::ng-deep input:-webkit-autofill,
+      :host ::ng-deep input:-webkit-autofill:hover,
+      :host ::ng-deep input:-webkit-autofill:focus {
+        -webkit-text-fill-color: var(--app-text-primary);
+        transition: background-color 5000s ease-in-out 0s;
+        box-shadow: 0 0 0 1000px transparent inset !important;
+        -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+      }
     `,
   ],
 })

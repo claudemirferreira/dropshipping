@@ -142,6 +142,18 @@ export class AuthService {
     return !!this.getAccessToken();
   }
 
+  needsPasswordChange(): boolean {
+    const token = this.getAccessToken();
+    if (!token) return false;
+    try {
+      const [, payload] = token.split('.');
+      const json = JSON.parse(this.base64UrlDecode(payload));
+      return !!json['needs_password_change'];
+    } catch {
+      return false;
+    }
+  }
+
   setTokens(access: string, refresh: string, remember: boolean): void {
     const store = this.storage(remember);
     store.setItem(this.accessTokenKey, access);
@@ -237,5 +249,15 @@ export class AuthService {
     localStorage.removeItem(this.rememberKey);
     this.user.set(null);
     this.userPerfis.set([]);
+  }
+
+  setPasswordFirstLogin(newPassword: string) {
+    return this.http.post<void>(`${this.api}/first-login/password`, { newPassword });
+  }
+
+  private base64UrlDecode(str: string): string {
+    const pad = str.length % 4 === 0 ? '' : '='.repeat(4 - (str.length % 4));
+    const s = str.replace(/-/g, '+').replace(/_/g, '/') + pad;
+    return atob(s);
   }
 }

@@ -14,6 +14,9 @@ public interface TemporaryPasswordRepository extends JpaRepository<TemporaryPass
     @Query("SELECT t FROM TemporaryPasswordEntity t WHERE t.userId = :userId AND t.used = false AND t.expiresAt > :now ORDER BY t.createdAt DESC")
     Optional<TemporaryPasswordEntity> findActiveByUserId(@Param("userId") UUID userId, @Param("now") Instant now);
 
+    @Query("SELECT t FROM TemporaryPasswordEntity t WHERE t.userId = :userId ORDER BY t.createdAt DESC")
+    Optional<TemporaryPasswordEntity> findLatestByUserId(@Param("userId") UUID userId);
+
     @Modifying
     @Query("UPDATE TemporaryPasswordEntity t SET t.used = true WHERE t.id = :id")
     void markUsed(@Param("id") UUID id);

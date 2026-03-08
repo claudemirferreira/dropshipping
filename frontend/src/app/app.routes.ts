@@ -15,6 +15,14 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'change-password',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/auth/change-password/change-password').then(
+        (m) => m.ChangePasswordComponent
+      ),
+  },
+  {
     path: 'planos',
     loadComponent: () =>
       import('./features/public/plans/plans').then((m) => m.PlansComponent),
