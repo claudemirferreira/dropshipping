@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Base64;
@@ -34,6 +36,9 @@ public class GenerateTemporaryPasswordUseCase {
 
     @Value("${auth.temp-password-expiration-minutes:15}")
     private int expirationMinutes;
+
+    @Value("${auth.temporary-login-url}")
+    private String temporaryLoginUrl;
 
     public GenerateTemporaryPasswordUseCase(UserRepositoryPort userRepository,
                                            TemporaryPasswordRepositoryPort tempPasswordRepository,
@@ -100,8 +105,8 @@ public class GenerateTemporaryPasswordUseCase {
         temp.setCreatedAt(Instant.now());
         tempPasswordRepository.save(temp);
 
-        System.out.println("Temporary password: " + tempPassword);
-        String resetLink = "http://localhost:4200/login?email=" + user.getEmail();
+        String encodedEmail = URLEncoder.encode(user.getEmail(), StandardCharsets.UTF_8);
+        String resetLink = temporaryLoginUrl + "?email=" + encodedEmail;
         emailSender.sendTemporaryPassword(user.getEmail(), user.getName(), tempPassword, resetLink);
     }
 
