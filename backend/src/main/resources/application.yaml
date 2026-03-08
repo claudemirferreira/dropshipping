@@ -85,6 +85,7 @@ auth:
   forgot-password-rate-limit-window-minutes: 15
   forgot-password-rate-limit-per-email: 5
   forgot-password-rate-limit-per-ip: 20
+  temporary-login-url: ${APP_WEB_LOGIN_URL}
 
 springdoc:
   api-docs:
