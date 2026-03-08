@@ -8,6 +8,7 @@ import com.srv.setebit.dropshipping.application.access.dto.response.PerfilRespon
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -42,13 +43,31 @@ public class PerfilController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'SELLER')")
     @Operation(summary = "Listar perfis")
     public ResponseEntity<PagePerfilResponse> list(
             @RequestParam(required = false) String code,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Boolean active,
             @PageableDefault(size = 20, sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
+        // Sanitiza sort vindo do frontend para evitar expressões inválidas como ["string"]
+        Sort sort = pageable.getSort();
+        boolean hasInvalidSort = sort.stream().anyMatch(order -> {
+            String property = order.getProperty();
+            return property == null
+                    || property.isBlank()
+                    || property.startsWith("[")
+                    || property.contains(" ");
+        });
+
+        if (hasInvalidSort) {
+            pageable = PageRequest.of(
+                    pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    Sort.by("name").ascending()
+            );
+        }
+
         PagePerfilResponse response = listPerfisUseCase.execute(code, name, active, pageable);
         return ResponseEntity.ok(response);
     }

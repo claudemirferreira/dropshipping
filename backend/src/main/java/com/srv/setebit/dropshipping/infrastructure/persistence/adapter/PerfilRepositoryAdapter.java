@@ -121,6 +121,11 @@ public class PerfilRepositoryAdapter implements PerfilRepositoryPort {
     }
 
     @Override
+    public boolean hasRotinas(UUID perfilId) {
+        return !perfilRotinaRepository.findRotinaIdsByPerfilId(perfilId).isEmpty();
+    }
+
+    @Override
     public void deleteById(UUID id) {
         jpaRepository.deleteById(id);
     }

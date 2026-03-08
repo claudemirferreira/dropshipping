@@ -14,3 +14,6 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
         default_schema: PUBLIC
+
+jwt:
+  secret: test-jwt-secret-for-unit-tests-only

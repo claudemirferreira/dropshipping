@@ -550,6 +550,8 @@ export class UsersListComponent {
       message: `Deseja desativar o usuário ${user.name}?`,
       header: 'Confirmar',
       icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sim',
+      rejectLabel: 'Não',
       accept: () => {
         this.usersService.deactivate(user.id).subscribe({
           next: () => {

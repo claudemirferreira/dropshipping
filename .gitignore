@@ -24,6 +24,9 @@ Thumbs.db
 # Uploads (backend)
 uploads/
 
-# Environment (descomente se tiver secrets locais)
-# .env
-# .env.local
+# Environment – nunca commitar arquivos com senhas/tokens
+.env
+.env.local
+.env.*.local
+*.env
+!.env.example

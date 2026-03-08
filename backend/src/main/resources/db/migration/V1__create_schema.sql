@@ -1,5 +1,6 @@
 -- V1__create_schema.sql
 -- Criação completa do schema lógico da aplicação (tabelas + índices + FKs)
+-- Não altere este arquivo após já ter sido aplicado em produção (Flyway valida checksum).
 
 CREATE TABLE users (
     id UUID PRIMARY KEY,

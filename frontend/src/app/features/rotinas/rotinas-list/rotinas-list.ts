@@ -181,6 +181,8 @@ export class RotinasListComponent {
       message: `Deseja excluir a rotina "${row.name}"?`,
       header: 'Confirmar exclusão',
       icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sim',
+      rejectLabel: 'Não',
       accept: () => {
         this.rotinasService.delete(row.id).subscribe({
           next: () => {
