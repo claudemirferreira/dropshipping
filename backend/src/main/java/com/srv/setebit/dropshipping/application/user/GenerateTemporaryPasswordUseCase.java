@@ -8,6 +8,9 @@ import com.srv.setebit.dropshipping.domain.user.User;
 import com.srv.setebit.dropshipping.domain.user.exception.RateLimitExceededException;
 import com.srv.setebit.dropshipping.domain.user.port.TemporaryPasswordRepositoryPort;
 import com.srv.setebit.dropshipping.domain.user.port.UserRepositoryPort;
+
+import lombok.extern.slf4j.Slf4j;
+
 import com.srv.setebit.dropshipping.domain.user.port.PasswordResetAuditRepositoryPort;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -19,6 +22,7 @@ import java.util.Base64;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class GenerateTemporaryPasswordUseCase {
 
     private final UserRepositoryPort userRepository;
@@ -77,6 +81,7 @@ public class GenerateTemporaryPasswordUseCase {
 
         var userOpt = userRepository.findByEmail(email);
         if (userOpt.isEmpty()) {
+            log.info("Forgot password requested for non-existing email: {}", email);
             return;
         }
         User user = userOpt.get();
@@ -96,7 +101,7 @@ public class GenerateTemporaryPasswordUseCase {
         tempPasswordRepository.save(temp);
 
         System.out.println("Temporary password: " + tempPassword);
-        String resetLink = "http://localhost:8080/login?email=" + user.getEmail();
+        String resetLink = "http://localhost:4200/login?email=" + user.getEmail();
         emailSender.sendTemporaryPassword(user.getEmail(), user.getName(), tempPassword, resetLink);
     }
 

@@ -26,13 +26,10 @@ spring:
         format_sql: true
         default_schema: dropshipping
   mail:
-    host: smtp.gmail.com
-    port: 8080
-    username: ${MAIL_FROM:moliveiraferreira247@gmail.com}
-    password: ${MAIL_PASSWORD:ipnpmvuaqbpuuhiu}
-    recipient: ${MAIL_FIXED_RECIPIENT:moliveiraferreira247@gmail.com}
-    base-url: ${APP_BASE_URL:http://localhost:8080}
-    logo-path: ${APP_EMAIL_LOGO_PATH:d:\\Dropshipping\\dropshipping\\frontend\\public\\assets\\logo-email.jpeg}
+    host: smtp-relay.brevo.com
+    port: 587
+    username: a30d73001@smtp-brevo.com
+    password: Y46zCjf72BJ5NrEg
     properties:
       mail:
         smtp:
@@ -47,7 +44,12 @@ app:
   upload:
     dir: ${UPLOAD_DIR:uploads}
   api:
-    base-url: ${API_BASE_URL:http://localhost:8080}
+    base-url: "http://localhost:8080"
+  mail:
+    from: "mar.stark.99@gmail.com"
+    override-recipient: ""
+    base-url: "http://localhost:8080"
+    logo-path: "d:\\Dropshipping\\dropshipping\\frontend\\public\\assets\\logo-email.jpeg"
 
 oci:
   object-storage:

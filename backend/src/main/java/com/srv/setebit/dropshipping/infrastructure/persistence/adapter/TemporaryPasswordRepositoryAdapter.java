@@ -34,6 +34,12 @@ public class TemporaryPasswordRepositoryAdapter implements TemporaryPasswordRepo
     }
 
     @Override
+    public Optional<TemporaryPassword> findLatestByUserId(UUID userId) {
+        return jpaRepository.findLatestByUserId(userId)
+                .map(this::toDomain);
+    }
+
+    @Override
     public void markUsed(UUID id) {
         jpaRepository.markUsed(id);
     }

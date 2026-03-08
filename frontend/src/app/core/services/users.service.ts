@@ -28,6 +28,11 @@ export interface UpdateUserRequest {
   phone?: string;
 }
 
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
 export interface ListUsersParams {
   name?: string;
   email?: string;
@@ -86,5 +91,9 @@ export class UsersService {
 
   assignPerfis(userId: string, perfilIds: string[]): Observable<void> {
     return this.http.put<void>(`${this.api}/${userId}/perfis`, { perfilIds });
+  }
+
+  changePassword(userId: string, request: ChangePasswordRequest): Observable<void> {
+    return this.http.patch<void>(`${this.api}/${userId}/password`, request);
   }
 }
