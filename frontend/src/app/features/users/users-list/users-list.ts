@@ -11,7 +11,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { AvatarModule } from 'primeng/avatar';
 import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
-import { MultiSelectModule } from 'primeng/multiselect';
+import { CheckboxModule } from 'primeng/checkbox';
 import { PasswordModule } from 'primeng/password';
 import { PickListModule } from 'primeng/picklist';
 import { UsersService, CreateUserRequest } from '../../../core/services/users.service';
@@ -41,7 +41,7 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
     AvatarModule,
     DialogModule,
     DropdownModule,
-    MultiSelectModule,
+    CheckboxModule,
     PasswordModule,
     PickListModule,
   ],
@@ -180,6 +180,7 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
       [(visible)]="createDialogVisible"
       [modal]="true"
       [style]="{ width: '28rem' }"
+      [contentStyle]="{ overflow: 'visible' }"
       [draggable]="false"
       [resizable]="false"
       (onHide)="resetCreateForm()"
@@ -218,16 +219,24 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
           <input id="create-phone" pInputText formControlName="phone" placeholder="(00) 00000-0000" />
         </div>
         <div class="form-field">
-          <label for="create-perfis">Perfis (opcional)</label>
-          <p-multiSelect
-            id="create-perfis"
-            formControlName="perfilIds"
-            [options]="perfisOptions()"
-            placeholder="Selecione os perfis"
-            optionLabel="label"
-            optionValue="value"
-            styleClass="w-full"
-          />
+          <label>Perfis (opcional)</label>
+          <div class="perfis-checkbox-list">
+            @for (option of perfisOptions(); track option.value) {
+              <div class="perfis-checkbox-item">
+                <p-checkbox
+                  [inputId]="'perfil-' + option.value"
+                  [value]="option.value"
+                  [formControl]="getPerfilIdsControl()"
+                />
+                <label [for]="'perfil-' + option.value" class="perfis-checkbox-label">
+                  {{ option.label }}
+                </label>
+              </div>
+            }
+            @empty {
+              <span class="perfis-empty">Nenhum perfil disponível</span>
+            }
+          </div>
         </div>
       </form>
       <ng-template pTemplate="footer">
@@ -455,6 +464,35 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
       ::ng-deep .perfis-picklist .p-picklist-list {
         min-height: 16rem;
       }
+
+      .perfis-checkbox-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        background: #f8fafc;
+      }
+
+      .perfis-checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .perfis-checkbox-label {
+        font-size: 0.875rem;
+        color: #334155;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .perfis-empty {
+        font-size: 0.875rem;
+        color: #94a3b8;
+        font-style: italic;
+      }
     `,
   ],
 })
@@ -482,12 +520,17 @@ export class UsersListComponent {
   private currentPage = 0;
   private currentSize = 10;
 
+  /** Retorna o FormControl de perfilIds com tipagem correta para o template. */
+  getPerfilIdsControl(): FormControl<string[]> {
+    return this.createForm.controls.perfilIds as FormControl<string[]>;
+  }
+
   constructor(
     private usersService: UsersService,
     private perfisService: PerfisService,
     private messageService: MessageService,
     private confirmationService: ConfirmationService
-  ) {}
+  ) { }
 
   applySearch(): void {
     this.loadUsers(0, this.currentSize);
