@@ -124,6 +124,15 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
             <td class="actions-cell">
               <div class="actions-buttons">
                 <p-button
+                  icon="pi pi-pencil"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="secondary"
+                  size="small"
+                  (onClick)="openEditDialog(user)"
+                  pTooltip="Editar"
+                />
+                <p-button
                   icon="pi pi-id-card"
                   [rounded]="true"
                   [text]="true"
@@ -244,6 +253,43 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\
         <p-button label="Cadastrar" icon="pi pi-check" (onClick)="submitCreate()" [loading]="creating()" [disabled]="createForm.invalid" />
       </ng-template>
     </p-dialog>
+
+    <!-- Dialog de Edição -->
+    <p-dialog
+      header="Editar usuário"
+      [(visible)]="editDialogVisible"
+      [modal]="true"
+      [style]="{ width: '26rem' }"
+      [contentStyle]="{ overflow: 'visible' }"
+      [draggable]="false"
+      [resizable]="false"
+      (onHide)="resetEditForm()"
+    >
+      <form [formGroup]="editForm" class="create-form">
+        <div class="form-field">
+          <label for="edit-name">Nome</label>
+          <input id="edit-name" pInputText formControlName="name" placeholder="Nome completo" />
+          @if (editForm.get('name')?.invalid && editForm.get('name')?.touched) {
+            <small class="field-error">Nome é obrigatório</small>
+          }
+        </div>
+        <div class="form-field">
+          <label for="edit-phone">Telefone (opcional)</label>
+          <input id="edit-phone" pInputText formControlName="phone" placeholder="(00) 00000-0000" />
+        </div>
+      </form>
+      <ng-template pTemplate="footer">
+        <p-button label="Cancelar" [text]="true" (onClick)="editDialogVisible = false" />
+        <p-button
+          label="Salvar"
+          icon="pi pi-check"
+          (onClick)="submitEdit()"
+          [loading]="updating()"
+          [disabled]="editForm.invalid"
+        />
+      </ng-template>
+    </p-dialog>
+
 
     <p-dialog
       header="Gerenciar perfis do usuário"
@@ -520,6 +566,15 @@ export class UsersListComponent {
   private currentPage = 0;
   private currentSize = 10;
 
+  // --- Estado do dialog de edição ---
+  editDialogVisible = false;
+  editingUser = signal<User | null>(null);
+  updating = signal(false);
+  editForm = this.fb.nonNullable.group({
+    name: ['', Validators.required],
+    phone: [''],
+  });
+
   /** Retorna o FormControl de perfilIds com tipagem correta para o template. */
   getPerfilIdsControl(): FormControl<string[]> {
     return this.createForm.controls.perfilIds as FormControl<string[]>;
@@ -627,6 +682,48 @@ export class UsersListComponent {
     });
     this.createDialogVisible = true;
   }
+
+  openEditDialog(user: User): void {
+    this.editingUser.set(user);
+    this.editForm.reset({
+      name: user.name,
+      phone: user.phone ?? '',
+    });
+    this.editDialogVisible = true;
+  }
+
+  resetEditForm(): void {
+    this.editingUser.set(null);
+    this.editForm.reset({ name: '', phone: '' });
+  }
+
+  submitEdit(): void {
+    if (this.editForm.invalid) return;
+    const user = this.editingUser();
+    if (!user) return;
+    const value = this.editForm.getRawValue();
+    this.updating.set(true);
+    this.usersService.update(user.id, { name: value.name, phone: value.phone?.trim() || undefined }).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Sucesso',
+          detail: 'Usuário atualizado com sucesso.',
+        });
+        this.editDialogVisible = false;
+        this.loadUsers(this.currentPage, this.currentSize);
+      },
+      error: (err) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: err.error?.message ?? 'Não foi possível atualizar o usuário.',
+        });
+      },
+      complete: () => this.updating.set(false),
+    });
+  }
+
 
   resetCreateForm(): void {
     this.createForm.reset({ name: '', email: '', password: '', phone: '', perfilIds: [] });
