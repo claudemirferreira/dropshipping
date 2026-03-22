@@ -68,11 +68,14 @@ public class LoginUseCase {
         boolean needsPasswordChange = false;
         boolean valid = false;
 
-        // tenta senha padrão
+        // tenta senha padrão — usuário bloqueado não pode entrar nem com a senha correta
         if (passwordEncoder.matches(request.password(), user.getPasswordHash())) {
+            if (user.isLocked()) {
+                throw new UserLockedException(user.getLockedReason());
+            }
             valid = true;
         } else {
-            // tenta senha temporária (self-service unlock)
+            // tenta senha temporária (self-service unlock) — único caminho permitido para conta bloqueada
             var tempOpt = tempPasswordRepository.findActiveByUserId(user.getId());
             if (tempOpt.isPresent() && passwordEncoder.matches(request.password(), tempOpt.get().getPasswordHash())) {
                 TemporaryPassword temp = tempOpt.get();
@@ -88,21 +91,20 @@ public class LoginUseCase {
             }
         }
 
-        // se ainda inválido e o usuário está bloqueado, informar bloqueio
-        if (user.isLocked() && !valid) {
-            throw new UserLockedException(user.getLockedReason());
-        }
-
+        // senha errada: se bloqueado informa bloqueio; senão registra tentativa falha
         if (!valid) {
+            if (user.isLocked()) {
+                throw new UserLockedException(user.getLockedReason());
+            }
             loginAttemptService.registerFailed(user, request.email());
             throw new InvalidCredentialsException();
-        } else {
-            // reset attempts on success
-            if (user.getFailedLoginAttempts() != 0) {
-                user.setFailedLoginAttempts(0);
-                user.setUpdatedAt(Instant.now());
-                userRepository.save(user);
-            }
+        }
+
+        // reset tentativas falhas após login bem-sucedido
+        if (user.getFailedLoginAttempts() != 0) {
+            user.setFailedLoginAttempts(0);
+            user.setUpdatedAt(Instant.now());
+            userRepository.save(user);
         }
 
         List<String> perfilCodes = getUserPerfisUseCase.execute(user.getId()).stream()

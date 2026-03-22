@@ -37,7 +37,6 @@ import com.srv.setebit.dropshipping.application.user.dto.request.CreateUserReque
 import com.srv.setebit.dropshipping.application.user.dto.request.UpdateUserRequest;
 import com.srv.setebit.dropshipping.application.user.dto.response.PageUserResponse;
 import com.srv.setebit.dropshipping.application.user.dto.response.UserResponse;
-import com.srv.setebit.dropshipping.domain.user.UserProfile;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -60,15 +59,15 @@ public class UserController {
     private final GetUserRotinasUseCase getUserRotinasUseCase;
 
     public UserController(CreateUserUseCase createUserUseCase,
-                          GetUserByIdUseCase getUserByIdUseCase,
-                          UpdateUserUseCase updateUserUseCase,
-                          ChangePasswordUseCase changePasswordUseCase,
-                          ListUsersUseCase listUsersUseCase,
-                          ActivateUserUseCase activateUserUseCase,
-                          DeactivateUserUseCase deactivateUserUseCase,
-                          GetUserPerfisUseCase getUserPerfisUseCase,
-                          AssignPerfisToUserUseCase assignPerfisToUserUseCase,
-                          GetUserRotinasUseCase getUserRotinasUseCase) {
+            GetUserByIdUseCase getUserByIdUseCase,
+            UpdateUserUseCase updateUserUseCase,
+            ChangePasswordUseCase changePasswordUseCase,
+            ListUsersUseCase listUsersUseCase,
+            ActivateUserUseCase activateUserUseCase,
+            DeactivateUserUseCase deactivateUserUseCase,
+            GetUserPerfisUseCase getUserPerfisUseCase,
+            AssignPerfisToUserUseCase assignPerfisToUserUseCase,
+            GetUserRotinasUseCase getUserRotinasUseCase) {
         this.createUserUseCase = createUserUseCase;
         this.getUserByIdUseCase = getUserByIdUseCase;
         this.updateUserUseCase = updateUserUseCase;
@@ -121,8 +120,8 @@ public class UserController {
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER') or #id == authentication.principal")
     @Operation(summary = "Atualizar usuário")
     public ResponseEntity<UserResponse> update(@PathVariable UUID id,
-                                                @Valid @RequestBody UpdateUserRequest request,
-                                                @AuthenticationPrincipal UUID userId) {
+            @Valid @RequestBody UpdateUserRequest request,
+            @AuthenticationPrincipal UUID userId) {
         UserResponse response = updateUserUseCase.execute(id, request);
         return ResponseEntity.ok(response);
     }
@@ -130,8 +129,8 @@ public class UserController {
     @PatchMapping("/{id}/password")
     @Operation(summary = "Alterar senha")
     public ResponseEntity<Void> changePassword(@PathVariable UUID id,
-                                                @Valid @RequestBody ChangePasswordRequest request,
-                                                @AuthenticationPrincipal UUID userId) {
+            @Valid @RequestBody ChangePasswordRequest request,
+            @AuthenticationPrincipal UUID userId) {
         if (!id.equals(userId) && !isAdminOrManager(userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -167,7 +166,7 @@ public class UserController {
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @Operation(summary = "Atribuir perfis ao usuário")
     public ResponseEntity<Void> assignPerfis(@PathVariable UUID id,
-                                             @Valid @RequestBody AssignPerfisRequest request) {
+            @Valid @RequestBody AssignPerfisRequest request) {
         assignPerfisToUserUseCase.execute(id, request);
         return ResponseEntity.noContent().build();
     }
