@@ -202,9 +202,14 @@ export class AuthService {
       .post<void>(`${this.api}/forgot-password`, { email })
       .pipe(
         catchError((err) => {
-          this.errorMessage.set(
-            err.error?.message ?? 'Não foi possível solicitar a senha temporária.'
-          );
+          const status = err?.status;
+          let msg: string | undefined = err?.error?.message;
+          if (status === 404) {
+            msg = 'Email inexistente no sistema';
+          } else if (status === 429) {
+            msg = 'Muitas solicitações. Tente novamente mais tarde.';
+          }
+          this.errorMessage.set(msg ?? 'Não foi possível solicitar a senha temporária.');
           return throwError(() => err);
         }),
         finalize(() => this.loading.set(false))

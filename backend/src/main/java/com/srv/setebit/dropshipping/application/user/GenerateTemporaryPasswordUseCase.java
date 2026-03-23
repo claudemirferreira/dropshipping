@@ -6,6 +6,7 @@ import com.srv.setebit.dropshipping.application.user.port.PasswordEncoderPort;
 import com.srv.setebit.dropshipping.domain.user.TemporaryPassword;
 import com.srv.setebit.dropshipping.domain.user.User;
 import com.srv.setebit.dropshipping.domain.user.exception.RateLimitExceededException;
+import com.srv.setebit.dropshipping.domain.user.exception.UserNotFoundException;
 import com.srv.setebit.dropshipping.domain.user.port.TemporaryPasswordRepositoryPort;
 import com.srv.setebit.dropshipping.domain.user.port.UserRepositoryPort;
 
@@ -86,8 +87,7 @@ public class GenerateTemporaryPasswordUseCase {
 
         var userOpt = userRepository.findByEmail(email);
         if (userOpt.isEmpty()) {
-            log.info("Forgot password requested for non-existing email: {}", email);
-            return;
+            throw new UserNotFoundException(email);
         }
         User user = userOpt.get();
 

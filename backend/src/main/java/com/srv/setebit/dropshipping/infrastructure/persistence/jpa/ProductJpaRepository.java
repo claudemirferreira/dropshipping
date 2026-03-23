@@ -24,6 +24,10 @@ public interface ProductJpaRepository extends JpaRepository<ProductEntity, UUID>
 
     boolean existsBySlugAndIdNot(String slug, UUID id);
 
+    Optional<ProductEntity> findByEan(String ean);
+
+    boolean existsByEan(String ean);
+
     @Query("SELECT p FROM ProductEntity p WHERE " +
             "(COALESCE(:name, '') = '' OR LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%')) OR LOWER(p.sku) LIKE LOWER(CONCAT('%', :name, '%'))) AND " +
             "(:status IS NULL OR p.status = :status) AND " +

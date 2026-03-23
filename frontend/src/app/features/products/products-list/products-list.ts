@@ -34,6 +34,7 @@ import {
   type CreateProductRequest,
   type CreateProductImageRequest,
 } from '../../../core/services/products.service';
+import { RouterLink } from "@angular/router";
 
 const STATUS_OPTIONS = [
   { label: 'Rascunho', value: 'DRAFT' },
@@ -75,7 +76,8 @@ function slugify(text: string): string {
     TabViewModule,
     CheckboxModule,
     TextareaModule,
-  ],
+    RouterLink
+],
   providers: [ConfirmationService],
   templateUrl: './products-list.html',
   styleUrl: './products-list.scss',

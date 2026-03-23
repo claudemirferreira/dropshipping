@@ -228,7 +228,7 @@ export class ForgotPasswordComponent {
     const email = this.form.getRawValue().email;
     this.infoMessage.set(null);
     this.auth.forgotPassword(email).subscribe({
-      next: () => this.infoMessage.set('Se a conta existir, enviamos a senha temporária.'),
+      next: () => this.infoMessage.set('Email enviado com sucesso'),
       error: () => {},
     });
   }
