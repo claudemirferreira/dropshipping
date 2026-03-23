@@ -1,6 +1,9 @@
 package com.srv.setebit.dropshipping.infrastructure.persistence.jpa;
 
 import com.srv.setebit.dropshipping.domain.product.ProductStatus;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.embeddable.CommercialEmbeddable;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.embeddable.LogisticsEmbeddable;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.embeddable.StockEmbeddable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -38,9 +41,6 @@ public class ProductEntity {
     @Column(name = "sale_price", nullable = false, precision = 19, scale = 4)
     private BigDecimal salePrice;
 
-    @Column(name = "cost_price", nullable = false, precision = 19, scale = 4)
-    private BigDecimal costPrice;
-
     @Column(name = "currency", nullable = false, length = 10)
     private String currency = "BRL";
 
@@ -57,23 +57,14 @@ public class ProductEntity {
     @Column(name = "supplier_product_url", length = 1000)
     private String supplierProductUrl;
 
-    @Column(name = "lead_time_days")
-    private Integer leadTimeDays;
+    @Embedded
+    private LogisticsEmbeddable logistica;
 
     @Column(name = "is_dropship", nullable = false)
     private boolean dropship = true;
 
-    @Column(name = "weight", precision = 10, scale = 4)
-    private BigDecimal weight;
-
-    @Column(name = "length", precision = 10, scale = 4)
-    private BigDecimal length;
-
-    @Column(name = "width", precision = 10, scale = 4)
-    private BigDecimal width;
-
-    @Column(name = "height", precision = 10, scale = 4)
-    private BigDecimal height;
+    @Embedded
+    private StockEmbeddable estoque;
 
     @Column(name = "slug", nullable = false, unique = true, length = 255)
     private String slug;
@@ -93,14 +84,23 @@ public class ProductEntity {
     @Column(name = "compare_at_price", precision = 19, scale = 4)
     private BigDecimal compareAtPrice;
 
-    @Column(name = "stock_quantity")
-    private Integer stockQuantity;
+    @Embedded
+    private CommercialEmbeddable comercial;
 
     @Column(name = "tags", columnDefinition = "TEXT")
     private String tags;
 
     @Column(name = "attributes", columnDefinition = "TEXT")
     private String attributes;
+
+    @Column(name = "ean", length = 20)
+    private String ean;
+
+    @Column(name = "is_ean_interno", nullable = false)
+    private boolean isEanInterno = false;
+
+    @Column(name = "created_by")
+    private UUID createdBy;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

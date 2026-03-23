@@ -69,6 +69,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'produtos/cadastrar',
+        loadComponent: () =>
+          import('./features/products/product-base-create/product-base-create').then(
+            (m) => m.ProductBaseCreateComponent
+          ),
+      },
+      {
         path: 'rotinas',
         loadComponent: () =>
           import('./features/rotinas/rotinas-list/rotinas-list').then(

@@ -7,6 +7,8 @@ import com.srv.setebit.dropshipping.domain.access.exception.PerfilNotFoundExcept
 import com.srv.setebit.dropshipping.domain.access.exception.RotinaNotFoundException;
 import com.srv.setebit.dropshipping.domain.product.exception.DuplicateSkuException;
 import com.srv.setebit.dropshipping.domain.product.exception.DuplicateSlugException;
+import com.srv.setebit.dropshipping.domain.product.exception.InvalidStockException;
+import com.srv.setebit.dropshipping.domain.product.exception.InvalidValueException;
 import com.srv.setebit.dropshipping.domain.product.exception.ProductNotFoundException;
 import com.srv.setebit.dropshipping.domain.user.exception.DuplicateEmailException;
 import com.srv.setebit.dropshipping.domain.user.exception.InvalidCredentialsException;
@@ -71,10 +73,20 @@ public class GlobalExceptionHandler {
                 new ErrorResponse(Instant.now(), 409, "Conflict", ex.getMessage(), null));
     }
 
-    @ExceptionHandler({DuplicateSkuException.class, DuplicateSlugException.class})
+ @ExceptionHandler({DuplicateSkuException.class, DuplicateSlugException.class})
     public ResponseEntity<ErrorResponse> handleDuplicateProduct(RuntimeException ex) {
+        String message = ex instanceof DuplicateSkuException 
+            ? "Este SKU já está cadastrado em outro produto." 
+            : "Já existe um produto com este nome/slug. Tente um nome diferente.";
+
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                new ErrorResponse(Instant.now(), 409, "Conflict", ex.getMessage(), null));
+                new ErrorResponse(Instant.now(), 409, "Conflito de Cadastro", message, null));
+    }
+
+  @ExceptionHandler({InvalidStockException.class, InvalidValueException.class})
+    public ResponseEntity<ErrorResponse> handleProductValidation(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(
+                new ErrorResponse(Instant.now(), 422, "Erro de Validação", ex.getMessage(), null));
     }
 
     @ExceptionHandler(InvalidCredentialsException.class)

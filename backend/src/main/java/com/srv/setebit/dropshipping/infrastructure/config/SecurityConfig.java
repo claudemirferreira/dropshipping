@@ -58,6 +58,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/products/**").authenticated()
                         .requestMatchers("/api/v1/rotinas/**").authenticated()
                         .requestMatchers("/api/v1/perfis/**").authenticated()
+                        .requestMatchers("/api/v1/**").authenticated()
                         .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
                         .anyRequest().authenticated())

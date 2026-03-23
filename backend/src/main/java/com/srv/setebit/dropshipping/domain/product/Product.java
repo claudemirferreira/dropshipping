@@ -40,6 +40,12 @@ public class Product {
     private Integer stockQuantity;
     private String tags;
     private String attributes;
+    private String ean;
+    private boolean isEanInterno;
+    private Integer stockMinimum;
+    private BigDecimal sellerFeePercent;
+    private String warranty;
+    private UUID createdBy;
     private Instant createdAt;
     private Instant updatedAt;
 }
