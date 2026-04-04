@@ -23,6 +23,13 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'password-reset-success',
+    loadComponent: () =>
+      import('./features/auth/password-reset-success/password-reset-success').then(
+        (m) => m.PasswordResetSuccessComponent
+      ),
+  },
+  {
     path: 'planos',
     loadComponent: () =>
       import('./features/public/plans/plans').then((m) => m.PlansComponent),
@@ -46,6 +53,11 @@ export const routes: Routes = [
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full',
+      },
+      {
+        path: 'perfil',
+        loadComponent: () =>
+          import('./features/profile/profile').then((m) => m.ProfileComponent),
       },
       {
         path: 'dashboard',

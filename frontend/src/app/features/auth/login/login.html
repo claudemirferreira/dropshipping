@@ -1,0 +1,167 @@
+<div class="login-page">
+
+  <!-- ── Navbar ── -->
+  <nav class="login-nav">
+    <span class="nav-brand">QueroSerDrop</span>
+    <div class="nav-links">
+      <a class="nav-link">Recursos</a>
+      <a class="nav-link">Preços</a>
+      <a class="nav-link">Sobre</a>
+    </div>
+    <a class="nav-cta">Cadastre-se</a>
+  </nav>
+
+  <!-- ── Painel principal ── -->
+  <main class="login-main">
+    <div class="login-panel">
+
+      <!-- Esquerda: marketing -->
+      <div class="panel-left">
+        <span class="left-brand">QueroSerDrop</span>
+        <h1 class="left-headline">
+          Venda mais com dropshipping e leve seu negócio para o próximo nível.
+        </h1>
+        <p class="left-desc">
+          Junte-se a milhares de vendedores que já estão crescendo com uma
+          logística eficiente e automatizada.
+        </p>
+
+        <!-- Mockup CSS do dashboard -->
+        <div class="dash-mockup">
+          <div class="dash-sidebar">
+            <div class="dash-logo-block"></div>
+            @for (i of [1,2,3,4,5,6]; track i) {
+              <div class="dash-nav-item" [class.active]="i === 2"></div>
+            }
+          </div>
+          <div class="dash-body">
+            <div class="dash-topbar">
+              <div class="dash-topbar-title"></div>
+              <div class="dash-topbar-btn"></div>
+            </div>
+            <div class="dash-cards">
+              @for (j of [1,2,3]; track j) {
+                <div class="dash-card-mini"></div>
+              }
+            </div>
+            <div class="dash-table">
+              <div class="dash-table-header">
+                @for (k of [1,2,3,4]; track k) {
+                  <div class="dash-th"></div>
+                }
+              </div>
+              @for (r of [1,2,3,4]; track r) {
+                <div class="dash-table-row" [class.alt]="r % 2 === 0">
+                  @for (c of [1,2,3,4]; track c) {
+                    <div class="dash-td"></div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Direita: form -->
+      <div class="panel-right">
+        <h2 class="form-title">Bem-vindo de volta</h2>
+        <p class="form-subtitle">Por favor, insira seus dados para acessar sua conta</p>
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="login-form" novalidate>
+
+          <!-- E-mail -->
+          <div class="field">
+            <label class="field-label" for="lEmail">E-MAIL</label>
+            <input
+              id="lEmail"
+              pInputText
+              type="email"
+              formControlName="email"
+              placeholder="hello@example.com"
+              autocomplete="email"
+              class="field-input"
+            />
+            @if (form.get('email')?.invalid && form.get('email')?.touched) {
+              <small class="field-err">E-mail é obrigatório</small>
+            }
+          </div>
+
+          <!-- Senha -->
+          <div class="field">
+            <div class="field-label-row">
+              <label class="field-label" for="lPassword">SENHA</label>
+              <a class="forgot-link" (click)="onForgotPassword()">Esqueceu a senha?</a>
+            </div>
+            <p-password
+              id="lPassword"
+              formControlName="password"
+              placeholder="••••••••"
+              [feedback]="false"
+              [toggleMask]="true"
+              styleClass="pw-wrap"
+              inputStyleClass="field-input w-full"
+            />
+            @if (form.get('password')?.invalid && form.get('password')?.touched) {
+              <small class="field-err">Senha é obrigatória</small>
+            }
+          </div>
+
+          <!-- Mensagem de erro -->
+          @if (errorMessage()) {
+            <div class="error-inline">
+              <i class="pi pi-times-circle"></i>
+              {{ errorMessage() }}
+            </div>
+          }
+
+          <!-- Manter conectado -->
+          <div class="field field-inline">
+            <p-checkbox inputId="lRemember" formControlName="rememberMe" [binary]="true" />
+            <label for="lRemember" class="remember-label">Manter conectado</label>
+          </div>
+
+          <!-- Submit -->
+          <button
+            id="btn-login"
+            type="submit"
+            class="submit-btn"
+            [disabled]="form.invalid || loading()"
+          >
+            @if (loading()) {
+              <i class="pi pi-spin pi-spinner"></i>
+            } @else {
+              Entrar
+            }
+          </button>
+
+          <!-- Conta bloqueada -->
+          @if (locked()) {
+            <button type="button" class="locked-btn" (click)="onResolveIssue()">
+              <i class="pi pi-lock"></i>
+              Clique aqui para resolver ou entre em contato com a equipe
+            </button>
+          }
+
+          <!-- Sem conta -->
+          <p class="signup-text">
+            Não tem uma conta?
+            <a class="signup-cta">Crie uma conta</a>
+          </p>
+
+        </form>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ── Footer ── -->
+  <footer class="login-footer">
+    <span>© 2024 QueroSerDrop TODOS OS DIREITOS RESERVADOS.</span>
+    <div class="footer-links">
+      <a>Política de Privacidade</a>
+      <a>Termos de Serviço</a>
+      <a>Central de Ajuda</a>
+    </div>
+  </footer>
+
+</div>

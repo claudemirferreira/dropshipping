@@ -1,0 +1,355 @@
+$green:       #16a34a;
+$green-mid:   #22c55e;
+$green-light: #dcfce7;
+$green-bg:    #f0fdf4;
+$text-dark:   #0f172a;
+$text-mid:    #374151;
+$text-muted:  #6b7280;
+$border:      #e5e7eb;
+$white:       #fff;
+
+* { box-sizing: border-box; }
+
+/* ─── Page ───────────────────────────────────────── */
+.profile-page {
+  max-width: 876px;
+  margin: 0 auto;
+  padding-bottom: 5rem;
+  font-family: 'Inter', system-ui, sans-serif;
+  position: relative;
+}
+
+/* ─── Breadcrumb ─────────────────────────────────── */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: $text-muted;
+  margin-bottom: 0.5rem;
+
+  .sep { opacity: 0.5; }
+  .active-crumb { color: $green; }
+}
+
+/* ─── Page header ────────────────────────────────── */
+.page-title {
+  font-size: 1.875rem;
+  font-weight: 800;
+  color: $text-dark;
+  margin: 0 0 0.25rem;
+}
+
+.page-subtitle {
+  font-size: 0.875rem;
+  color: $text-muted;
+  margin: 0 0 1.5rem;
+}
+
+/* ─── Section cards ──────────────────────────────── */
+.section-card {
+  background: $white;
+  border-radius: 0.875rem;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.07);
+  padding: 1.5rem 1.75rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #f1f5f9;
+
+  h2 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: $text-dark;
+    margin: 0;
+  }
+}
+
+.section-icon-wrap {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: $green-light;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  i {
+    font-size: 1rem;
+    color: $green;
+  }
+}
+
+/* ─── Form layout ────────────────────────────────── */
+.form-row {
+  display: grid;
+  gap: 1rem;
+
+  &.two-col         { grid-template-columns: 1fr 1fr; }
+  &.three-col       { grid-template-columns: 1fr 1fr 80px; }
+  &.cep-row         { grid-template-columns: 200px 1fr; }
+  &.small-first     { grid-template-columns: 160px 1fr; }
+}
+
+/* ─── Fields ─────────────────────────────────────── */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.field-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: $text-mid;
+}
+
+.field-input {
+  width: 100%;
+  border: 1.5px solid $border !important;
+  border-radius: 8px !important;
+  padding: 0.55rem 0.875rem !important;
+  font-size: 0.875rem !important;
+  color: $text-dark !important;
+  background: $white !important;
+  box-shadow: none !important;
+  transition: border-color 0.15s, background 0.15s;
+
+  &:focus {
+    border-color: $green-mid !important;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12) !important;
+  }
+
+  &::placeholder { color: #9ca3af !important; }
+
+  /* campos preenchidos via CEP lookup */
+  &.filled { background: $green-bg !important; }
+}
+
+/* ─── p-dropdown override ────────────────────────── */
+::ng-deep .field-dropdown {
+  .p-dropdown {
+    border: 1.5px solid $border !important;
+    border-radius: 8px !important;
+    background: $white !important;
+    box-shadow: none !important;
+
+    &:hover, &.p-focus {
+      border-color: $green-mid !important;
+      box-shadow: none !important;
+    }
+  }
+
+  .p-dropdown-label {
+    color: $text-dark !important;
+    font-size: 0.875rem !important;
+    padding: 0.55rem 0.875rem !important;
+  }
+}
+
+/* ─── Perfil pills ───────────────────────────────── */
+.perfil-pills {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  padding-top: 0.25rem;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 1rem;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border: 1.5px solid $border;
+  background: $white;
+  color: $text-mid;
+
+  &.pill-active {
+    background: $green;
+    border-color: $green;
+    color: $white;
+  }
+}
+
+/* ─── Radio group ────────────────────────────────── */
+.radio-group {
+  display: flex;
+  gap: 1.5rem;
+  padding-top: 0.25rem;
+}
+
+.radio-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: $text-mid;
+  user-select: none;
+}
+
+::ng-deep .radio-item .p-radiobutton .p-radiobutton-box {
+  border-color: $border !important;
+  background: $white !important;
+  box-shadow: none !important;
+  width: 20px !important;
+  height: 20px !important;
+
+  &.p-highlight {
+    border-color: $green !important;
+    background: $white !important;
+
+    .p-radiobutton-icon {
+      background: $green !important;
+      width: 10px !important;
+      height: 10px !important;
+    }
+  }
+}
+
+/* ─── CEP field ──────────────────────────────────── */
+.cep-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.cep-search-btn {
+  position: absolute;
+  right: 0.625rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: $text-muted;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  font-size: 0.875rem;
+  transition: color 0.15s;
+
+  &:hover:not(:disabled) { color: $green; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+/* ─── Ações ──────────────────────────────────────── */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.btn-cancel {
+  padding: 0.6rem 1.5rem;
+  border: 1.5px solid $border;
+  border-radius: 8px;
+  background: $white;
+  color: $text-mid;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+
+  &:hover { border-color: $text-mid; color: $text-dark; }
+}
+
+.btn-save {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  background: $green;
+  color: $white;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+
+  &:hover:not(:disabled) { background: darken($green, 5%); }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+/* ─── Aviso Segurança ────────────────────────────── */
+.security-notice {
+  display: flex;
+  gap: 0.75rem;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+
+  .notice-icon {
+    color: #0284c7;
+    font-size: 1rem;
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+  }
+
+  .notice-body {
+    strong {
+      font-size: 0.875rem;
+      color: #0c4a6e;
+      font-weight: 600;
+    }
+
+    p {
+      margin: 0.25rem 0 0;
+      font-size: 0.8125rem;
+      color: #0369a1;
+      line-height: 1.55;
+    }
+  }
+}
+
+/* ─── FAB ────────────────────────────────────────── */
+.fab-support {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: $green;
+  color: $white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(22, 163, 74, 0.4);
+  transition: background 0.15s, box-shadow 0.15s;
+  z-index: 100;
+
+  i { font-size: 1.125rem; }
+
+  &:hover {
+    background: darken($green, 5%);
+    box-shadow: 0 6px 18px rgba(22, 163, 74, 0.5);
+  }
+}
+
+/* ─── Responsivo ─────────────────────────────────── */
+@media (max-width: 680px) {
+  .form-row.two-col,
+  .form-row.three-col,
+  .form-row.cep-row,
+  .form-row.small-first {
+    grid-template-columns: 1fr;
+  }
+}

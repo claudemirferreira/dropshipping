@@ -182,6 +182,12 @@ export class SakaiTopbarComponent {
 
   userMenuItems: MenuItem[] = [
     {
+      label: 'Meu Perfil',
+      icon: 'pi pi-user',
+      routerLink: '/perfil',
+    },
+    { separator: true },
+    {
       label: 'Sair',
       icon: 'pi pi-sign-out',
       command: () => this.auth.logout(),

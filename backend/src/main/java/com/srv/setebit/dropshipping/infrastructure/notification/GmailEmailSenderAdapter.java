@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Profile;
 import jakarta.mail.internet.MimeMessage;
 import java.io.File;
 
-
 @Component
 @Profile("!test")
 public class GmailEmailSenderAdapter implements EmailSenderPort {
@@ -88,7 +87,7 @@ public class GmailEmailSenderAdapter implements EmailSenderPort {
           <div class="card">
             <div class="header">
               <img src="cid:logoCid" alt="Logo">
-              <div>DropSeller • Segurança de Acesso</div>
+              <div>QueroSerDrop • Segurança de Acesso</div>
             </div>
             <div class="content">
               <h1 class="title">Olá %s!</h1>
@@ -100,7 +99,7 @@ public class GmailEmailSenderAdapter implements EmailSenderPort {
               <p style="margin-top:16px;color:#666;">Se não foi você quem solicitou, ignore este email.</p>
             </div>
             <div class="footer">
-              © %d DropSeller. Todos os direitos reservados.
+              © %d QueroSerDrop. Todos os direitos reservados.
             </div>
           </div>
         </body>
