@@ -24,7 +24,7 @@ import { AdminProductsService, CreateBaseProductRequest } from '../../../core/se
     TextareaModule,
     RouterLink,
     StepperModule
-],
+  ],
   templateUrl: './product-base-create.html',
   styleUrls: ['./product-base-create.scss'],
 })
@@ -95,9 +95,9 @@ export class ProductBaseCreateComponent {
     const v = this.form.getRawValue();
     const tags: string[] | undefined = v.tagsInput
       ? String(v.tagsInput)
-          .split(',')
-          .map((s: string) => s.trim())
-          .filter((s: string) => s.length > 0)
+        .split(',')
+        .map((s: string) => s.trim())
+        .filter((s: string) => s.length > 0)
       : undefined;
     const payload: CreateBaseProductRequest = {
       nome: v.nome,
@@ -128,9 +128,9 @@ export class ProductBaseCreateComponent {
       },
       codigos: v.codigos
         ? {
-            ean: v.codigos.ean || undefined,
-            is_ean_interno: !!v.codigos.is_ean_interno,
-          }
+          ean: v.codigos.ean || undefined,
+          is_ean_interno: !!v.codigos.is_ean_interno,
+        }
         : undefined,
       tags,
     };
