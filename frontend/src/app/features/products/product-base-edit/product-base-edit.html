@@ -1,10 +1,16 @@
 <div class="page-header">
   <div class="page-title-block">
-    <h1 class="page-title">Novo Produto</h1>
-    <p class="page-description">Cadastro de produto base do catálogo.</p>
+    <h1 class="page-title">Editar Produto</h1>
+    <p class="page-description">Edição de produto base do catálogo.</p>
   </div>
 </div>
 
+@if (loading()) {
+<div style="text-align: center; padding: 3rem; color: #94a3b8;">
+  <i class="pi pi-spin pi-spinner" style="font-size: 2rem;"></i>
+  <p>Carregando dados do produto...</p>
+</div>
+} @else {
 <form [formGroup]="form" class="product-form" (ngSubmit)="submit()">
   <p-stepper [value]="1" class="product-stepper">
     <p-step-list>
@@ -264,10 +270,11 @@
 
           <div class="form-actions step-actions">
             <p-button label="Voltar" severity="secondary" icon="pi pi-arrow-left" (onClick)="activateCallback(3)"></p-button>
-            <p-button label="Salvar" severity="primary" type="submit" [disabled]="!isStepValid(4)"></p-button>
+            <p-button label="Salvar alterações" severity="primary" type="submit" [loading]="saving()" [disabled]="!isStepValid(4) || saving()"></p-button>
           </div>
         </ng-template>
       </p-step-panel>
     </p-step-panels>
   </p-stepper>
 </form>
+}

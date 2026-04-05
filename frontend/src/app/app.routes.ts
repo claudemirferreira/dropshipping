@@ -88,6 +88,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'produtos/editar/:id',
+        loadComponent: () =>
+          import('./features/products/product-base-edit/product-base-edit').then(
+            (m) => m.ProductBaseEditComponent
+          ),
+      },
+      {
         path: 'rotinas',
         loadComponent: () =>
           import('./features/rotinas/rotinas-list/rotinas-list').then(
