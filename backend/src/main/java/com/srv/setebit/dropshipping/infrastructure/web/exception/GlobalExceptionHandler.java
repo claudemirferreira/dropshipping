@@ -5,6 +5,8 @@ import com.srv.setebit.dropshipping.domain.access.exception.DuplicateRotinaCodeE
 import com.srv.setebit.dropshipping.domain.access.exception.PerfilEmUsoException;
 import com.srv.setebit.dropshipping.domain.access.exception.PerfilNotFoundException;
 import com.srv.setebit.dropshipping.domain.access.exception.RotinaNotFoundException;
+import com.srv.setebit.dropshipping.domain.appconfig.exception.AppConfigNotFoundException;
+import com.srv.setebit.dropshipping.domain.appconfig.exception.InvalidAppConfigTipoException;
 import com.srv.setebit.dropshipping.domain.product.exception.DuplicateSkuException;
 import com.srv.setebit.dropshipping.domain.product.exception.DuplicateSlugException;
 import com.srv.setebit.dropshipping.domain.product.exception.InvalidStockException;
@@ -55,7 +57,13 @@ public class GlobalExceptionHandler {
                 new ErrorResponse(Instant.now(), 404, "Not Found", ex.getMessage(), null));
     }
 
-    @ExceptionHandler({RotinaNotFoundException.class, PerfilNotFoundException.class})
+    @ExceptionHandler(InvalidAppConfigTipoException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidAppConfigTipo(InvalidAppConfigTipoException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new ErrorResponse(Instant.now(), 400, "Bad Request", ex.getMessage(), null));
+    }
+
+    @ExceptionHandler({RotinaNotFoundException.class, PerfilNotFoundException.class, AppConfigNotFoundException.class})
     public ResponseEntity<ErrorResponse> handleAccessNotFound(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 new ErrorResponse(Instant.now(), 404, "Not Found", ex.getMessage(), null));

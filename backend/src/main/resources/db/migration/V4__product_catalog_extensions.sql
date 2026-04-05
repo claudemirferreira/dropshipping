@@ -1,9 +1,0 @@
-ALTER TABLE product
-    ADD COLUMN IF NOT EXISTS ean VARCHAR(20),
-    ADD COLUMN IF NOT EXISTS is_ean_interno BOOLEAN NOT NULL DEFAULT false,
-    ADD COLUMN IF NOT EXISTS created_by UUID,
-    ADD COLUMN IF NOT EXISTS stock_minimum INTEGER,
-    ADD COLUMN IF NOT EXISTS seller_fee_percent NUMERIC(5,2),
-    ADD COLUMN IF NOT EXISTS warranty VARCHAR(500);
-
-CREATE INDEX IF NOT EXISTS idx_product_ean ON product(ean);
