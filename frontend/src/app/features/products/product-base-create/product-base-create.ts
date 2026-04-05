@@ -55,6 +55,7 @@ export class ProductBaseCreateComponent {
     }),
     comercial: this.fb.group({
       valor_custo: [null, [Validators.required]],
+      valor_venda: [null, [Validators.required]],
       percentual_taxa_seller: [null],
       garantia: ['', [Validators.required]],
     }),
@@ -120,6 +121,7 @@ export class ProductBaseCreateComponent {
       },
       comercial: {
         valor_custo: Number(v.comercial.valor_custo),
+        valor_venda: Number(v.comercial.valor_venda),
         percentual_taxa_seller:
           v.comercial.percentual_taxa_seller != null && v.comercial.percentual_taxa_seller !== ''
             ? Number(v.comercial.percentual_taxa_seller)

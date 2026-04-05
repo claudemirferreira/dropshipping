@@ -69,7 +69,7 @@ public class CreateBaseProductUseCase {
         product.setShortDescription(request.descricaoCurta().trim());
         product.setFullDescription(request.descricaoCompleta());
         product.setCostPrice(request.comercial().valorCusto());
-        product.setSalePrice(request.comercial().valorCusto());
+        product.setSalePrice(request.comercial().valorVenda());
         product.setCurrency(DEFAULT_CURRENCY);
         product.setStatus(ProductStatus.DRAFT);
         product.setSupplierSku(null);

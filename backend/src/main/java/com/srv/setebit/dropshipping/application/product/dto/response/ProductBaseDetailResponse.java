@@ -76,6 +76,7 @@ public record ProductBaseDetailResponse(
                 ),
                 new ComercialDetail(
                         p.getCostPrice(),
+                        p.getSalePrice(),
                         p.getSellerFeePercent(),
                         p.getWarranty() != null ? p.getWarranty() : ""
                 ),
@@ -102,6 +103,7 @@ public record ProductBaseDetailResponse(
 
     public record ComercialDetail(
             @JsonProperty("valor_custo") BigDecimal valorCusto,
+            @JsonProperty("valor_venda") BigDecimal valorVenda,
             @JsonProperty("percentual_taxa_seller") BigDecimal percentualTaxaSeller,
             @JsonProperty("garantia") String garantia
     ) {}

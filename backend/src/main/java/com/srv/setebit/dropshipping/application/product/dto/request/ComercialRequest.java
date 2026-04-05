@@ -10,6 +10,8 @@ import java.math.BigDecimal;
 public record ComercialRequest(
         @NotNull @DecimalMin(value = "0", inclusive = false)
         @JsonProperty("valor_custo") BigDecimal valorCusto,
+        @NotNull @DecimalMin(value = "0", inclusive = false)
+        @JsonProperty("valor_venda") BigDecimal valorVenda,
         @DecimalMin(value = "0", inclusive = false)
         @JsonProperty("percentual_taxa_seller") BigDecimal percentualTaxaSeller,
         @NotBlank

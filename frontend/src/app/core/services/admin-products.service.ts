@@ -29,6 +29,7 @@ export interface EstoquePayload {
 
 export interface ComercialPayload {
   valor_custo: number;
+  valor_venda?: number;
   percentual_taxa_seller?: number;
   garantia: string;
 }
@@ -59,6 +60,7 @@ export interface ProductBaseDetail {
   };
   comercial: {
     valor_custo: number;
+    valor_venda: number;
     percentual_taxa_seller: number | null;
     garantia: string;
   };

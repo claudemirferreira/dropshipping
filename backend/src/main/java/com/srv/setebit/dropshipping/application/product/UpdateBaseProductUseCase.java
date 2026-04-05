@@ -95,7 +95,9 @@ public class UpdateBaseProductUseCase {
         }
 
         if (request.comercial() != null) {
+            log.info("Atualizando comercial: custo={}, venda={}", request.comercial().valorCusto(), request.comercial().valorVenda());
             product.setCostPrice(request.comercial().valorCusto());
+            product.setSalePrice(request.comercial().valorVenda());
             product.setSellerFeePercent(request.comercial().percentualTaxaSeller() != null
                     ? request.comercial().percentualTaxaSeller()
                     : java.math.BigDecimal.valueOf(5.0));
@@ -108,7 +110,7 @@ public class UpdateBaseProductUseCase {
         product.setUpdatedAt(Instant.now());
 
         product = productRepository.save(product);
-        log.info("Produto base atualizado com id={}", product.getId());
+        log.info("Produto base atualizado com id={}, salePrice={}, costPrice={}", product.getId(), product.getSalePrice(), product.getCostPrice());
         return new ProductResponseDTO(
                 product.getId(), product.getName(), product.getSlug(), product.getSku(),
                 product.getStatus(), product.getEan(), product.isEanInterno(), product.getCreatedAt()
