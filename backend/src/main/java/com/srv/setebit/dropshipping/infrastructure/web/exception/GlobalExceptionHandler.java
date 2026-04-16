@@ -12,6 +12,8 @@ import com.srv.setebit.dropshipping.domain.product.exception.DuplicateSlugExcept
 import com.srv.setebit.dropshipping.domain.product.exception.InvalidStockException;
 import com.srv.setebit.dropshipping.domain.product.exception.InvalidValueException;
 import com.srv.setebit.dropshipping.domain.product.exception.ProductNotFoundException;
+import com.srv.setebit.dropshipping.domain.seller.exception.SellerAlreadyExistsException;
+import com.srv.setebit.dropshipping.domain.seller.exception.SellerNotFoundException;
 import com.srv.setebit.dropshipping.domain.user.exception.DuplicateEmailException;
 import com.srv.setebit.dropshipping.domain.user.exception.InvalidCredentialsException;
 import com.srv.setebit.dropshipping.domain.user.exception.InvalidRefreshTokenException;
@@ -45,8 +47,8 @@ public class GlobalExceptionHandler {
                 new ErrorResponse(Instant.now(), 404, "Not Found", ex.getMessage(), null));
     }
 
-    @ExceptionHandler(DuplicateEmailException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicateEmail(DuplicateEmailException ex) {
+    @ExceptionHandler({DuplicateEmailException.class, SellerAlreadyExistsException.class})
+    public ResponseEntity<ErrorResponse> handleDuplicateEmail(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 new ErrorResponse(Instant.now(), 409, "Conflict", ex.getMessage(), null));
     }
@@ -63,7 +65,8 @@ public class GlobalExceptionHandler {
                 new ErrorResponse(Instant.now(), 400, "Bad Request", ex.getMessage(), null));
     }
 
-    @ExceptionHandler({RotinaNotFoundException.class, PerfilNotFoundException.class, AppConfigNotFoundException.class})
+    @ExceptionHandler({RotinaNotFoundException.class, PerfilNotFoundException.class, AppConfigNotFoundException.class,
+            SellerNotFoundException.class})
     public ResponseEntity<ErrorResponse> handleAccessNotFound(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 new ErrorResponse(Instant.now(), 404, "Not Found", ex.getMessage(), null));

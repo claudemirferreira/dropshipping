@@ -1,8 +1,8 @@
 package com.srv.setebit.dropshipping.infrastructure.persistence.adapter;
 
 import com.srv.setebit.dropshipping.domain.user.port.PasswordResetAuditRepositoryPort;
-import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.PasswordResetRequestEntity;
-import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.PasswordResetRequestRepository;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.entity.PasswordResetRequestEntity;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.repository.PasswordResetRequestRepository;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 

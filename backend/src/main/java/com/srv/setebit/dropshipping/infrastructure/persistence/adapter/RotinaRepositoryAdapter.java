@@ -2,8 +2,8 @@ package com.srv.setebit.dropshipping.infrastructure.persistence.adapter;
 
 import com.srv.setebit.dropshipping.domain.access.Rotina;
 import com.srv.setebit.dropshipping.domain.access.port.RotinaRepositoryPort;
-import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.RotinaEntity;
-import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.RotinaJpaRepository;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.entity.RotinaEntity;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.repository.RotinaJpaRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
