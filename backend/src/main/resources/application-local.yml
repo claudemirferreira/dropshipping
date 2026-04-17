@@ -1,0 +1,105 @@
+# Configuração via variáveis de ambiente.
+# Local: opcionalmente carrega backend/.env (spring.config.import).
+# VPS/Docker: defina as variáveis no arquivo de env (ex.: /root/dropshipping.env) ou no ambiente.
+# Todas as chaves abaixo usam sintaxe ${NOME_VAR:valor_default}; sem default, a variável é obrigatória.
+spring:
+  application:
+    name: dropshipping
+  datasource:
+    url: jdbc:postgresql://localhost:5432/dropshipping?currentSchema=dropshipping
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    create-schemas: true
+    locations: classpath:db/migration
+    validate-on-migrate: true
+    # Cria as tabelas no schema dropshipping (postgres → dropshipping)
+    schemas: dropshipping
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        default_schema: dropshipping
+  mail:
+    host: smtp-relay.brevo.com
+    port: 587
+    username: a30d73001@smtp-brevo.com
+    password: Y46zCjf72BJ5NrEg
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+server:
+  port: 8080
+
+app:
+  upload:
+    dir: uploads
+  api:
+    base-url: http://localhost:8080
+  mail:
+    from: moliveiraferreira247@gmail.com
+    override-recipient: ""
+    base-url: http://localhost:8080
+    logo-path: d:\Dropshipping\dropshipping\frontend\public\assets\logo-email.jpeg
+
+oci:
+  object-storage:
+    enabled: false
+    namespace: gr0kzi2pkjs4
+    bucket-name: products
+    region: sa-saopaulo-1
+    config-profile: DEFAULT
+
+# Para ver no console se o Flyway está rodando e quais migrações aplica.
+# Na VPS, defina LOGGING_LEVEL_ORG_FLYWAYDB=DEBUG no .env para diagnosticar se as migrations rodam.
+logging:
+  level:
+    org.flywaydb: ${LOGGING_LEVEL_ORG_FLYWAYDB:INFO}
+
+management:
+  health:
+    mail:
+      enabled: true
+
+jwt:
+  # Em produção use JWT_SECRET forte (min 256 bits). Defina via variável de ambiente ou .env.
+  secret: dropshipping-secret-key-for-jwt-signing-min-256-bits-required-for-hs256
+  access-token-expiration-ms: 1800000
+  refresh-token-expiration-ms: 604800000
+
+auth:
+  forgot-password-rate-limit-window-minutes: 15
+  forgot-password-rate-limit-per-email: 5
+  forgot-password-rate-limit-per-ip: 20
+  temporary-login-url: http://187.77.46.9/login
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    operationsSorter: method
+    tagsSorter: alpha
+
+mercadolivre:
+  client-id: ${MERCADOLIVRE_CLIENT_ID:7667915994635886}
+  client-secret: ${MERCADOLIVRE_CLIENT_SECRET:xaiArQRfva8zFlbdzhRZfNfLNpe2rX9o}
+  redirect-uri: ${MERCADOLIVRE_REDIRECT_URI:http://localhost:8080/callback}
+  base-url: https://api.mercadolibre.com
+  auth-url: https://auth.mercadolibre.com.ar
+  token-refresh-threshold-seconds: 300

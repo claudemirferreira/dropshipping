@@ -1,5 +1,6 @@
 package com.srv.setebit.dropshipping.infrastructure.web.mapper;
 
+import com.srv.setebit.dropshipping.application.seller.dto.request.UpdateSellerRequest;
 import com.srv.setebit.dropshipping.application.seller.dto.response.SellerResponse;
 import com.srv.setebit.dropshipping.domain.seller.Seller;
 import com.srv.setebit.dropshipping.infrastructure.web.dto.seller.CreateSellerRequest;
@@ -9,6 +10,20 @@ import org.springframework.stereotype.Component;
 public class SellerMapper {
 
     public Seller toCreate(CreateSellerRequest request) {
+        return Seller
+                .builder()
+                .userId(request.userId())
+                .marketplace(request.marketplace())
+                .marketplaceId(request.marketplaceId())
+                .accessToken(request.accessToken())
+                .tokenType(request.tokenType())
+                .expiresIn(request.expiresIn())
+                .refreshToken(request.refreshToken())
+                .scope(request.scope())
+                .build();
+    }
+
+    public Seller toUpdate(UpdateSellerRequest request) {
         return Seller
                 .builder()
                 .userId(request.userId())

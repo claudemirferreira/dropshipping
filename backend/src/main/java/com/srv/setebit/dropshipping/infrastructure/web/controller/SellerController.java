@@ -37,7 +37,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/v1/ml-sellers")
+@RequestMapping("/api/v1/sellers")
 @Tag(name = "Mercado Livre — Seller", description = "CRUD de tokens OAuth do vendedor (id = usuário da aplicação)")
 public class SellerController {
 
@@ -107,8 +107,8 @@ public class SellerController {
     @Operation(summary = "Atualizar tokens do seller")
     public ResponseEntity<SellerResponse> update(@PathVariable UUID id,
                                                  @Valid @RequestBody UpdateSellerRequest request) {
-        SellerResponse response = updateSellerUseCase.execute(id, request);
-        return ResponseEntity.ok(response);
+        Seller seller = updateSellerUseCase.execute(id, sellerWebMapper.toUpdate(request));
+        return ResponseEntity.ok(sellerWebMapper.toResponse(seller));
     }
 
     @DeleteMapping("/{id}")
@@ -118,4 +118,5 @@ public class SellerController {
         deleteSellerUseCase.execute(id);
         return ResponseEntity.noContent().build();
     }
+
 }

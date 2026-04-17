@@ -7,8 +7,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.UUID;
+
 @Schema(description = "Atualização dos tokens do seller (snake_case aceito)")
 public record UpdateSellerRequest(
+        @NotNull(message = "id é obrigatório")
+        @Schema(description = "ID do usuário", requiredMode = Schema.RequiredMode.REQUIRED)
+        UUID userId,
+
         @NotNull(message = "marketplace é obrigatório")
         @Schema(description = "Marketplace (mercado_livre, shopee)", requiredMode = Schema.RequiredMode.REQUIRED)
         MarketplaceEnum marketplace,
