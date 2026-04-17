@@ -34,7 +34,7 @@ import {
   type CreateProductRequest,
   type CreateProductImageRequest,
 } from '../../../core/services/products.service';
-import { RouterLink } from "@angular/router";
+import { Router, RouterLink } from "@angular/router";
 
 const STATUS_OPTIONS = [
   { label: 'Rascunho', value: 'DRAFT' },
@@ -87,6 +87,7 @@ export class ProductsListComponent {
   private readonly productsService = inject(ProductsService);
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
+  private readonly router = inject(Router);
 
   products = signal<Product[]>([]);
   totalRecords = signal(0);
@@ -204,20 +205,7 @@ export class ProductsListComponent {
   }
 
   openEditDialog(product: Product): void {
-    this.productsService.getById(product.id).subscribe({
-      next: (detail) => {
-        this.editingProduct.set(detail);
-        this.patchForm(detail);
-        this.dialogVisible.set(true);
-      },
-      error: () => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Erro',
-          detail: 'Não foi possível carregar o produto.',
-        });
-      },
-    });
+    this.router.navigate(['/produtos/editar', product.id]);
   }
 
   private patchForm(p: ProductDetail): void {

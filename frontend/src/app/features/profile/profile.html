@@ -1,0 +1,182 @@
+<div class="profile-page">
+
+  <!-- ── Breadcrumb ── -->
+  <nav class="breadcrumb" aria-label="Navegação">
+    <span>CONFIGURAÇÕES</span>
+    <span class="sep">/</span>
+    <span class="active-crumb">EDITAR PERFIL</span>
+  </nav>
+
+  <h1 class="page-title">Dados do Perfil</h1>
+  <p class="page-subtitle">Gerenciar suas informações de conta e faturamento.</p>
+
+  <form [formGroup]="form" (ngSubmit)="onSave()" novalidate>
+
+    <!-- ── Seção 1: Dados Básicos ── -->
+    <div class="section-card">
+      <div class="section-header">
+        <span class="section-icon-wrap"><i class="pi pi-user"></i></span>
+        <h2>Dados Básicos</h2>
+      </div>
+
+      <div class="form-row two-col">
+        <div class="field">
+          <label class="field-label">NOME COMPLETO</label>
+          <input pInputText formControlName="nomeCompleto" placeholder="Ex: João da Silva" class="field-input" />
+        </div>
+        <div class="field">
+          <label class="field-label">WHATSAPP</label>
+          <input pInputText formControlName="whatsapp" placeholder="(00) 0 0000-0000" class="field-input" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">PERFIL DE ACESSO</label>
+        <div class="perfil-pills">
+          @for (p of userPerfis(); track p.code) {
+            <span class="pill" [class.pill-active]="p.active">{{ p.code }}</span>
+          }
+          @if (userPerfis().length === 0) {
+            <span class="pill">SEM PERFIL</span>
+          }
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">TIPO DE PESSOA</label>
+        <div class="radio-group">
+          <label class="radio-item">
+            <p-radioButton inputId="fisica" formControlName="tipoPessoa" value="fisica" />
+            <span for="fisica">Pessoa Física</span>
+          </label>
+          <label class="radio-item">
+            <p-radioButton inputId="juridica" formControlName="tipoPessoa" value="juridica" />
+            <span for="juridica">Pessoa Jurídica</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Seção 2: Dados Fiscais ── -->
+    <div class="section-card">
+      <div class="section-header">
+        <span class="section-icon-wrap"><i class="pi pi-file-edit"></i></span>
+        <h2>Dados Fiscais</h2>
+      </div>
+
+      <div class="form-row two-col">
+        <div class="field">
+          <label class="field-label">
+            {{ tipoPessoa() === 'juridica' ? 'CNPJ' : 'CPF / CNPJ' }}
+          </label>
+          <input
+            pInputText
+            formControlName="cpfCnpj"
+            [placeholder]="tipoPessoa() === 'juridica' ? '00.000.000/0000-00' : '000.000.000-00'"
+            class="field-input"
+          />
+        </div>
+        <div class="field">
+          <label class="field-label">INSCRIÇÃO ESTADUAL (IE)</label>
+          <input pInputText formControlName="inscricaoEstadual" placeholder="Isento" class="field-input" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">REGIME TRIBUTÁRIO</label>
+        <p-dropdown
+          formControlName="regimeTributario"
+          [options]="regimeTributarioOptions"
+          optionLabel="label"
+          optionValue="value"
+          styleClass="field-dropdown"
+          [style]="{ width: '100%' }"
+        />
+      </div>
+    </div>
+
+    <!-- ── Seção 3: Endereço ── -->
+    <div class="section-card">
+      <div class="section-header">
+        <span class="section-icon-wrap"><i class="pi pi-map-marker"></i></span>
+        <h2>Endereço</h2>
+      </div>
+
+      <div class="form-row cep-row">
+        <div class="field">
+          <label class="field-label">CEP</label>
+          <div class="cep-wrapper">
+            <input
+              pInputText
+              formControlName="cep"
+              placeholder="00000-000"
+              class="field-input"
+              (blur)="onCepBlur()"
+              maxlength="9"
+            />
+            <button type="button" class="cep-search-btn" (click)="lookupCep()" [disabled]="loadingCep()">
+              <i class="pi" [class.pi-search]="!loadingCep()" [class.pi-spin]="loadingCep()" [class.pi-spinner]="loadingCep()"></i>
+            </button>
+          </div>
+        </div>
+        <div class="field col-logradouro">
+          <label class="field-label">RUA / LOGRADOURO</label>
+          <input pInputText formControlName="logradouro" placeholder="Informe ou pesquise pelo CEP" class="field-input filled" />
+        </div>
+      </div>
+
+      <div class="form-row three-col">
+        <div class="field">
+          <label class="field-label">BAIRRO</label>
+          <input pInputText formControlName="bairro" placeholder="Bairro" class="field-input filled" />
+        </div>
+        <div class="field">
+          <label class="field-label">CIDADE</label>
+          <input pInputText formControlName="cidade" placeholder="Cidade" class="field-input filled" />
+        </div>
+        <div class="field col-estado">
+          <label class="field-label">ESTADO</label>
+          <input pInputText formControlName="estado" placeholder="UF" maxlength="2" class="field-input filled" />
+        </div>
+      </div>
+
+      <div class="form-row two-col small-first">
+        <div class="field">
+          <label class="field-label">NÚMERO</label>
+          <input pInputText formControlName="numero" placeholder="123" class="field-input" />
+        </div>
+        <div class="field">
+          <label class="field-label">COMPLEMENTO</label>
+          <input pInputText formControlName="complemento" placeholder="Apto, Bloco, Sala..." class="field-input" />
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Ações ── -->
+    <div class="form-actions">
+      <button type="button" class="btn-cancel" (click)="onCancel()">Cancelar</button>
+      <button type="submit" class="btn-save" [disabled]="saving()">
+        <i class="pi pi-save"></i>
+        @if (saving()) { Salvando... } @else { Salvar alterações }
+      </button>
+    </div>
+
+    <!-- ── Aviso de Segurança ── -->
+    <div class="security-notice">
+      <i class="pi pi-info-circle notice-icon"></i>
+      <div class="notice-body">
+        <strong>Verificação de Segurança</strong>
+        <p>Alterações em dados fiscais (CPF/CNPJ) podem exigir uma nova validação manual da nossa equipe de compliance. O prazo de análise é de até 24 horas úteis.</p>
+      </div>
+    </div>
+
+  </form>
+
+  <!-- ── FAB Suporte ── -->
+  <button class="fab-support" type="button" aria-label="Suporte">
+    <i class="pi pi-comments"></i>
+  </button>
+
+</div>
+
+<p-toast />
