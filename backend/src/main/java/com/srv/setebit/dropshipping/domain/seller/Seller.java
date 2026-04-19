@@ -22,8 +22,10 @@ public class Seller {
     private int expiresIn;
     private String scope;
     private Long marketplaceId;
+    private Long marketplaceUserId;
     private MarketplaceEnum marketplace;
     private String refreshToken;
+    private Instant expiresAt;
     private Instant createdAt;
     private Instant updatedAt;
 
@@ -33,7 +35,22 @@ public class Seller {
         setId(UUID.randomUUID());
     }
 
-    public void validate(){
+    public boolean isTokenExpired() {
+        return expiresAt == null || Instant.now().isAfter(expiresAt);
+    }
+
+    public void applyTokenResponse(MarketplaceTokenResponse tokenResponse) {
+        this.accessToken = tokenResponse.accessToken();
+        this.refreshToken = tokenResponse.refreshToken();
+        this.tokenType = tokenResponse.tokenType();
+        this.expiresIn = tokenResponse.expiresIn();
+        this.scope = tokenResponse.scope();
+        this.marketplaceUserId = tokenResponse.marketplaceUserId();
+        this.expiresAt = Instant.now().plusSeconds(tokenResponse.expiresIn());
+        this.updatedAt = Instant.now();
+    }
+
+    public void validate() {
         Objects.requireNonNull(userId, "userId");
         Objects.requireNonNull(accessToken, "accessToken");
         Objects.requireNonNull(marketplaceId, "marketplaceId");

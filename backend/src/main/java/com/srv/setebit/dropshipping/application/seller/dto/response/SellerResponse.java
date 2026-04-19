@@ -31,11 +31,17 @@ public record SellerResponse(
         @Schema(description = "Escopos OAuth")
         String scope,
 
-        @Schema(description = "ID da conta no marketplace (ex.: user_id do ML)")
+        @Schema(description = "ID da conta no marketplace (ex.: marketplace_id do ML)")
         Long marketplaceId,
+
+        @Schema(description = "ID do usuário no marketplace (ex.: user_id retornado pelo ML)")
+        Long marketplaceUserId,
 
         @Schema(description = "Refresh token OAuth")
         String refreshToken,
+
+        @Schema(description = "Data de expiração do access token")
+        Instant expiresAt,
 
         @Schema(description = "Data de criação")
         Instant createdAt,

@@ -5,6 +5,7 @@ import com.srv.setebit.dropshipping.application.seller.dto.response.SellerRespon
 import com.srv.setebit.dropshipping.domain.seller.Seller;
 import com.srv.setebit.dropshipping.domain.seller.exception.SellerNotFoundException;
 import com.srv.setebit.dropshipping.domain.seller.port.SellerRepositoryPort;
+import com.srv.setebit.dropshipping.infrastructure.web.mapper.SellerMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,9 +15,11 @@ import java.util.UUID;
 public class UpdateSellerUseCase {
 
     private final SellerRepositoryPort sellerRepository;
+    private final SellerMapper sellerMapper;
 
-    public UpdateSellerUseCase(SellerRepositoryPort sellerRepository) {
+    public UpdateSellerUseCase(SellerRepositoryPort sellerRepository, SellerMapper sellerMapper) {
         this.sellerRepository = sellerRepository;
+        this.sellerMapper = sellerMapper;
     }
 
     @Transactional
@@ -33,22 +36,6 @@ public class UpdateSellerUseCase {
         seller.setRefreshToken(request.refreshToken());
 
         seller = sellerRepository.save(seller);
-        return toResponse(seller);
+        return sellerMapper.toResponse(seller);
     }
-
-    private SellerResponse toResponse(Seller s) {
-        return new SellerResponse(
-                s.getId(),
-                s.getUserId(),
-                s.getMarketplace(),
-                s.getAccessToken(),
-                s.getTokenType(),
-                s.getExpiresIn(),
-                s.getScope(),
-                s.getMarketplaceId(),
-                s.getRefreshToken(),
-                s.getCreatedAt(),
-                s.getUpdatedAt());
-    }
-
 }

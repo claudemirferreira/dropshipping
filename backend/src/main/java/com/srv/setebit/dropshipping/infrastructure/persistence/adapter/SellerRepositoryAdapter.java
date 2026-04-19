@@ -1,5 +1,6 @@
 package com.srv.setebit.dropshipping.infrastructure.persistence.adapter;
 
+import com.srv.setebit.dropshipping.domain.seller.MarketplaceEnum;
 import com.srv.setebit.dropshipping.domain.seller.Seller;
 import com.srv.setebit.dropshipping.domain.seller.port.SellerRepositoryPort;
 import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.entity.SellerEntity;
@@ -23,13 +24,22 @@ public class SellerRepositoryAdapter implements SellerRepositoryPort {
     @Override
     public Seller save(Seller seller) {
         SellerEntity entity = toEntity(seller);
-        entity = jpaRepository.save(entity);
-        return toDomain(entity);
+        return toDomain(jpaRepository.save(entity));
     }
 
     @Override
     public Optional<Seller> findById(UUID id) {
         return jpaRepository.findById(id).map(this::toDomain);
+    }
+
+    @Override
+    public Optional<Seller> findByUserIdAndMarketplace(UUID userId, MarketplaceEnum marketplace) {
+        return jpaRepository.findByUserIdAndMarketplace(userId, marketplace).map(this::toDomain);
+    }
+
+    @Override
+    public boolean existsByMarketplaceUserId(Long marketplaceUserId, UUID excludeUserId) {
+        return jpaRepository.existsByMarketplaceUserIdAndUserIdNot(marketplaceUserId, excludeUserId);
     }
 
     @Override
@@ -56,25 +66,30 @@ public class SellerRepositoryAdapter implements SellerRepositoryPort {
         e.setExpiresIn(s.getExpiresIn());
         e.setScope(s.getScope());
         e.setMarketplaceId(s.getMarketplaceId());
+        e.setMarketplaceUserId(s.getMarketplaceUserId());
         e.setMarketplace(s.getMarketplace());
         e.setRefreshToken(s.getRefreshToken());
+        e.setExpiresAt(s.getExpiresAt());
         e.setCreatedAt(s.getCreatedAt());
         e.setUpdatedAt(s.getUpdatedAt());
         return e;
     }
 
     private Seller toDomain(SellerEntity e) {
-        return new Seller(
-                e.getId(),
-                e.getUserId(),
-                e.getAccessToken(),
-                e.getTokenType(),
-                e.getExpiresIn(),
-                e.getScope(),
-                e.getMarketplaceId(),
-                e.getMarketplace(),
-                e.getRefreshToken(),
-                e.getCreatedAt(),
-                e.getUpdatedAt());
+        return Seller.builder()
+                .id(e.getId())
+                .userId(e.getUserId())
+                .accessToken(e.getAccessToken())
+                .tokenType(e.getTokenType())
+                .expiresIn(e.getExpiresIn())
+                .scope(e.getScope())
+                .marketplaceId(e.getMarketplaceId())
+                .marketplaceUserId(e.getMarketplaceUserId())
+                .marketplace(e.getMarketplace())
+                .refreshToken(e.getRefreshToken())
+                .expiresAt(e.getExpiresAt())
+                .createdAt(e.getCreatedAt())
+                .updatedAt(e.getUpdatedAt())
+                .build();
     }
 }

@@ -9,8 +9,7 @@ import org.springframework.stereotype.Component;
 public class SellerMapper {
 
     public Seller toCreate(CreateSellerRequest request) {
-        return Seller
-                .builder()
+        return Seller.builder()
                 .userId(request.userId())
                 .marketplace(request.marketplace())
                 .marketplaceId(request.marketplaceId())
@@ -32,7 +31,9 @@ public class SellerMapper {
                 s.getExpiresIn(),
                 s.getScope(),
                 s.getMarketplaceId(),
+                s.getMarketplaceUserId(),
                 s.getRefreshToken(),
+                s.getExpiresAt(),
                 s.getCreatedAt(),
                 s.getUpdatedAt());
     }

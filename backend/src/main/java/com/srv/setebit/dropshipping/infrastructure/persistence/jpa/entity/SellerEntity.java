@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "seller", uniqueConstraints = {
-        @UniqueConstraint(name = "uk_seller_marketplace_pair", columnNames = {"marketplace", "id"})
+        @UniqueConstraint(name = "uk_seller_marketplace_pair", columnNames = {"marketplace", "user_id"})
 })
 @Data
 @NoArgsConstructor
@@ -42,12 +42,18 @@ public class SellerEntity {
     @Column(name = "marketplace_id", nullable = false)
     private Long marketplaceId;
 
+    @Column(name = "marketplace_user_id")
+    private Long marketplaceUserId;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "marketplace", nullable = false, length = 60)
     private MarketplaceEnum marketplace;
 
     @Column(name = "refresh_token", nullable = false, columnDefinition = "text")
     private String refreshToken;
+
+    @Column(name = "expires_at", nullable = false)
+    private Instant expiresAt;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

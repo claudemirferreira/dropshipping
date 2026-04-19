@@ -8,6 +8,9 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.format.FormatterRegistry;
+import org.springframework.core.convert.converter.Converter;
+import com.srv.setebit.dropshipping.domain.seller.MarketplaceEnum;
 
 import java.util.List;
 
@@ -21,6 +24,16 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:" + uploadDir + "/");
+    }
+
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        registry.addConverter(new Converter<String, MarketplaceEnum>() {
+            @Override
+            public MarketplaceEnum convert(String source) {
+                return MarketplaceEnum.fromCodigo(source);
+            }
+        });
     }
 
     @Bean

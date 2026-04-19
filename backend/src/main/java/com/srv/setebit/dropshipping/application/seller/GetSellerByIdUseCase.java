@@ -4,6 +4,7 @@ import com.srv.setebit.dropshipping.application.seller.dto.response.SellerRespon
 import com.srv.setebit.dropshipping.domain.seller.Seller;
 import com.srv.setebit.dropshipping.domain.seller.exception.SellerNotFoundException;
 import com.srv.setebit.dropshipping.domain.seller.port.SellerRepositoryPort;
+import com.srv.setebit.dropshipping.infrastructure.web.mapper.SellerMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -12,29 +13,16 @@ import java.util.UUID;
 public class GetSellerByIdUseCase {
 
     private final SellerRepositoryPort sellerRepository;
+    private final SellerMapper sellerMapper;
 
-    public GetSellerByIdUseCase(SellerRepositoryPort sellerRepository) {
+    public GetSellerByIdUseCase(SellerRepositoryPort sellerRepository, SellerMapper sellerMapper) {
         this.sellerRepository = sellerRepository;
+        this.sellerMapper = sellerMapper;
     }
 
     public SellerResponse execute(UUID id) {
         Seller seller = sellerRepository.findById(id)
                 .orElseThrow(() -> new SellerNotFoundException(id));
-        return toResponse(seller);
-    }
-
-    private SellerResponse toResponse(Seller s) {
-        return new SellerResponse(
-                s.getId(),
-                s.getUserId(),
-                s.getMarketplace(),
-                s.getAccessToken(),
-                s.getTokenType(),
-                s.getExpiresIn(),
-                s.getScope(),
-                s.getMarketplaceId(),
-                s.getRefreshToken(),
-                s.getCreatedAt(),
-                s.getUpdatedAt());
+        return sellerMapper.toResponse(seller);
     }
 }
