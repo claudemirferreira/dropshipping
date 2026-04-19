@@ -5,11 +5,11 @@ import com.srv.setebit.dropshipping.domain.seller.MarketplaceTokenResponse;
 import com.srv.setebit.dropshipping.domain.seller.Seller;
 import com.srv.setebit.dropshipping.domain.seller.exception.MarketplaceAccountAlreadyLinkedException;
 import com.srv.setebit.dropshipping.domain.seller.port.MarketplaceAuthPort;
+import com.srv.setebit.dropshipping.domain.seller.port.OAuthStatePort;
 import com.srv.setebit.dropshipping.domain.seller.port.SellerRepositoryPort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -23,15 +23,22 @@ public class ConnectMarketplaceUseCase {
 
     private final MarketplaceAuthPort marketplaceAuthPort;
     private final SellerRepositoryPort sellerRepository;
+    private final OAuthStatePort oAuthStatePort;
 
     public ConnectMarketplaceUseCase(MarketplaceAuthPort marketplaceAuthPort,
-                                     SellerRepositoryPort sellerRepository) {
+                                     SellerRepositoryPort sellerRepository,
+                                     OAuthStatePort oAuthStatePort) {
         this.marketplaceAuthPort = marketplaceAuthPort;
         this.sellerRepository = sellerRepository;
+        this.oAuthStatePort = oAuthStatePort;
     }
 
     @Transactional
-    public Seller execute(UUID userId, MarketplaceEnum marketplace, String code) {
+    public Seller execute(String state, String code) {
+        OAuthStatePort.OAuthStatePayload payload = oAuthStatePort.validateState(state);
+        UUID userId = payload.userId();
+        MarketplaceEnum marketplace = payload.marketplace();
+
         MarketplaceTokenResponse tokenResponse = marketplaceAuthPort.exchangeCode(code);
 
         validarContaNaoVinculadaAOutroUsuario(tokenResponse.marketplaceUserId(), userId);
