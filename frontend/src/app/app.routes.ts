@@ -108,6 +108,13 @@ export const routes: Routes = [
             (m) => m.PerfisListComponent
           ),
       },
+      {
+        path: 'sellers',
+        loadComponent: () =>
+          import('./features/sellers/sellers-list/sellers-list').then(
+            (m) => m.SellersListComponent
+          ),
+      },
     ],
   },
   { path: '**', redirectTo: '' },

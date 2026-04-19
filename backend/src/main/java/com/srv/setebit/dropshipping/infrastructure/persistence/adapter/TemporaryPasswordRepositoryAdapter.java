@@ -2,8 +2,8 @@ package com.srv.setebit.dropshipping.infrastructure.persistence.adapter;
 
 import com.srv.setebit.dropshipping.domain.user.TemporaryPassword;
 import com.srv.setebit.dropshipping.domain.user.port.TemporaryPasswordRepositoryPort;
-import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.TemporaryPasswordEntity;
-import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.TemporaryPasswordRepository;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.entity.TemporaryPasswordEntity;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.repository.TemporaryPasswordRepository;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 

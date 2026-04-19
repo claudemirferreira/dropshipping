@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS dropshipping.config (
+    id UUID PRIMARY KEY,
+    tipo VARCHAR(100) NOT NULL,
+    payload JSONB NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_config_tipo ON dropshipping.config (tipo);

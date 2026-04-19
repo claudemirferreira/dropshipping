@@ -3,8 +3,8 @@ package com.srv.setebit.dropshipping.infrastructure.persistence.adapter;
 import com.srv.setebit.dropshipping.domain.user.Bloqueio;
 import com.srv.setebit.dropshipping.domain.user.BloqueioStatus;
 import com.srv.setebit.dropshipping.domain.user.port.BloqueioRepositoryPort;
-import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.BloqueioEntity;
-import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.BloqueioRepository;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.entity.BloqueioEntity;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.repository.BloqueioRepository;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 

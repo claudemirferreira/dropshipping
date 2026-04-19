@@ -1,6 +1,7 @@
 -- V1__create_schema.sql
 -- Criação completa do schema lógico da aplicação (tabelas + índices + FKs)
--- Não altere este arquivo após já ter sido aplicado em produção (Flyway valida checksum).
+-- Não altere após aplicado em produção sem flyway repair / baseline (Flyway valida checksum).
+-- Instalações novas: product já inclui colunas de catálogo alinhadas ao JPA (ean, warranty, etc.).
 
 CREATE TABLE users (
     id UUID PRIMARY KEY,
@@ -55,8 +56,14 @@ CREATE TABLE product (
     meta_description VARCHAR(500),
     compare_at_price DECIMAL(19, 4),
     stock_quantity INTEGER,
+    stock_minimum INTEGER,
     tags TEXT,
     attributes TEXT,
+    ean VARCHAR(20),
+    is_ean_interno BOOLEAN NOT NULL DEFAULT false,
+    created_by UUID,
+    seller_fee_percent NUMERIC(5, 2),
+    warranty VARCHAR(500),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT uk_products_sku UNIQUE (sku),
@@ -159,6 +166,7 @@ CREATE INDEX idx_product_sku ON product(sku);
 CREATE INDEX idx_product_slug ON product(slug);
 CREATE INDEX idx_product_status ON product(status);
 CREATE INDEX idx_product_category_id ON product(category_id);
+CREATE INDEX idx_product_ean ON product(ean);
 
 CREATE INDEX ix_rotina_code ON rotina (code);
 CREATE INDEX ix_perfil_code ON perfil (code);
