@@ -50,6 +50,10 @@ app:
     dir: ${UPLOAD_DIR}
   api:
     base-url: ${API_BASE_URL}
+  cors:
+    # Lista de origens permitidas pelo CORS (separadas por vírgula).
+    # Em prod defina APP_CORS_ALLOWED_ORIGINS=https://queroserdrop.com.br (e demais domínios).
+    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:https://queroserdrop.com.br}
   mail:
     from: ${MAIL_FROM}
     override-recipient: ${MAIL_FIXED_RECIPIENT}
