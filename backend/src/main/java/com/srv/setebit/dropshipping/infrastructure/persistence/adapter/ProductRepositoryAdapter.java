@@ -3,8 +3,11 @@ package com.srv.setebit.dropshipping.infrastructure.persistence.adapter;
 import com.srv.setebit.dropshipping.domain.product.Product;
 import com.srv.setebit.dropshipping.domain.product.ProductStatus;
 import com.srv.setebit.dropshipping.domain.product.port.ProductRepositoryPort;
-import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.ProductEntity;
-import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.ProductJpaRepository;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.entity.ProductEntity;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.repository.ProductJpaRepository;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.embeddable.CommercialEmbeddable;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.embeddable.LogisticsEmbeddable;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.embeddable.StockEmbeddable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -45,6 +48,11 @@ public class ProductRepositoryAdapter implements ProductRepositoryPort {
     }
 
     @Override
+    public Optional<Product> findByEan(String ean) {
+        return jpaRepository.findByEan(ean).map(this::toDomain);
+    }
+
+    @Override
     public boolean existsBySku(String sku) {
         return jpaRepository.existsBySku(sku);
     }
@@ -62,6 +70,11 @@ public class ProductRepositoryAdapter implements ProductRepositoryPort {
     @Override
     public boolean existsBySlugAndIdNot(String slug, UUID id) {
         return jpaRepository.existsBySlugAndIdNot(slug, id);
+    }
+
+    @Override
+    public boolean existsByEan(String ean) {
+        return jpaRepository.existsByEan(ean);
     }
 
     @Override
@@ -89,27 +102,39 @@ public class ProductRepositoryAdapter implements ProductRepositoryPort {
         entity.setShortDescription(product.getShortDescription());
         entity.setFullDescription(product.getFullDescription());
         entity.setSalePrice(product.getSalePrice());
-        entity.setCostPrice(product.getCostPrice());
         entity.setCurrency(product.getCurrency());
         entity.setStatus(product.getStatus());
         entity.setSupplierSku(product.getSupplierSku());
         entity.setSupplierName(product.getSupplierName());
         entity.setSupplierProductUrl(product.getSupplierProductUrl());
-        entity.setLeadTimeDays(product.getLeadTimeDays());
+        LogisticsEmbeddable logistics = new LogisticsEmbeddable();
+        logistics.setLeadTimeEnvioDias(product.getLeadTimeDays());
+        logistics.setPesoKg(product.getWeight());
+        logistics.setComprimentoCm(product.getLength());
+        logistics.setLarguraCm(product.getWidth());
+        logistics.setAlturaCm(product.getHeight());
+        entity.setLogistica(logistics);
         entity.setDropship(product.isDropship());
-        entity.setWeight(product.getWeight());
-        entity.setLength(product.getLength());
-        entity.setWidth(product.getWidth());
-        entity.setHeight(product.getHeight());
         entity.setSlug(product.getSlug());
         entity.setCategoryId(product.getCategoryId());
         entity.setBrand(product.getBrand());
         entity.setMetaTitle(product.getMetaTitle());
         entity.setMetaDescription(product.getMetaDescription());
         entity.setCompareAtPrice(product.getCompareAtPrice());
-        entity.setStockQuantity(product.getStockQuantity());
+        StockEmbeddable estoque = new StockEmbeddable();
+        estoque.setAtual(product.getStockQuantity());
+        estoque.setMinimo(product.getStockMinimum());
+        entity.setEstoque(estoque);
+        CommercialEmbeddable comercial = new CommercialEmbeddable();
+        comercial.setValorCusto(product.getCostPrice());
+        comercial.setTaxaSellerPercent(product.getSellerFeePercent());
+        comercial.setGarantia(product.getWarranty());
+        entity.setComercial(comercial);
         entity.setTags(product.getTags());
         entity.setAttributes(product.getAttributes());
+        entity.setEan(product.getEan());
+        entity.setEanInterno(product.isEanInterno());
+        entity.setCreatedBy(product.getCreatedBy());
         entity.setCreatedAt(product.getCreatedAt());
         entity.setUpdatedAt(product.getUpdatedAt());
         return entity;
@@ -123,27 +148,33 @@ public class ProductRepositoryAdapter implements ProductRepositoryPort {
                 entity.getShortDescription(),
                 entity.getFullDescription(),
                 entity.getSalePrice(),
-                entity.getCostPrice(),
+                entity.getComercial() != null ? entity.getComercial().getValorCusto() : null,
                 entity.getCurrency(),
                 entity.getStatus(),
                 entity.getSupplierSku(),
                 entity.getSupplierName(),
                 entity.getSupplierProductUrl(),
-                entity.getLeadTimeDays(),
+                entity.getLogistica() != null ? entity.getLogistica().getLeadTimeEnvioDias() : null,
                 entity.isDropship(),
-                entity.getWeight(),
-                entity.getLength(),
-                entity.getWidth(),
-                entity.getHeight(),
+                entity.getLogistica() != null ? entity.getLogistica().getPesoKg() : null,
+                entity.getLogistica() != null ? entity.getLogistica().getComprimentoCm() : null,
+                entity.getLogistica() != null ? entity.getLogistica().getLarguraCm() : null,
+                entity.getLogistica() != null ? entity.getLogistica().getAlturaCm() : null,
                 entity.getSlug(),
                 entity.getCategoryId(),
                 entity.getBrand(),
                 entity.getMetaTitle(),
                 entity.getMetaDescription(),
                 entity.getCompareAtPrice(),
-                entity.getStockQuantity(),
+                entity.getEstoque() != null ? entity.getEstoque().getAtual() : null,
                 entity.getTags(),
                 entity.getAttributes(),
+                entity.getEan(),
+                entity.isEanInterno(),
+                entity.getEstoque() != null ? entity.getEstoque().getMinimo() : null,
+                entity.getComercial() != null ? entity.getComercial().getTaxaSellerPercent() : null,
+                entity.getComercial() != null ? entity.getComercial().getGarantia() : null,
+                entity.getCreatedBy(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt()
         );

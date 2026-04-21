@@ -96,12 +96,20 @@ export class AuthService {
         this.touchActivity();
       }),
       catchError((err) => {
-        const msg =
-          err.error?.message ?? 'E-mail ou senha inválidos. Tente novamente.';
+        const backendMsg: string | undefined = err.error?.message;
+        const status = err.status;
+        const inactiveByStatus = status === 403;
+        const inactiveByMessage = /inativ|desativ/i.test(backendMsg ?? '');
+        let msg: string;
+        if (inactiveByStatus || inactiveByMessage) {
+          msg = 'Usuário desativado. Contate o administrador.';
+        } else {
+          msg = backendMsg ?? 'E-mail ou senha inválidos. Tente novamente.';
+        }
         this.errorMessage.set(msg);
-        this.lastErrorStatus.set(err.status ?? null);
-        const lockedByStatus = err.status === 423;
-        const lockedByMessage = /bloquead/i.test(msg) || /invalid[aá]?\s*3/i.test(msg);
+        this.lastErrorStatus.set(status ?? null);
+        const lockedByStatus = status === 423;
+        const lockedByMessage = /bloquead/i.test(backendMsg ?? '') || /invalid[aá]?\s*3/i.test(backendMsg ?? '');
         if (lockedByStatus || lockedByMessage) {
           this.accountLocked.set(true);
         }
@@ -140,6 +148,18 @@ export class AuthService {
 
   isAuthenticated(): boolean {
     return !!this.getAccessToken();
+  }
+
+  needsPasswordChange(): boolean {
+    const token = this.getAccessToken();
+    if (!token) return false;
+    try {
+      const [, payload] = token.split('.');
+      const json = JSON.parse(this.base64UrlDecode(payload));
+      return !!json['needs_password_change'];
+    } catch {
+      return false;
+    }
   }
 
   setTokens(access: string, refresh: string, remember: boolean): void {
@@ -190,9 +210,14 @@ export class AuthService {
       .post<void>(`${this.api}/forgot-password`, { email })
       .pipe(
         catchError((err) => {
-          this.errorMessage.set(
-            err.error?.message ?? 'Não foi possível solicitar a senha temporária.'
-          );
+          const status = err?.status;
+          let msg: string | undefined = err?.error?.message;
+          if (status === 404) {
+            msg = 'Email inexistente no sistema';
+          } else if (status === 429) {
+            msg = 'Muitas solicitações. Tente novamente mais tarde.';
+          }
+          this.errorMessage.set(msg ?? 'Não foi possível solicitar a senha temporária.');
           return throwError(() => err);
         }),
         finalize(() => this.loading.set(false))
@@ -237,5 +262,15 @@ export class AuthService {
     localStorage.removeItem(this.rememberKey);
     this.user.set(null);
     this.userPerfis.set([]);
+  }
+
+  setPasswordFirstLogin(newPassword: string) {
+    return this.http.post<void>(`${this.api}/first-login/password`, { newPassword });
+  }
+
+  private base64UrlDecode(str: string): string {
+    const pad = str.length % 4 === 0 ? '' : '='.repeat(4 - (str.length % 4));
+    const s = str.replace(/-/g, '+').replace(/_/g, '/') + pad;
+    return atob(s);
   }
 }

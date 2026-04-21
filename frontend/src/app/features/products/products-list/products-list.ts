@@ -34,6 +34,7 @@ import {
   type CreateProductRequest,
   type CreateProductImageRequest,
 } from '../../../core/services/products.service';
+import { Router, RouterLink } from "@angular/router";
 
 const STATUS_OPTIONS = [
   { label: 'Rascunho', value: 'DRAFT' },
@@ -75,7 +76,8 @@ function slugify(text: string): string {
     TabViewModule,
     CheckboxModule,
     TextareaModule,
-  ],
+    RouterLink
+],
   providers: [ConfirmationService],
   templateUrl: './products-list.html',
   styleUrl: './products-list.scss',
@@ -85,6 +87,7 @@ export class ProductsListComponent {
   private readonly productsService = inject(ProductsService);
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
+  private readonly router = inject(Router);
 
   products = signal<Product[]>([]);
   totalRecords = signal(0);
@@ -202,20 +205,7 @@ export class ProductsListComponent {
   }
 
   openEditDialog(product: Product): void {
-    this.productsService.getById(product.id).subscribe({
-      next: (detail) => {
-        this.editingProduct.set(detail);
-        this.patchForm(detail);
-        this.dialogVisible.set(true);
-      },
-      error: () => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Erro',
-          detail: 'Não foi possível carregar o produto.',
-        });
-      },
-    });
+    this.router.navigate(['/produtos/editar', product.id]);
   }
 
   private patchForm(p: ProductDetail): void {
@@ -415,6 +405,8 @@ export class ProductsListComponent {
       message: 'Remover esta foto do produto?',
       header: 'Confirmar',
       icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sim',
+      rejectLabel: 'Não',
       accept: () => {
         this.productsService.removeImage(productId, id).subscribe({
           next: () => {
@@ -623,6 +615,8 @@ export class ProductsListComponent {
       message: `Excluir o produto "${product.name}"? Esta ação não pode ser desfeita.`,
       header: 'Confirmar exclusão',
       icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sim',
+      rejectLabel: 'Não',
       acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
         this.productsService.delete(product.id).subscribe({

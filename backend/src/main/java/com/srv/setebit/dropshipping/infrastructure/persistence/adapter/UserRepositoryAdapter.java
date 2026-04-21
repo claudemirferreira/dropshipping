@@ -2,8 +2,8 @@ package com.srv.setebit.dropshipping.infrastructure.persistence.adapter;
 
 import com.srv.setebit.dropshipping.domain.user.User;
 import com.srv.setebit.dropshipping.domain.user.port.UserRepositoryPort;
-import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.UserEntity;
-import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.UserRepository;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.entity.UserEntity;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.repository.UserRepository;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -25,6 +25,10 @@ public interface ProductRepositoryPort {
 
     boolean existsBySlugAndIdNot(String slug, UUID id);
 
+    Optional<Product> findByEan(String ean);
+
+    boolean existsByEan(String ean);
+
     Page<Product> findAllByFilter(String name, String status, UUID categoryId, Pageable pageable);
 
     void deleteById(UUID id);

@@ -8,6 +8,7 @@ import java.util.UUID;
 public interface TemporaryPasswordRepositoryPort {
     TemporaryPassword save(TemporaryPassword temp);
     Optional<TemporaryPassword> findActiveByUserId(UUID userId);
+    Optional<TemporaryPassword> findLatestByUserId(UUID userId);
     void markUsed(UUID id);
     void deleteByUserId(UUID userId);
 }

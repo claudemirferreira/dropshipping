@@ -11,26 +11,25 @@ import org.springframework.context.annotation.Profile;
 import jakarta.mail.internet.MimeMessage;
 import java.io.File;
 
-
 @Component
 @Profile("!test")
 public class GmailEmailSenderAdapter implements EmailSenderPort {
 
   private final JavaMailSender mailSender;
   private final String from;
-  private final String fixedRecipient;
+  private final String overrideRecipient;
   private final String baseUrl;
   private final String logoPath;
 
   public GmailEmailSenderAdapter(
       JavaMailSender mailSender,
-      @Value("${spring.mail.username}") String from,
-      @Value("${spring.mail.recipient}") String fixedRecipient,
-      @Value("${spring.mail.base-url}") String baseUrl,
-      @Value("${spring.mail.logo-path}") String logoPath) {
+      @Value("${app.mail.from:${spring.mail.username}}") String from,
+      @Value("${app.mail.override-recipient:}") String overrideRecipient,
+      @Value("${app.mail.base-url:http://localhost:8080}") String baseUrl,
+      @Value("${app.mail.logo-path:d:\\Dropshipping\\dropshipping\\frontend\\public\\assets\\logo-email.jpeg}") String logoPath) {
     this.mailSender = mailSender;
     this.from = from;
-    this.fixedRecipient = fixedRecipient;
+    this.overrideRecipient = overrideRecipient;
     this.baseUrl = baseUrl;
     this.logoPath = logoPath;
   }
@@ -45,7 +44,8 @@ public class GmailEmailSenderAdapter implements EmailSenderPort {
       MimeMessage message = mailSender.createMimeMessage();
       MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
       helper.setFrom(from);
-      helper.setTo(fixedRecipient);
+      String target = (overrideRecipient != null && !overrideRecipient.isBlank()) ? overrideRecipient : toEmail;
+      helper.setTo(target);
       helper.setSubject(subject);
       helper.setText(html, true);
 
@@ -78,7 +78,8 @@ public class GmailEmailSenderAdapter implements EmailSenderPort {
             .subtitle { color:#666; margin:0 0 16px 0; }
             .password { background:#f0f7ff; border:1px solid #cfe2ff; color:#0b5ed7; font-weight:bold; padding:10px 14px; border-radius:8px; display:inline-block; letter-spacing:0.5px; }
             .cta { margin-top:20px; }
-            .button { background:#0b5ed7; color:#fff; text-decoration:none; padding:12px 18px; border-radius:8px; display:inline-block; }
+            .button { background:#0b5ed7; color:#ffffff !important; text-decoration:none; padding:12px 18px; border-radius:8px; display:inline-block; }
+            .button:link, .button:visited, .button:hover, .button:active { color:#ffffff !important; text-decoration:none !important; }
             .footer { font-size:12px; color:#888; padding:16px 24px; }
           </style>
         </head>
@@ -86,7 +87,7 @@ public class GmailEmailSenderAdapter implements EmailSenderPort {
           <div class="card">
             <div class="header">
               <img src="cid:logoCid" alt="Logo">
-              <div>DropSeller • Segurança de Acesso</div>
+              <div>QueroSerDrop • Segurança de Acesso</div>
             </div>
             <div class="content">
               <h1 class="title">Olá %s!</h1>
@@ -98,7 +99,7 @@ public class GmailEmailSenderAdapter implements EmailSenderPort {
               <p style="margin-top:16px;color:#666;">Se não foi você quem solicitou, ignore este email.</p>
             </div>
             <div class="footer">
-              © %d DropSeller. Todos os direitos reservados.
+              © %d QueroSerDrop. Todos os direitos reservados.
             </div>
           </div>
         </body>

@@ -1,0 +1,273 @@
+<div class="page-header">
+  <div class="page-title-block">
+    <h1 class="page-title">Novo Produto</h1>
+    <p class="page-description">Cadastro de produto base do catálogo.</p>
+  </div>
+</div>
+
+<form [formGroup]="form" class="product-form" (ngSubmit)="submit()">
+  <p-stepper [value]="1" class="product-stepper">
+    <p-step-list>
+      <p-step [value]="1">Dados Gerais</p-step>
+      <p-step [value]="2">Logística e Estoque</p-step>
+      <p-step [value]="3">Comercial e Códigos</p-step>
+      <p-step [value]="4">Revisão</p-step>
+    </p-step-list>
+
+    <p-step-panels>
+      <p-step-panel [value]="1">
+        <ng-template #content let-activateCallback="activateCallback">
+          <div class="form-section">
+            <h2 class="section-title">Dados Gerais</h2>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Nome</label>
+                <input pInputText formControlName="nome" placeholder="Nome do produto" />
+              </div>
+              <div class="form-field">
+                <label>Slug</label>
+                <input pInputText formControlName="slug" placeholder="slug-opcional" />
+              </div>
+              <div class="form-field">
+                <label>SKU</label>
+                <input pInputText formControlName="sku" placeholder="Ex.: CG-PRO-BLK-01" />
+              </div>
+              <div class="form-field">
+                <label>Categoria (opcional)</label>
+                <input pInputText formControlName="categoria_id" placeholder="ID da categoria (opcional)" />
+              </div>
+              <div class="form-field">
+                <label>Marca</label>
+                <input pInputText formControlName="marca" placeholder="Marca" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field flex-2">
+                <label>Descrição curta</label>
+                <textarea pTextarea rows="2" formControlName="descricao_curta"></textarea>
+              </div>
+              <div class="form-field flex-2">
+                <label>Descrição completa</label>
+                <textarea pTextarea rows="4" formControlName="descricao_completa"></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="step-actions">
+            <p-button label="Próximo" icon="pi pi-arrow-right" iconPos="right" [disabled]="!isStepValid(1)" (onClick)="activateCallback(2)"></p-button>
+          </div>
+        </ng-template>
+      </p-step-panel>
+
+      <p-step-panel [value]="2">
+        <ng-template #content let-activateCallback="activateCallback">
+          <div class="form-section">
+            <h2 class="section-title">Logística</h2>
+            <div formGroupName="logistica" class="form-row">
+              <div class="form-field">
+                <label>Peso (kg)</label>
+                <p-inputNumber formControlName="peso_kg" inputId="peso_kg" [minFractionDigits]="0" [maxFractionDigits]="3"></p-inputNumber>
+              </div>
+              <div class="form-field">
+                <label>Altura (cm)</label>
+                <p-inputNumber formControlName="altura_cm" [minFractionDigits]="0" [maxFractionDigits]="2"></p-inputNumber>
+              </div>
+              <div class="form-field">
+                <label>Largura (cm)</label>
+                <p-inputNumber formControlName="largura_cm" [minFractionDigits]="0" [maxFractionDigits]="2"></p-inputNumber>
+              </div>
+              <div class="form-field">
+                <label>Comprimento (cm)</label>
+                <p-inputNumber formControlName="comprimento_cm" [minFractionDigits]="0" [maxFractionDigits]="2"></p-inputNumber>
+              </div>
+              <div class="form-field">
+                <label>Lead time envio (dias)</label>
+                <p-inputNumber formControlName="lead_time_envio_dias" [min]="1"></p-inputNumber>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h2 class="section-title">Estoque</h2>
+            <div formGroupName="estoque" class="form-row">
+              <div class="form-field">
+                <label>Atual</label>
+                <p-inputNumber formControlName="atual" [min]="0"></p-inputNumber>
+              </div>
+              <div class="form-field">
+                <label>Mínimo</label>
+                <p-inputNumber formControlName="minimo" [min]="0"></p-inputNumber>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-actions">
+            <p-button label="Voltar" severity="secondary" icon="pi pi-arrow-left" (onClick)="activateCallback(1)"></p-button>
+            <p-button label="Próximo" icon="pi pi-arrow-right" iconPos="right" [disabled]="!isStepValid(2)" (onClick)="activateCallback(3)"></p-button>
+          </div>
+        </ng-template>
+      </p-step-panel>
+
+      <p-step-panel [value]="3">
+        <ng-template #content let-activateCallback="activateCallback">
+          <div class="form-section">
+            <h2 class="section-title">Comercial</h2>
+            <div formGroupName="comercial" class="form-row">
+              <div class="form-field">
+                <label>Valor de custo</label>
+                <p-inputNumber formControlName="valor_custo" [minFractionDigits]="2" [maxFractionDigits]="2"></p-inputNumber>
+              </div>
+              <div class="form-field">
+                <label>Valor de venda</label>
+                <p-inputNumber formControlName="valor_venda" [minFractionDigits]="2" [maxFractionDigits]="2"></p-inputNumber>
+              </div>
+              <div class="form-field">
+                <label>% taxa seller</label>
+                <p-inputNumber formControlName="percentual_taxa_seller" [minFractionDigits]="2" [maxFractionDigits]="2"></p-inputNumber>
+              </div>
+              <div class="form-field flex-2">
+                <label>Garantia</label>
+                <input pInputText formControlName="garantia" placeholder="Ex.: 12 meses" />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h2 class="section-title">Códigos</h2>
+            <div formGroupName="codigos" class="form-row">
+              <div class="form-field">
+                <label>EAN</label>
+                <input pInputText formControlName="ean" placeholder="Somente dígitos" />
+              </div>
+              <div class="form-field">
+                <p-checkbox inputId="is_ean_interno" binary="true" formControlName="is_ean_interno" label="Gerar EAN interno"></p-checkbox>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h2 class="section-title">Tags</h2>
+            <div class="form-row">
+              <div class="form-field flex-2">
+                <input pInputText formControlName="tagsInput" placeholder="Separe por vírgula" />
+              </div>
+            </div>
+          </div>
+
+          <div class="step-actions">
+            <p-button label="Voltar" severity="secondary" icon="pi pi-arrow-left" (onClick)="activateCallback(2)"></p-button>
+            <p-button label="Próximo" icon="pi pi-arrow-right" iconPos="right" [disabled]="!isStepValid(3)" (onClick)="activateCallback(4)"></p-button>
+          </div>
+        </ng-template>
+      </p-step-panel>
+
+      <p-step-panel [value]="4">
+        <ng-template #content let-activateCallback="activateCallback">
+          <div class="form-section review-section">
+            <h2 class="section-title">Revisão</h2>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Nome</label>
+                <div class="review-value">{{ form.get('nome')?.value }}</div>
+              </div>
+              <div class="form-field">
+                <label>Slug</label>
+                <div class="review-value">{{ form.get('slug')?.value || '—' }}</div>
+              </div>
+              <div class="form-field">
+                <label>SKU</label>
+                <div class="review-value">{{ form.get('sku')?.value }}</div>
+              </div>
+              <div class="form-field">
+                <label>Categoria</label>
+                <div class="review-value">{{ form.get('categoria_id')?.value }}</div>
+              </div>
+              <div class="form-field">
+                <label>Marca</label>
+                <div class="review-value">{{ form.get('marca')?.value }}</div>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field flex-2">
+                <label>Descrição curta</label>
+                <div class="review-value">{{ form.get('descricao_curta')?.value }}</div>
+              </div>
+              <div class="form-field flex-2">
+                <label>Descrição completa</label>
+                <div class="review-value">{{ form.get('descricao_completa')?.value }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section review-section">
+            <h2 class="section-title">Logística e Estoque</h2>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Peso (kg)</label>
+                <div class="review-value">{{ form.get('logistica.peso_kg')?.value }}</div>
+              </div>
+              <div class="form-field">
+                <label>Altura (cm)</label>
+                <div class="review-value">{{ form.get('logistica.altura_cm')?.value }}</div>
+              </div>
+              <div class="form-field">
+                <label>Largura (cm)</label>
+                <div class="review-value">{{ form.get('logistica.largura_cm')?.value }}</div>
+              </div>
+              <div class="form-field">
+                <label>Comprimento (cm)</label>
+                <div class="review-value">{{ form.get('logistica.comprimento_cm')?.value }}</div>
+              </div>
+              <div class="form-field">
+                <label>Lead time (dias)</label>
+                <div class="review-value">{{ form.get('logistica.lead_time_envio_dias')?.value }}</div>
+              </div>
+              <div class="form-field">
+                <label>Estoque atual</label>
+                <div class="review-value">{{ form.get('estoque.atual')?.value }}</div>
+              </div>
+              <div class="form-field">
+                <label>Estoque mínimo</label>
+                <div class="review-value">{{ form.get('estoque.minimo')?.value }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section review-section">
+            <h2 class="section-title">Comercial e Códigos</h2>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Valor de custo</label>
+                <div class="review-value">{{ form.get('comercial.valor_custo')?.value }}</div>
+              </div>
+              <div class="form-field">
+                <label>% taxa seller</label>
+                <div class="review-value">{{ form.get('comercial.percentual_taxa_seller')?.value || '—' }}</div>
+              </div>
+              <div class="form-field flex-2">
+                <label>Garantia</label>
+                <div class="review-value">{{ form.get('comercial.garantia')?.value }}</div>
+              </div>
+              <div class="form-field">
+                <label>EAN</label>
+                <div class="review-value">{{ form.get('codigos.ean')?.value || '—' }}</div>
+              </div>
+              <div class="form-field">
+                <label>EAN interno</label>
+                <div class="review-value">{{ form.get('codigos.is_ean_interno')?.value ? 'Sim' : 'Não' }}</div>
+              </div>
+              <div class="form-field flex-2">
+                <label>Tags</label>
+                <div class="review-value">{{ form.get('tagsInput')?.value || '—' }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions step-actions">
+            <p-button label="Voltar" severity="secondary" icon="pi pi-arrow-left" (onClick)="activateCallback(3)"></p-button>
+            <p-button label="Salvar" severity="primary" type="submit" [disabled]="!isStepValid(4)"></p-button>
+          </div>
+        </ng-template>
+      </p-step-panel>
+    </p-step-panels>
+  </p-stepper>
+</form>

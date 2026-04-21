@@ -2,8 +2,8 @@ package com.srv.setebit.dropshipping.infrastructure.persistence.adapter;
 
 import com.srv.setebit.dropshipping.domain.product.ProductFile;
 import com.srv.setebit.dropshipping.domain.product.port.ProductFileRepositoryPort;
-import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.ProductFileEntity;
-import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.ProductFileJpaRepository;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.entity.ProductFileEntity;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.repository.ProductFileJpaRepository;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 

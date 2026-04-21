@@ -4,12 +4,11 @@ import com.srv.setebit.dropshipping.domain.access.Perfil;
 import com.srv.setebit.dropshipping.domain.access.Rotina;
 import com.srv.setebit.dropshipping.domain.access.port.PerfilRepositoryPort;
 import com.srv.setebit.dropshipping.domain.access.port.RotinaRepositoryPort;
-import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.PerfilEntity;
-import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.PerfilJpaRepository;
-import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.PerfilRotinaEntity;
-import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.PerfilRotinaJpaRepository;
-import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.RotinaEntity;
-import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.RotinaJpaRepository;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.entity.PerfilEntity;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.repository.PerfilJpaRepository;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.entity.PerfilRotinaEntity;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.repository.PerfilRotinaJpaRepository;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.repository.RotinaJpaRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -118,6 +117,11 @@ public class PerfilRepositoryAdapter implements PerfilRepositoryPort {
     @Override
     public boolean existsByCodeAndIdNot(String code, UUID id) {
         return jpaRepository.existsByCodeAndIdNot(code, id);
+    }
+
+    @Override
+    public boolean hasRotinas(UUID perfilId) {
+        return !perfilRotinaRepository.findRotinaIdsByPerfilId(perfilId).isEmpty();
     }
 
     @Override

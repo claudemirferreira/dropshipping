@@ -1,0 +1,480 @@
+/* ─── Reset / base ────────────────────────────────────── */
+* {
+  box-sizing: border-box;
+}
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f0fdf4;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* ─── Navbar ──────────────────────────────────────────── */
+.login-nav {
+  display: flex;
+  align-items: center;
+  padding: 1rem 2.5rem;
+  gap: 1.75rem;
+}
+
+.nav-brand {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #111827;
+  margin-right: auto;
+}
+
+.nav-link {
+  font-size: 0.875rem;
+  color: #4b5563;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.15s;
+
+  &:hover {
+    color: #16a34a;
+  }
+}
+
+.nav-cta {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #16a34a;
+  cursor: pointer;
+}
+
+/* ─── Main ────────────────────────────────────────────── */
+.login-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2rem 2rem;
+}
+
+/* ─── Painel dois columns ─────────────────────────────── */
+.login-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  max-width: 960px;
+  min-height: 560px;
+  border-radius: 1.25rem;
+  overflow: hidden;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* ─── Painel esquerdo ─────────────────────────────────── */
+.panel-left {
+  background: #dcfce7;
+  padding: 2.25rem 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.left-brand {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #16a34a;
+  margin-bottom: 1.25rem;
+}
+
+.left-headline {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.25;
+  margin: 0 0 0.875rem;
+}
+
+.left-desc {
+  font-size: 0.875rem;
+  color: #374151;
+  line-height: 1.65;
+  margin: 0 0 1.25rem;
+}
+
+/* ─── Dashboard mockup CSS ────────────────────────────── */
+.dash-mockup {
+  flex: 1;
+  background: #0f172a;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  display: flex;
+  min-height: 180px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+}
+
+.dash-sidebar {
+  width: 52px;
+  background: #1e293b;
+  padding: 0.75rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.44rem;
+}
+
+.dash-logo-block {
+  height: 10px;
+  border-radius: 3px;
+  background: #22c55e;
+  margin-bottom: 0.25rem;
+}
+
+.dash-nav-item {
+  height: 7px;
+  border-radius: 3px;
+  background: #334155;
+
+  &.active {
+    background: #22c55e;
+  }
+}
+
+.dash-body {
+  flex: 1;
+  padding: 0.625rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.dash-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dash-topbar-title {
+  height: 8px;
+  width: 80px;
+  border-radius: 3px;
+  background: #334155;
+}
+
+.dash-topbar-btn {
+  height: 14px;
+  width: 40px;
+  border-radius: 4px;
+  background: #22c55e;
+}
+
+.dash-cards {
+  display: flex;
+  gap: 0.375rem;
+}
+
+.dash-card-mini {
+  flex: 1;
+  height: 28px;
+  border-radius: 5px;
+  background: #1e293b;
+}
+
+.dash-table {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+}
+
+.dash-table-header {
+  display: flex;
+  gap: 0.25rem;
+  padding-bottom: 3px;
+}
+
+.dash-th {
+  flex: 1;
+  height: 6px;
+  border-radius: 2px;
+  background: #334155;
+}
+
+.dash-table-row {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.dash-td {
+  flex: 1;
+  height: 10px;
+  border-radius: 2px;
+  background: #1e293b;
+}
+
+.dash-table-row.alt .dash-td {
+  background: #172032;
+}
+
+/* ─── Painel direito ──────────────────────────────────── */
+.panel-right {
+  background: #fff;
+  padding: 2.5rem 2.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-title {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 0.25rem;
+}
+
+.form-subtitle {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  margin: 0 0 1.5rem;
+}
+
+/* ─── Form ────────────────────────────────────────────── */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.field-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #374151;
+}
+
+.field-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.forgot-link {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #16a34a;
+  cursor: pointer;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.field-input {
+  width: 100%;
+  border: 1.5px solid #e5e7eb !important;
+  border-radius: 6px !important;
+  padding: 0.5rem 0.75rem !important;
+  font-size: 0.875rem !important;
+  color: #0f172a !important;
+  outline: none;
+  background: #fff !important;
+  box-shadow: none !important;
+  transition: border-color 0.15s;
+
+  &:focus {
+    border-color: #22c55e !important;
+  }
+
+  &::placeholder {
+    color: #9ca3af !important;
+  }
+}
+
+/* p-password wrapper */
+::ng-deep .pw-wrap {
+  width: 100%;
+
+  .p-inputtext {
+    width: 100%;
+    border: 1.5px solid #e5e7eb !important;
+    border-radius: 6px !important;
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.875rem !important;
+    background: #fff !important;
+    box-shadow: none !important;
+    color: #0f172a !important;
+
+    &:focus {
+      border-color: #22c55e !important;
+      box-shadow: none !important;
+    }
+  }
+
+  input::placeholder {
+    color: #9ca3af !important;
+  }
+
+  .p-password {
+    width: 100%;
+  }
+}
+
+/* Autofill */
+::ng-deep input:-webkit-autofill,
+::ng-deep input:-webkit-autofill:hover,
+::ng-deep input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #0f172a;
+  transition: background-color 5000s ease-in-out 0s;
+  box-shadow: 0 0 0 1000px #fff inset !important;
+}
+
+.field-err {
+  font-size: 0.75rem;
+  color: #dc2626;
+}
+
+.error-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.8rem;
+  color: #dc2626;
+  margin-top: -0.25rem;
+}
+
+.field-inline {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.remember-label {
+  font-size: 0.8125rem;
+  color: #374151;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Checkbox */
+::ng-deep .p-checkbox {
+  .p-checkbox-box {
+    border-radius: 4px !important;
+    border-color: #d1d5db !important;
+    background: #fff !important;
+    box-shadow: none !important;
+  }
+
+  &.p-highlight .p-checkbox-box {
+    border-color: #22c55e !important;
+    background: #22c55e !important;
+  }
+
+  .p-checkbox-box .p-icon {
+    color: #fff !important;
+  }
+}
+
+/* ─── Botão submit ────────────────────────────────────── */
+.submit-btn {
+  width: 100%;
+  padding: 0.7rem;
+  background: #22c55e;
+  color: #fff;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: background 0.15s, opacity 0.15s;
+  margin-top: 0.25rem;
+  letter-spacing: 0.01em;
+
+  &:hover:not(:disabled) {
+    background: #16a34a;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+/* ─── Bloqueado ───────────────────────────────────────── */
+.locked-btn {
+  width: 100%;
+  padding: 0.5rem;
+  background: transparent;
+  border: 1px solid #fca5a5;
+  border-radius: 6px;
+  color: #dc2626;
+  font-size: 0.75rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+/* ─── Signup ──────────────────────────────────────────── */
+.signup-text {
+  text-align: center;
+  font-size: 0.8125rem;
+  color: #6b7280;
+  margin: 0.125rem 0 0;
+}
+
+.signup-cta {
+  font-weight: 600;
+  color: #16a34a;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+/* ─── Footer ──────────────────────────────────────────── */
+.login-footer {
+  padding: 1rem 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.6875rem;
+  color: #9ca3af;
+  letter-spacing: 0.04em;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.footer-links {
+  display: flex;
+  gap: 1.5rem;
+
+  a {
+    cursor: pointer;
+    color: #9ca3af;
+    text-decoration: none;
+
+    &:hover {
+      color: #374151;
+    }
+  }
+}
+
+/* ─── Responsivo ──────────────────────────────────────── */
+@media (max-width: 700px) {
+  .login-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .panel-left {
+    display: none;
+  }
+
+  .panel-right {
+    padding: 2rem 1.5rem;
+  }
+}

@@ -2,8 +2,8 @@ package com.srv.setebit.dropshipping.infrastructure.persistence.adapter;
 
 import com.srv.setebit.dropshipping.domain.user.RefreshToken;
 import com.srv.setebit.dropshipping.domain.user.port.RefreshTokenRepositoryPort;
-import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.RefreshTokenEntity;
-import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.RefreshTokenRepository;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.entity.RefreshTokenEntity;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.repository.RefreshTokenRepository;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 

@@ -26,19 +26,22 @@ public class AuthController {
     private final GetUserByIdUseCase getUserByIdUseCase;
     private final GenerateTemporaryPasswordUseCase generateTemporaryPasswordUseCase;
     private final UnlockUserUseCase unlockUserUseCase;
+    private final SetPasswordAfterTemporaryUseCase setPasswordAfterTemporaryUseCase;
 
     public AuthController(LoginUseCase loginUseCase,
                           RefreshTokenUseCase refreshTokenUseCase,
                           LogoutUseCase logoutUseCase,
                           GetUserByIdUseCase getUserByIdUseCase,
                           GenerateTemporaryPasswordUseCase generateTemporaryPasswordUseCase,
-                          UnlockUserUseCase unlockUserUseCase) {
+                          UnlockUserUseCase unlockUserUseCase,
+                          SetPasswordAfterTemporaryUseCase setPasswordAfterTemporaryUseCase) {
         this.loginUseCase = loginUseCase;
         this.refreshTokenUseCase = refreshTokenUseCase;
         this.logoutUseCase = logoutUseCase;
         this.getUserByIdUseCase = getUserByIdUseCase;
         this.generateTemporaryPasswordUseCase = generateTemporaryPasswordUseCase;
         this.unlockUserUseCase = unlockUserUseCase;
+        this.setPasswordAfterTemporaryUseCase = setPasswordAfterTemporaryUseCase;
     }
 
     @PostMapping("/login")
@@ -85,6 +88,14 @@ public class AuthController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> adminUnlock(@AuthenticationPrincipal UUID adminId, @PathVariable UUID userId) {
         unlockUserUseCase.execute(userId, adminId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/first-login/password")
+    @Operation(summary = "Definir nova senha (primeiro login)", description = "Usuário autenticado via senha temporária define a senha definitiva")
+    public ResponseEntity<Void> setPasswordFirstLogin(@AuthenticationPrincipal UUID userId,
+                                                      @Valid @RequestBody NewPasswordRequest request) {
+        setPasswordAfterTemporaryUseCase.execute(userId, request);
         return ResponseEntity.noContent().build();
     }
 }

@@ -37,7 +37,6 @@ import com.srv.setebit.dropshipping.application.user.dto.request.CreateUserReque
 import com.srv.setebit.dropshipping.application.user.dto.request.UpdateUserRequest;
 import com.srv.setebit.dropshipping.application.user.dto.response.PageUserResponse;
 import com.srv.setebit.dropshipping.application.user.dto.response.UserResponse;
-import com.srv.setebit.dropshipping.domain.user.UserProfile;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -60,15 +59,15 @@ public class UserController {
     private final GetUserRotinasUseCase getUserRotinasUseCase;
 
     public UserController(CreateUserUseCase createUserUseCase,
-                          GetUserByIdUseCase getUserByIdUseCase,
-                          UpdateUserUseCase updateUserUseCase,
-                          ChangePasswordUseCase changePasswordUseCase,
-                          ListUsersUseCase listUsersUseCase,
-                          ActivateUserUseCase activateUserUseCase,
-                          DeactivateUserUseCase deactivateUserUseCase,
-                          GetUserPerfisUseCase getUserPerfisUseCase,
-                          AssignPerfisToUserUseCase assignPerfisToUserUseCase,
-                          GetUserRotinasUseCase getUserRotinasUseCase) {
+            GetUserByIdUseCase getUserByIdUseCase,
+            UpdateUserUseCase updateUserUseCase,
+            ChangePasswordUseCase changePasswordUseCase,
+            ListUsersUseCase listUsersUseCase,
+            ActivateUserUseCase activateUserUseCase,
+            DeactivateUserUseCase deactivateUserUseCase,
+            GetUserPerfisUseCase getUserPerfisUseCase,
+            AssignPerfisToUserUseCase assignPerfisToUserUseCase,
+            GetUserRotinasUseCase getUserRotinasUseCase) {
         this.createUserUseCase = createUserUseCase;
         this.getUserByIdUseCase = getUserByIdUseCase;
         this.updateUserUseCase = updateUserUseCase;
@@ -82,7 +81,7 @@ public class UserController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Criar usuário")
     public ResponseEntity<UserResponse> create(@Valid @RequestBody CreateUserRequest request) {
         UserResponse response = createUserUseCase.execute(request);
@@ -90,7 +89,7 @@ public class UserController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Listar usuários")
     public ResponseEntity<PageUserResponse> list(
             @RequestParam(required = false) String name,
@@ -110,7 +109,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER') or #id == authentication.principal")
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal")
     @Operation(summary = "Buscar usuário por ID")
     public ResponseEntity<UserResponse> getById(@PathVariable UUID id, @AuthenticationPrincipal UUID userId) {
         UserResponse response = getUserByIdUseCase.execute(id);
@@ -118,11 +117,11 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER') or #id == authentication.principal")
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal")
     @Operation(summary = "Atualizar usuário")
     public ResponseEntity<UserResponse> update(@PathVariable UUID id,
-                                                @Valid @RequestBody UpdateUserRequest request,
-                                                @AuthenticationPrincipal UUID userId) {
+            @Valid @RequestBody UpdateUserRequest request,
+            @AuthenticationPrincipal UUID userId) {
         UserResponse response = updateUserUseCase.execute(id, request);
         return ResponseEntity.ok(response);
     }
@@ -130,9 +129,9 @@ public class UserController {
     @PatchMapping("/{id}/password")
     @Operation(summary = "Alterar senha")
     public ResponseEntity<Void> changePassword(@PathVariable UUID id,
-                                                @Valid @RequestBody ChangePasswordRequest request,
-                                                @AuthenticationPrincipal UUID userId) {
-        if (!id.equals(userId) && !isAdminOrManager(userId)) {
+            @Valid @RequestBody ChangePasswordRequest request,
+            @AuthenticationPrincipal UUID userId) {
+        if (!id.equals(userId) && !isAdmin(userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         changePasswordUseCase.execute(id, request);
@@ -140,7 +139,7 @@ public class UserController {
     }
 
     @PatchMapping("/{id}/activate")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Ativar usuário")
     public ResponseEntity<UserResponse> activate(@PathVariable UUID id) {
         UserResponse response = activateUserUseCase.execute(id);
@@ -148,7 +147,7 @@ public class UserController {
     }
 
     @PatchMapping("/{id}/deactivate")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Desativar usuário")
     public ResponseEntity<UserResponse> deactivate(@PathVariable UUID id) {
         UserResponse response = deactivateUserUseCase.execute(id);
@@ -156,7 +155,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/perfis")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER') or #id == authentication.principal")
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal")
     @Operation(summary = "Listar perfis do usuário")
     public ResponseEntity<List<PerfilResponse>> getPerfis(@PathVariable UUID id) {
         List<PerfilResponse> response = getUserPerfisUseCase.execute(id);
@@ -164,26 +163,25 @@ public class UserController {
     }
 
     @PutMapping("/{id}/perfis")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Atribuir perfis ao usuário")
     public ResponseEntity<Void> assignPerfis(@PathVariable UUID id,
-                                             @Valid @RequestBody AssignPerfisRequest request) {
+            @Valid @RequestBody AssignPerfisRequest request) {
         assignPerfisToUserUseCase.execute(id, request);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}/rotinas")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER') or #id == authentication.principal")
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal")
     @Operation(summary = "Listar rotinas acessíveis pelo usuário")
     public ResponseEntity<List<String>> getRotinas(@PathVariable UUID id) {
         List<String> response = getUserRotinasUseCase.execute(id);
         return ResponseEntity.ok(response);
     }
 
-    private boolean isAdminOrManager(UUID userId) {
-        List<String> perfilCodes = getUserPerfisUseCase.execute(userId).stream()
+    private boolean isAdmin(UUID userId) {
+        return getUserPerfisUseCase.execute(userId).stream()
                 .map(PerfilResponse::code)
-                .toList();
-        return perfilCodes.contains("ADMIN") || perfilCodes.contains("MANAGER");
+                .anyMatch("ADMIN"::equals);
     }
 }

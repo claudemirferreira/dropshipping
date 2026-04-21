@@ -6,19 +6,26 @@ import com.srv.setebit.dropshipping.application.user.port.PasswordEncoderPort;
 import com.srv.setebit.dropshipping.domain.user.TemporaryPassword;
 import com.srv.setebit.dropshipping.domain.user.User;
 import com.srv.setebit.dropshipping.domain.user.exception.RateLimitExceededException;
+import com.srv.setebit.dropshipping.domain.user.exception.UserNotFoundException;
 import com.srv.setebit.dropshipping.domain.user.port.TemporaryPasswordRepositoryPort;
 import com.srv.setebit.dropshipping.domain.user.port.UserRepositoryPort;
+
+import lombok.extern.slf4j.Slf4j;
+
 import com.srv.setebit.dropshipping.domain.user.port.PasswordResetAuditRepositoryPort;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class GenerateTemporaryPasswordUseCase {
 
     private final UserRepositoryPort userRepository;
@@ -30,6 +37,9 @@ public class GenerateTemporaryPasswordUseCase {
 
     @Value("${auth.temp-password-expiration-minutes:15}")
     private int expirationMinutes;
+
+    @Value("${auth.temporary-login-url}")
+    private String temporaryLoginUrl;
 
     public GenerateTemporaryPasswordUseCase(UserRepositoryPort userRepository,
                                            TemporaryPasswordRepositoryPort tempPasswordRepository,
@@ -77,7 +87,7 @@ public class GenerateTemporaryPasswordUseCase {
 
         var userOpt = userRepository.findByEmail(email);
         if (userOpt.isEmpty()) {
-            return;
+            throw new UserNotFoundException(email);
         }
         User user = userOpt.get();
 
@@ -95,8 +105,8 @@ public class GenerateTemporaryPasswordUseCase {
         temp.setCreatedAt(Instant.now());
         tempPasswordRepository.save(temp);
 
-        System.out.println("Temporary password: " + tempPassword);
-        String resetLink = "http://localhost:8080/login?email=" + user.getEmail();
+        String encodedEmail = URLEncoder.encode(user.getEmail(), StandardCharsets.UTF_8);
+        String resetLink = temporaryLoginUrl + "?email=" + encodedEmail;
         emailSender.sendTemporaryPassword(user.getEmail(), user.getName(), tempPassword, resetLink);
     }
 

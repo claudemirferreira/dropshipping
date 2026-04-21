@@ -2,12 +2,26 @@ package com.srv.setebit.dropshipping.infrastructure.web.exception;
 
 import com.srv.setebit.dropshipping.domain.access.exception.DuplicatePerfilCodeException;
 import com.srv.setebit.dropshipping.domain.access.exception.DuplicateRotinaCodeException;
+import com.srv.setebit.dropshipping.domain.access.exception.PerfilEmUsoException;
 import com.srv.setebit.dropshipping.domain.access.exception.PerfilNotFoundException;
 import com.srv.setebit.dropshipping.domain.access.exception.RotinaNotFoundException;
+import com.srv.setebit.dropshipping.domain.appconfig.exception.AppConfigNotFoundException;
+import com.srv.setebit.dropshipping.domain.appconfig.exception.InvalidAppConfigTipoException;
 import com.srv.setebit.dropshipping.domain.product.exception.DuplicateSkuException;
 import com.srv.setebit.dropshipping.domain.product.exception.DuplicateSlugException;
+import com.srv.setebit.dropshipping.domain.product.exception.InvalidStockException;
+import com.srv.setebit.dropshipping.domain.product.exception.InvalidValueException;
 import com.srv.setebit.dropshipping.domain.product.exception.ProductNotFoundException;
-import com.srv.setebit.dropshipping.domain.user.exception.*;
+import com.srv.setebit.dropshipping.domain.seller.exception.SellerAlreadyExistsException;
+import com.srv.setebit.dropshipping.domain.seller.exception.SellerNotFoundException;
+import com.srv.setebit.dropshipping.domain.user.exception.DuplicateEmailException;
+import com.srv.setebit.dropshipping.domain.user.exception.InvalidCredentialsException;
+import com.srv.setebit.dropshipping.domain.user.exception.InvalidRefreshTokenException;
+import com.srv.setebit.dropshipping.domain.user.exception.RateLimitExceededException;
+import com.srv.setebit.dropshipping.domain.user.exception.UserInactiveException;
+import com.srv.setebit.dropshipping.domain.user.exception.UserLockedException;
+import com.srv.setebit.dropshipping.domain.user.exception.UserNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -34,8 +48,8 @@ public class GlobalExceptionHandler {
                 new ErrorResponse(Instant.now(), 404, "Not Found", ex.getMessage(), null));
     }
 
-    @ExceptionHandler(DuplicateEmailException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicateEmail(DuplicateEmailException ex) {
+    @ExceptionHandler({DuplicateEmailException.class, SellerAlreadyExistsException.class})
+    public ResponseEntity<ErrorResponse> handleDuplicateEmail(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 new ErrorResponse(Instant.now(), 409, "Conflict", ex.getMessage(), null));
     }
@@ -46,7 +60,14 @@ public class GlobalExceptionHandler {
                 new ErrorResponse(Instant.now(), 404, "Not Found", ex.getMessage(), null));
     }
 
-    @ExceptionHandler({RotinaNotFoundException.class, PerfilNotFoundException.class})
+    @ExceptionHandler(InvalidAppConfigTipoException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidAppConfigTipo(InvalidAppConfigTipoException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new ErrorResponse(Instant.now(), 400, "Bad Request", ex.getMessage(), null));
+    }
+
+    @ExceptionHandler({RotinaNotFoundException.class, PerfilNotFoundException.class, AppConfigNotFoundException.class,
+            SellerNotFoundException.class})
     public ResponseEntity<ErrorResponse> handleAccessNotFound(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 new ErrorResponse(Instant.now(), 404, "Not Found", ex.getMessage(), null));
@@ -58,10 +79,26 @@ public class GlobalExceptionHandler {
                 new ErrorResponse(Instant.now(), 409, "Conflict", ex.getMessage(), null));
     }
 
-    @ExceptionHandler({DuplicateSkuException.class, DuplicateSlugException.class})
-    public ResponseEntity<ErrorResponse> handleDuplicateProduct(RuntimeException ex) {
+    @ExceptionHandler(PerfilEmUsoException.class)
+    public ResponseEntity<ErrorResponse> handlePerfilEmUso(PerfilEmUsoException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 new ErrorResponse(Instant.now(), 409, "Conflict", ex.getMessage(), null));
+    }
+
+ @ExceptionHandler({DuplicateSkuException.class, DuplicateSlugException.class})
+    public ResponseEntity<ErrorResponse> handleDuplicateProduct(RuntimeException ex) {
+        String message = ex instanceof DuplicateSkuException 
+            ? "Este SKU já está cadastrado em outro produto." 
+            : "Já existe um produto com este nome/slug. Tente um nome diferente.";
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                new ErrorResponse(Instant.now(), 409, "Conflito de Cadastro", message, null));
+    }
+
+  @ExceptionHandler({InvalidStockException.class, InvalidValueException.class})
+    public ResponseEntity<ErrorResponse> handleProductValidation(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(
+                new ErrorResponse(Instant.now(), 422, "Erro de Validação", ex.getMessage(), null));
     }
 
     @ExceptionHandler(InvalidCredentialsException.class)
@@ -81,6 +118,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.LOCKED).body(
                 new ErrorResponse(Instant.now(), 423, "Locked", ex.getMessage(), null));
     }
+
+    @ExceptionHandler(UserInactiveException.class)
+    public ResponseEntity<ErrorResponse> handleUserInactive(UserInactiveException ex) {
+        log.info("Usuário desativado. Contate o administrador.");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                new ErrorResponse(Instant.now(), 403, "Forbidden",
+                        "Usuário desativado. Contate o administrador.", null));
+    }
     
     @ExceptionHandler(RateLimitExceededException.class)
     public ResponseEntity<ErrorResponse> handleRateLimit(RateLimitExceededException ex) {
@@ -89,9 +134,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex) {
+    public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex, HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
-                new ErrorResponse(Instant.now(), 403, "Forbidden", "Acesso negado", null));
+                new ErrorResponse(Instant.now(), 403, "Forbidden", "Acesso não autorizado.", request.getRequestURI()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

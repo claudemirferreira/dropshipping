@@ -30,5 +30,8 @@ public interface PerfilRepositoryPort {
 
     boolean existsByCodeAndIdNot(String code, UUID id);
 
+    /** Verifica se o perfil possui rotinas associadas. */
+    boolean hasRotinas(UUID perfilId);
+
     void deleteById(UUID id);
 }

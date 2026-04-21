@@ -1,0 +1,260 @@
+<p-confirmDialog />
+
+<div class="page-header">
+  <div class="page-title-block">
+    <h1 class="page-title">Sellers (Mercado Livre / Shopee)</h1>
+  </div>
+</div>
+
+<div class="page-toolbar">
+  <div class="search-wrapper">
+    <i class="pi pi-search search-icon"></i>
+    <input
+      type="number"
+      pInputText
+      placeholder="Filtrar por marketplaceId..."
+      class="search-input"
+      [formControl]="marketplaceIdFilter"
+      (keyup.enter)="applyFilter()"
+    />
+  </div>
+  <div class="toolbar-actions">
+    <p-button
+      label="Filtrar"
+      icon="pi pi-filter"
+      size="small"
+      severity="secondary"
+      [outlined]="true"
+      (onClick)="applyFilter()"
+    />
+    <p-button
+      label="Limpar"
+      icon="pi pi-times"
+      size="small"
+      severity="secondary"
+      [text]="true"
+      (onClick)="clearFilter()"
+    />
+    <p-button
+      label="Novo"
+      icon="pi pi-plus"
+      size="small"
+      severity="primary"
+      (onClick)="openCreateDialog()"
+    />
+  </div>
+</div>
+
+<div class="table-card">
+  <p-table
+    [value]="sellers()"
+    [lazy]="true"
+    [paginator]="true"
+    [rows]="10"
+    [totalRecords]="totalRecords()"
+    [loading]="loading()"
+    (onLazyLoad)="onLazyLoad($event)"
+    [rowsPerPageOptions]="[10, 25, 50, { showAll: 'Todos' }]"
+    dataKey="id"
+    currentPageReportTemplate="{first} - {last} de {totalRecords}"
+    [showCurrentPageReport]="true"
+    paginatorTemplate="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink"
+    [showFirstLastIcon]="false"
+    [paginatorDropdownAppendTo]="'body'"
+    styleClass="p-datatable-sm"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Marketplace</th>
+        <th>Marketplace ID</th>
+        <th>Usuário</th>
+        <th>Token Type</th>
+        <th>Expires In</th>
+        <th>Scope</th>
+        <th style="width: 140px">Ações</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-row>
+      <tr>
+        <td>
+          <p-tag
+            [value]="marketplaceLabel(row.marketplace)"
+            [severity]="row.marketplace === 'mercado_livre' ? 'warn' : 'danger'"
+            [rounded]="true"
+          />
+        </td>
+        <td class="mono-cell">{{ row.marketplaceId }}</td>
+        <td>
+          <code class="code-cell" [title]="row.userId">
+            {{ row.userId.slice(0, 8) }}…
+          </code>
+        </td>
+        <td>{{ row.tokenType }}</td>
+        <td class="mono-cell">{{ row.expiresIn }}s</td>
+        <td class="scope-cell" [title]="row.scope">{{ row.scope }}</td>
+        <td class="actions-cell">
+          <div class="actions-buttons">
+            <p-button
+              icon="pi pi-pencil"
+              [rounded]="true"
+              [text]="true"
+              severity="secondary"
+              size="small"
+              (onClick)="openEditDialog(row)"
+              pTooltip="Editar"
+            />
+            <p-button
+              icon="pi pi-trash"
+              [rounded]="true"
+              [text]="true"
+              severity="secondary"
+              size="small"
+              (onClick)="confirmDelete(row)"
+              pTooltip="Excluir"
+            />
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="7" class="empty-message">Nenhum seller encontrado.</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="loadingbody">
+      <tr>
+        <td colspan="7" class="loading-message">
+          <i class="pi pi-spin pi-spinner"></i> Carregando...
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="paginatorleft">
+      <span class="paginator-rows-label">Itens por página:</span>
+    </ng-template>
+  </p-table>
+</div>
+
+<p-dialog
+  [header]="editId() ? 'Editar seller' : 'Novo seller'"
+  [(visible)]="dialogVisible"
+  [modal]="true"
+  [style]="{ width: '48rem', maxHeight: '92vh' }"
+  [contentStyle]="{ overflow: 'auto', maxHeight: 'calc(92vh - 8rem)' }"
+  [draggable]="false"
+  [resizable]="false"
+  (onHide)="closeDialog()"
+>
+  <form [formGroup]="form" class="create-form">
+    <div class="form-row">
+      <div class="form-field">
+        <label for="userId">Usuário</label>
+        <p-dropdown
+          inputId="userId"
+          [options]="userOptions()"
+          formControlName="userId"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Selecione o usuário"
+          [filter]="true"
+          filterBy="label"
+          appendTo="body"
+          styleClass="w-full"
+        />
+        @if (form.get('userId')?.invalid && form.get('userId')?.touched) {
+          <small class="field-error">Usuário é obrigatório</small>
+        }
+      </div>
+      <div class="form-field">
+        <label for="marketplace">Marketplace</label>
+        <p-dropdown
+          inputId="marketplace"
+          [options]="marketplaceOptions"
+          formControlName="marketplace"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Selecione"
+          appendTo="body"
+          styleClass="w-full"
+        />
+        @if (form.get('marketplace')?.invalid && form.get('marketplace')?.touched) {
+          <small class="field-error">Marketplace é obrigatório</small>
+        }
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-field">
+        <label for="marketplace_id">Marketplace ID</label>
+        <p-inputNumber
+          inputId="marketplace_id"
+          formControlName="marketplace_id"
+          [useGrouping]="false"
+          [min]="0"
+          styleClass="w-full"
+          inputStyleClass="w-full"
+        />
+        @if (form.get('marketplace_id')?.invalid && form.get('marketplace_id')?.touched) {
+          <small class="field-error">Marketplace ID é obrigatório</small>
+        }
+      </div>
+      <div class="form-field">
+        <label for="expires_in">Expira em (segundos)</label>
+        <p-inputNumber
+          inputId="expires_in"
+          formControlName="expires_in"
+          [useGrouping]="false"
+          [min]="0"
+          styleClass="w-full"
+          inputStyleClass="w-full"
+        />
+        @if (form.get('expires_in')?.invalid && form.get('expires_in')?.touched) {
+          <small class="field-error">Expiração é obrigatória</small>
+        }
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-field">
+        <label for="token_type">Token type</label>
+        <input id="token_type" pInputText formControlName="token_type" placeholder="Bearer" />
+        @if (form.get('token_type')?.invalid && form.get('token_type')?.touched) {
+          <small class="field-error">Token type é obrigatório</small>
+        }
+      </div>
+      <div class="form-field">
+        <label for="scope">Scope</label>
+        <input id="scope" pInputText formControlName="scope" placeholder="offline_access read write" />
+        @if (form.get('scope')?.invalid && form.get('scope')?.touched) {
+          <small class="field-error">Scope é obrigatório</small>
+        }
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label for="access_token">Access token</label>
+      <input id="access_token" pInputText formControlName="access_token" placeholder="APP_USR-..." />
+      @if (form.get('access_token')?.invalid && form.get('access_token')?.touched) {
+        <small class="field-error">Access token é obrigatório</small>
+      }
+    </div>
+
+    <div class="form-field">
+      <label for="refresh_token">Refresh token</label>
+      <input id="refresh_token" pInputText formControlName="refresh_token" placeholder="TG-..." />
+      @if (form.get('refresh_token')?.invalid && form.get('refresh_token')?.touched) {
+        <small class="field-error">Refresh token é obrigatório</small>
+      }
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <p-button label="Cancelar" [text]="true" (onClick)="closeDialog()" />
+    <p-button
+      [label]="editId() ? 'Salvar' : 'Cadastrar'"
+      icon="pi pi-check"
+      (onClick)="submit()"
+      [loading]="saving()"
+      [disabled]="form.invalid"
+    />
+  </ng-template>
+</p-dialog>

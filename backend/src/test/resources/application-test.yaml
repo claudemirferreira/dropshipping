@@ -14,3 +14,28 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
         default_schema: PUBLIC
+  mail:
+    host: localhost
+    port: 3025
+    username: test
+    password: test
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: false
+
+app:
+  upload:
+    dir: ${java.io.tmpdir}/dropshipping-test-upload
+  api:
+    base-url: http://localhost:8080
+  mail:
+    from: test@test.local
+    override-recipient: test@test.local
+    base-url: http://localhost:8080
+    logo-path: /logo.png
+
+jwt:
+  secret: test-jwt-secret-for-unit-tests-only

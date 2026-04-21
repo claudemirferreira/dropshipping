@@ -9,11 +9,13 @@ import com.srv.setebit.dropshipping.domain.user.RefreshToken;
 import com.srv.setebit.dropshipping.domain.user.TemporaryPassword;
 import com.srv.setebit.dropshipping.domain.user.User;
 import com.srv.setebit.dropshipping.domain.user.exception.InvalidCredentialsException;
+import com.srv.setebit.dropshipping.domain.user.exception.UserInactiveException;
 import com.srv.setebit.dropshipping.domain.user.exception.UserLockedException;
 import com.srv.setebit.dropshipping.domain.user.port.BloqueioRepositoryPort;
 import com.srv.setebit.dropshipping.domain.user.port.RefreshTokenRepositoryPort;
 import com.srv.setebit.dropshipping.domain.user.port.TemporaryPasswordRepositoryPort;
 import com.srv.setebit.dropshipping.domain.user.port.UserRepositoryPort;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class LoginUseCase {
 
@@ -61,17 +64,21 @@ public class LoginUseCase {
                 .orElseThrow(InvalidCredentialsException::new);
 
         if (!user.isActive()) {
-            throw new InvalidCredentialsException();
+            log.info("usuario {} inativo ", user.getEmail());
+            throw new UserInactiveException(user.getEmail());
         }
 
         boolean needsPasswordChange = false;
         boolean valid = false;
 
-        // tenta senha padrão
+        // tenta senha padrão — usuário bloqueado não pode entrar nem com a senha correta
         if (passwordEncoder.matches(request.password(), user.getPasswordHash())) {
+            if (user.isLocked()) {
+                throw new UserLockedException(user.getLockedReason());
+            }
             valid = true;
         } else {
-            // tenta senha temporária (self-service unlock)
+            // tenta senha temporária (self-service unlock) — único caminho permitido para conta bloqueada
             var tempOpt = tempPasswordRepository.findActiveByUserId(user.getId());
             if (tempOpt.isPresent() && passwordEncoder.matches(request.password(), tempOpt.get().getPasswordHash())) {
                 TemporaryPassword temp = tempOpt.get();
@@ -87,21 +94,20 @@ public class LoginUseCase {
             }
         }
 
-        // se ainda inválido e o usuário está bloqueado, informar bloqueio
-        if (user.isLocked() && !valid) {
-            throw new UserLockedException(user.getLockedReason());
-        }
-
+        // senha errada: se bloqueado informa bloqueio; senão registra tentativa falha
         if (!valid) {
+            if (user.isLocked()) {
+                throw new UserLockedException(user.getLockedReason());
+            }
             loginAttemptService.registerFailed(user, request.email());
             throw new InvalidCredentialsException();
-        } else {
-            // reset attempts on success
-            if (user.getFailedLoginAttempts() != 0) {
-                user.setFailedLoginAttempts(0);
-                user.setUpdatedAt(Instant.now());
-                userRepository.save(user);
-            }
+        }
+
+        // reset tentativas falhas após login bem-sucedido
+        if (user.getFailedLoginAttempts() != 0) {
+            user.setFailedLoginAttempts(0);
+            user.setUpdatedAt(Instant.now());
+            userRepository.save(user);
         }
 
         List<String> perfilCodes = getUserPerfisUseCase.execute(user.getId()).stream()

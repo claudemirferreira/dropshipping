@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { roleGuard } from './core/guards/role.guard';
 
 export const routes: Routes = [
   {
@@ -12,6 +13,21 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/auth/forgot-password/forgot-password').then(
         (m) => m.ForgotPasswordComponent
+      ),
+  },
+  {
+    path: 'change-password',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/auth/change-password/change-password').then(
+        (m) => m.ChangePasswordComponent
+      ),
+  },
+  {
+    path: 'password-reset-success',
+    loadComponent: () =>
+      import('./features/auth/password-reset-success/password-reset-success').then(
+        (m) => m.PasswordResetSuccessComponent
       ),
   },
   {
@@ -40,6 +56,11 @@ export const routes: Routes = [
         pathMatch: 'full',
       },
       {
+        path: 'perfil',
+        loadComponent: () =>
+          import('./features/profile/profile').then((m) => m.ProfileComponent),
+      },
+      {
         path: 'dashboard',
         loadComponent: () =>
           import('./features/dashboard/dashboard').then(
@@ -48,9 +69,18 @@ export const routes: Routes = [
       },
       {
         path: 'usuarios',
+        canActivate: [roleGuard],
+        data: { roles: ['ADMIN'] },
         loadComponent: () =>
           import('./features/users/users-list/users-list').then(
             (m) => m.UsersListComponent
+          ),
+      },
+      {
+        path: 'unauthorized',
+        loadComponent: () =>
+          import('./features/auth/unauthorized/unauthorized').then(
+            (m) => m.UnauthorizedComponent
           ),
       },
       {
@@ -58,6 +88,20 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/products/products-list/products-list').then(
             (m) => m.ProductsListComponent
+          ),
+      },
+      {
+        path: 'produtos/cadastrar',
+        loadComponent: () =>
+          import('./features/products/product-base-create/product-base-create').then(
+            (m) => m.ProductBaseCreateComponent
+          ),
+      },
+      {
+        path: 'produtos/editar/:id',
+        loadComponent: () =>
+          import('./features/products/product-base-edit/product-base-edit').then(
+            (m) => m.ProductBaseEditComponent
           ),
       },
       {
@@ -72,6 +116,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/perfis/perfis-list/perfis-list').then(
             (m) => m.PerfisListComponent
+          ),
+      },
+      {
+        path: 'sellers',
+        loadComponent: () =>
+          import('./features/sellers/sellers-list/sellers-list').then(
+            (m) => m.SellersListComponent
           ),
       },
     ],

@@ -153,6 +153,19 @@
   font-size: 0.875rem;
 }
 
+/* Dialog Novo/Editar perfil: conteúdo com scroll e footer sempre visível */
+:host ::ng-deep .p-dialog .p-dialog-content {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
+:host ::ng-deep .p-dialog .p-dialog-footer {
+  flex-shrink: 0;
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--p-content-border-color, #e2e8f0);
+}
+
 .form-picklist,
 .rotinas-picklist {
   min-height: 18rem;

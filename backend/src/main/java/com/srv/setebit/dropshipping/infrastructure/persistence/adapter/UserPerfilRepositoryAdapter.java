@@ -1,11 +1,11 @@
 package com.srv.setebit.dropshipping.infrastructure.persistence.adapter;
 
 import com.srv.setebit.dropshipping.domain.access.port.UserPerfilRepositoryPort;
-import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.PerfilJpaRepository;
-import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.UserEntity;
-import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.UserPerfilEntity;
-import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.UserPerfilJpaRepository;
-import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.UserRepository;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.repository.PerfilJpaRepository;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.entity.UserEntity;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.entity.UserPerfilEntity;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.repository.UserPerfilJpaRepository;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.repository.UserRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +42,11 @@ public class UserPerfilRepositoryAdapter implements UserPerfilRepositoryPort {
     @Override
     public Set<UUID> findPerfilIdsByUserId(UUID userId) {
         return new HashSet<>(userPerfilRepository.findPerfilIdsByUserId(userId));
+    }
+
+    @Override
+    public boolean existsUserWithPerfil(UUID perfilId) {
+        return userPerfilRepository.countById_PerfilId(perfilId) > 0;
     }
 
     @Override

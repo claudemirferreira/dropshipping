@@ -19,6 +19,16 @@
 
 ---
 
+## Dados de acesso ao mercado livre
+| Parametro | Valor |
+|----------------|---------|
+|APP ID          |7667915994635886|
+|SECRET KEY      |xaiArQRfva8zFlbdzhRZfNfLNpe2rX9o|
+|REDIRECT URI    |https://www.google.com|
+|CODE            |TG-69d28b133a53f1000118f37c-274253902|
+|WEBHOOK         |https://www.queroserdrop/notifications|
+
+
 ## Pré-requisitos (fora do código)
 
 | ID | Tarefa | Prioridade | Detalhes |
