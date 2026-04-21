@@ -48,7 +48,8 @@ services:
     volumes:
       - app_uploads:/app/uploads
     ports:
-      - "8080:8080"
+      # Backend fica acess\u00edvel s\u00f3 em localhost; o Nginx do host faz o proxy para /api.
+      - "127.0.0.1:${APP_HOST_PORT:-8080}:8080"
     networks:
       - app
 
@@ -63,7 +64,9 @@ services:
     depends_on:
       - app
     ports:
-      - "80:80"
+      # Exposto em 8081 no host. O Nginx do host (que termina o SSL de
+      # https://queroserdrop.com.br) deve fazer proxy_pass para http://127.0.0.1:8081
+      - "127.0.0.1:${FRONTEND_HOST_PORT:-8081}:80"
     networks:
       - app
 
