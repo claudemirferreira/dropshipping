@@ -65,6 +65,7 @@
         <th>Código</th>
         <th>Nome</th>
         <th>Status</th>
+        <th>Data Criação</th>
         <th style="width: 170px">Ações</th>
       </tr>
     </ng-template>
@@ -78,6 +79,7 @@
         <td>
           <span class="status-text">{{ row.active ? 'Ativo' : 'Inativo' }}</span>
         </td>
+        <td class="name-cell">{{ row.createdAt | date:'dd/MM/yyyy HH:mm'  }}</td>
         <td class="actions-cell">
           <div class="actions-buttons">
             <p-button

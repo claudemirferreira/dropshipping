@@ -21,6 +21,7 @@ import com.srv.setebit.dropshipping.domain.user.exception.RateLimitExceededExcep
 import com.srv.setebit.dropshipping.domain.user.exception.UserInactiveException;
 import com.srv.setebit.dropshipping.domain.user.exception.UserLockedException;
 import com.srv.setebit.dropshipping.domain.user.exception.UserNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -120,8 +121,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserInactiveException.class)
     public ResponseEntity<ErrorResponse> handleUserInactive(UserInactiveException ex) {
+        log.info("Usuário desativado. Contate o administrador.");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
-                new ErrorResponse(Instant.now(), 403, "Forbidden", "Usuário inativo", null));
+                new ErrorResponse(Instant.now(), 403, "Forbidden",
+                        "Usuário desativado. Contate o administrador.", null));
     }
     
     @ExceptionHandler(RateLimitExceededException.class)
@@ -131,9 +134,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex) {
+    public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex, HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
-                new ErrorResponse(Instant.now(), 403, "Forbidden", "Acesso negado", null));
+                new ErrorResponse(Instant.now(), 403, "Forbidden", "Acesso não autorizado.", request.getRequestURI()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

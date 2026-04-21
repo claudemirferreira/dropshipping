@@ -96,12 +96,20 @@ export class AuthService {
         this.touchActivity();
       }),
       catchError((err) => {
-        const msg =
-          err.error?.message ?? 'E-mail ou senha inválidos. Tente novamente.';
+        const backendMsg: string | undefined = err.error?.message;
+        const status = err.status;
+        const inactiveByStatus = status === 403;
+        const inactiveByMessage = /inativ|desativ/i.test(backendMsg ?? '');
+        let msg: string;
+        if (inactiveByStatus || inactiveByMessage) {
+          msg = 'Usuário desativado. Contate o administrador.';
+        } else {
+          msg = backendMsg ?? 'E-mail ou senha inválidos. Tente novamente.';
+        }
         this.errorMessage.set(msg);
-        this.lastErrorStatus.set(err.status ?? null);
-        const lockedByStatus = err.status === 423;
-        const lockedByMessage = /bloquead/i.test(msg) || /invalid[aá]?\s*3/i.test(msg);
+        this.lastErrorStatus.set(status ?? null);
+        const lockedByStatus = status === 423;
+        const lockedByMessage = /bloquead/i.test(backendMsg ?? '') || /invalid[aá]?\s*3/i.test(backendMsg ?? '');
         if (lockedByStatus || lockedByMessage) {
           this.accountLocked.set(true);
         }

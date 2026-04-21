@@ -1,0 +1,26 @@
+<div class="unauthorized-page">
+  <div class="unauthorized-card">
+    <div class="icon-wrap">
+      <i class="pi pi-lock"></i>
+    </div>
+    <h1 class="title">Acesso não autorizado.</h1>
+    <p class="subtitle">
+      Você não possui permissão para acessar esta área. Caso acredite que isso é um
+      engano, entre em contato com o administrador do sistema.
+    </p>
+    <div class="actions">
+      <p-button
+        label="Voltar"
+        icon="pi pi-arrow-left"
+        severity="secondary"
+        [outlined]="true"
+        (onClick)="goBack()"
+      />
+      <p-button
+        label="Ir para o Dashboard"
+        icon="pi pi-home"
+        (onClick)="goToDashboard()"
+      />
+    </div>
+  </div>
+</div>
