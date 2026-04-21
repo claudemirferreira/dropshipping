@@ -10,6 +10,7 @@ import com.srv.setebit.dropshipping.domain.user.exception.InvalidRefreshTokenExc
 import com.srv.setebit.dropshipping.domain.user.exception.UserInactiveException;
 import com.srv.setebit.dropshipping.domain.user.port.RefreshTokenRepositoryPort;
 import com.srv.setebit.dropshipping.domain.user.port.UserRepositoryPort;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class RefreshTokenUseCase {
 
@@ -56,7 +58,8 @@ public class RefreshTokenUseCase {
                 .orElseThrow(InvalidRefreshTokenException::new);
 
         if (!user.isActive()) {
-            throw new UserInactiveException();
+            log.info("usuario {} inativo ", user.getEmail());
+            throw new UserInactiveException(user.getEmail());
         }
 
         refreshTokenRepository.revokeByUserId(user.getId());

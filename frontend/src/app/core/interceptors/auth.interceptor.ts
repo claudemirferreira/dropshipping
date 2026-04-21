@@ -31,6 +31,16 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((err: HttpErrorResponse) => {
+      if (err.status === 403 && !isLoginOrRefresh) {
+        messageService.add({
+          severity: 'error',
+          summary: 'Acesso negado',
+          detail: 'Acesso não autorizado.',
+          life: 4000,
+        });
+        router.navigate(['/unauthorized']);
+        return throwError(() => err);
+      }
       if (err.status === 401 && !isLoginOrRefresh) {
         const refresh = auth.getRefreshToken();
         if (refresh) {
