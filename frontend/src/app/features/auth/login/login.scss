@@ -26,6 +26,12 @@
   margin-right: auto;
 }
 
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem; /* ou 1.5rem / 2rem conforme preferir */
+}
+
 .nav-link {
   font-size: 0.875rem;
   color: #4b5563;
