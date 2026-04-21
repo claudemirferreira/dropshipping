@@ -25,7 +25,7 @@ export class ChangePasswordComponent {
 
   loading  = signal(false);
   error    = signal<string | null>(null);
-  needsChange = this.auth.needsPasswordChange;
+  needsChange = (): boolean => this.auth.needsPasswordChange();
 
   form = this.fb.nonNullable.group({
     currentPassword: ['', Validators.required],
