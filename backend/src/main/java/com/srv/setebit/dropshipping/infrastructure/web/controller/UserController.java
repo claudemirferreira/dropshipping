@@ -2,7 +2,9 @@ package com.srv.setebit.dropshipping.infrastructure.web.controller;
 
 import java.util.List;
 import java.util.UUID;
-
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -58,6 +60,11 @@ public class UserController {
     private final AssignPerfisToUserUseCase assignPerfisToUserUseCase;
     private final GetUserRotinasUseCase getUserRotinasUseCase;
 
+    private static final Set<String> USER_SORT_PROPERTIES = Set.of(
+            "id", "email", "name", "phone", "active",
+            "createdAt", "updatedAt",
+            "failedLoginAttempts", "locked", "lockedReason", "lockedAt", "unlockedAt");
+
     public UserController(CreateUserUseCase createUserUseCase,
             GetUserByIdUseCase getUserByIdUseCase,
             UpdateUserUseCase updateUserUseCase,
@@ -96,7 +103,8 @@ public class UserController {
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String perfilCode,
             @PageableDefault(size = 20, sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
-        PageUserResponse response = listUsersUseCase.execute(name, email, perfilCode, pageable);
+        Pageable safePageable = sanitizeSort(pageable, USER_SORT_PROPERTIES, "name");
+        PageUserResponse response = listUsersUseCase.execute(name, email, perfilCode, safePageable);
         return ResponseEntity.ok(response);
     }
 
@@ -177,6 +185,16 @@ public class UserController {
     public ResponseEntity<List<String>> getRotinas(@PathVariable UUID id) {
         List<String> response = getUserRotinasUseCase.execute(id);
         return ResponseEntity.ok(response);
+    }
+
+    private Pageable sanitizeSort(Pageable pageable, Set<String> allowedProperties, String defaultProperty) {
+        Sort sort = pageable.getSort().stream()
+                .filter(order -> allowedProperties.contains(order.getProperty()))
+                .collect(Collectors.collectingAndThen(Collectors.toList(), Sort::by));
+        if (sort.isEmpty()) {
+            sort = Sort.by(Sort.Direction.ASC, defaultProperty);
+        }
+        return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
     }
 
     private boolean isAdmin(UUID userId) {
