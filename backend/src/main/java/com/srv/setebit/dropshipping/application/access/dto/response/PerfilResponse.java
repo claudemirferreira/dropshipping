@@ -1,11 +1,13 @@
 package com.srv.setebit.dropshipping.application.access.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 
 import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
 
+@Builder
 @Schema(description = "Dados do perfil")
 public record PerfilResponse(
         @Schema(description = "ID do perfil")
@@ -22,9 +24,6 @@ public record PerfilResponse(
 
         @Schema(description = "Ativo")
         boolean active,
-
-        @Schema(description = "Perfil padrão do sistema — não pode ser editado nem excluído")
-        boolean systemDefault,
 
         @Schema(description = "Ordem de exibição no menu")
         int displayOrder,

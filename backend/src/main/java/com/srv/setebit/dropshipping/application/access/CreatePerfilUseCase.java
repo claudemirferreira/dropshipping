@@ -27,6 +27,10 @@ public class CreatePerfilUseCase {
 
     @Transactional
     public PerfilResponse execute(CreatePerfilRequest request) {
+//        validate(id);
+//        request.create();
+//        return perfilRepository.save(request);
+
         if (perfilRepository.existsByCode(request.code().trim())) {
             throw new DuplicatePerfilCodeException(request.code());
         }
@@ -45,6 +49,7 @@ public class CreatePerfilUseCase {
 
         perfil = perfilRepository.save(perfil);
 
+        //APAGAR
         if (request.rotinaIds() != null && !request.rotinaIds().isEmpty()) {
             perfilRepository.replaceRotinasForPerfil(perfil.getId(), request.rotinaIds());
             perfil = perfilRepository.findByIdWithRotinas(perfil.getId()).orElse(perfil);
@@ -59,7 +64,7 @@ public class CreatePerfilUseCase {
                 : new HashSet<>();
         return new PerfilResponse(
                 p.getId(), p.getCode(), p.getName(),
-                p.getIcon(), p.isActive(), p.isSystemDefault(), p.getDisplayOrder(), rotinas,
+                p.getIcon(), p.isActive(), p.getDisplayOrder(), rotinas,
                 p.getCreatedAt(), p.getUpdatedAt()
         );
     }

@@ -5,8 +5,8 @@ import com.srv.setebit.dropshipping.domain.access.Rotina;
 import com.srv.setebit.dropshipping.domain.access.port.PerfilRepositoryPort;
 import com.srv.setebit.dropshipping.domain.access.port.RotinaRepositoryPort;
 import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.entity.PerfilEntity;
-import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.repository.PerfilJpaRepository;
 import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.entity.PerfilRotinaEntity;
+import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.repository.PerfilJpaRepository;
 import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.repository.PerfilRotinaJpaRepository;
 import com.srv.setebit.dropshipping.infrastructure.persistence.jpa.repository.RotinaJpaRepository;
 import org.springframework.data.domain.Page;
@@ -136,20 +136,24 @@ public class PerfilRepositoryAdapter implements PerfilRepositoryPort {
         e.setName(p.getName());
         e.setIcon(p.getIcon());
         e.setActive(p.isActive());
-        e.setSystemDefault(p.isSystemDefault());
         e.setDisplayOrder(p.getDisplayOrder());
         e.setCreatedAt(p.getCreatedAt());
         e.setUpdatedAt(p.getUpdatedAt());
         return e;
     }
 
-    private Perfil toDomain(PerfilEntity e) {
-        Perfil p = new Perfil(
-                e.getId(), e.getCode(), e.getName(),
-                e.getIcon(), e.isActive(), e.isSystemDefault(), e.getDisplayOrder(),
-                e.getCreatedAt(), e.getUpdatedAt(),
-                null
-        );
-        return p;
+    private Perfil toDomain(PerfilEntity entity) {
+        return Perfil
+                .builder()
+                .id(entity.getId())
+                .code(entity.getCode())
+                .name(entity.getName())
+                .icon(entity.getIcon())
+                .active(entity.isActive())
+                .displayOrder(entity.getDisplayOrder())
+                .createdAt(entity.getCreatedAt())
+                .updatedAt(entity.getUpdatedAt())
+                .build();
+
     }
 }

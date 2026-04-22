@@ -33,9 +33,6 @@ public class PerfilEntity {
     @Column(name = "active", nullable = false)
     private boolean active = true;
 
-    @Column(name = "system_default", nullable = false)
-    private boolean systemDefault = false;
-
     @Column(name = "display_order", nullable = false)
     private int displayOrder = 0;
 

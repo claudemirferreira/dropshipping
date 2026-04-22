@@ -33,6 +33,15 @@ export class ChangePasswordComponent {
     confirmPassword: ['', Validators.required],
   });
 
+  constructor() {
+    // No primeiro login o campo "senha atual" não é exibido,
+    // então removemos o validator pra não travar o form como inválido.
+    if (this.auth.needsPasswordChange()) {
+      this.form.controls.currentPassword.clearValidators();
+      this.form.controls.currentPassword.updateValueAndValidity();
+    }
+  }
+
   /** Requisitos da nova senha (reativos). */
   reqs = computed(() => {
     const pw = this.form.get('newPassword')?.value ?? '';

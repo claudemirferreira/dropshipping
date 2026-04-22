@@ -1,6 +1,7 @@
 package com.srv.setebit.dropshipping.domain.access;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,6 +10,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Perfil {
@@ -18,9 +20,19 @@ public class Perfil {
     private String name;
     private String icon;
     private boolean active;
-    private boolean systemDefault;
     private int displayOrder;
     private Instant createdAt;
     private Instant updatedAt;
     private Set<Rotina> rotinas;
+
+    public void update() {
+        updatedAt = Instant.now();
+    }
+
+    public void create() {
+        update();
+        createdAt = Instant.now();
+        id = UUID.randomUUID();
+    }
+
 }

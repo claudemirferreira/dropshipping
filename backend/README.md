@@ -59,3 +59,9 @@ mvn test
 "phone": "string",
 "profile": "ADMIN"
 }
+
+
+https://auth.mercadolivre.com.br/authorization?client_id=212822126712120&response_type=code&redirect_uri=https%3A%2F%2Fapp2.soudrop.com.br%2Fintegrations%2Fmeli&state=1074
+
+
+

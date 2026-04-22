@@ -5,6 +5,8 @@ import com.srv.setebit.dropshipping.application.access.dto.request.CreatePerfilR
 import com.srv.setebit.dropshipping.application.access.dto.request.UpdatePerfilRequest;
 import com.srv.setebit.dropshipping.application.access.dto.response.PagePerfilResponse;
 import com.srv.setebit.dropshipping.application.access.dto.response.PerfilResponse;
+import com.srv.setebit.dropshipping.domain.access.Perfil;
+import com.srv.setebit.dropshipping.infrastructure.web.mapper.PerfilMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -29,17 +31,20 @@ public class PerfilController {
     private final GetPerfilByIdUseCase getPerfilByIdUseCase;
     private final UpdatePerfilUseCase updatePerfilUseCase;
     private final DeletePerfilUseCase deletePerfilUseCase;
+    private final PerfilMapper perfilMapper;
 
     public PerfilController(ListPerfisUseCase listPerfisUseCase,
                             CreatePerfilUseCase createPerfilUseCase,
                             GetPerfilByIdUseCase getPerfilByIdUseCase,
                             UpdatePerfilUseCase updatePerfilUseCase,
-                            DeletePerfilUseCase deletePerfilUseCase) {
+                            DeletePerfilUseCase deletePerfilUseCase,
+                            PerfilMapper perfilMapper) {
         this.listPerfisUseCase = listPerfisUseCase;
         this.createPerfilUseCase = createPerfilUseCase;
         this.getPerfilByIdUseCase = getPerfilByIdUseCase;
         this.updatePerfilUseCase = updatePerfilUseCase;
         this.deletePerfilUseCase = deletePerfilUseCase;
+        this.perfilMapper = perfilMapper;
     }
 
     @GetMapping
@@ -93,8 +98,8 @@ public class PerfilController {
     @Operation(summary = "Atualizar perfil")
     public ResponseEntity<PerfilResponse> update(@PathVariable UUID id,
                                                  @Valid @RequestBody UpdatePerfilRequest request) {
-        PerfilResponse response = updatePerfilUseCase.execute(id, request);
-        return ResponseEntity.ok(response);
+        Perfil perfil = updatePerfilUseCase.execute(id, perfilMapper.toPerfil(request));
+        return ResponseEntity.ok(perfilMapper.toPerfilResponse(perfil));
     }
 
     @DeleteMapping("/{id}")

@@ -34,7 +34,7 @@ public class GetPerfilByIdUseCase {
                 : new HashSet<>();
         return new PerfilResponse(
                 p.getId(), p.getCode(), p.getName(),
-                p.getIcon(), p.isActive(), p.isSystemDefault(), p.getDisplayOrder(), rotinas,
+                p.getIcon(), p.isActive(), p.getDisplayOrder(), rotinas,
                 p.getCreatedAt(), p.getUpdatedAt()
         );
     }
