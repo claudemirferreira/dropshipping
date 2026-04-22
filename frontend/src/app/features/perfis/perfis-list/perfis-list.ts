@@ -74,9 +74,16 @@ export class PerfisListComponent {
   statusControl = new FormControl<boolean | null>(null);
   statusOptions = STATUS_OPTIONS;
 
+  // Guarda o estado original do perfil ao abrir o dialog de edição
+  private originalFormValue: Record<string, unknown> = {};
+  private originalRotinaIds: string[] = [];
+
+  // Rastreia se houve alteração de rotinas no dialog de rotinas
+  private originalPickListTargetIds: string[] = [];
+
   form = this.fb.nonNullable.group({
     code: ['', [Validators.required, Validators.maxLength(50)]],
-    name: ['', [Validators.required, Validators.maxLength(255)]],
+    name: ['', [Validators.required, Validators.maxLength(60)]],
     icon: [''],
     active: [true],
     rotinaIds: [[] as string[]],
@@ -84,6 +91,37 @@ export class PerfisListComponent {
 
   private currentPage = 0;
   private currentSize = 10;
+
+  // ── Helpers de detecção de campo alterado ────────────────────────────────
+
+  /** Retorna true se o campo foi modificado em relação ao valor original. */
+  isFieldChanged(field: string): boolean {
+    if (!this.editId()) return false;
+    const current = this.form.get(field)?.value;
+    const original = this.originalFormValue[field];
+    return current !== original;
+  }
+
+  /** Retorna true se a lista de rotinas do form mudou. */
+  isRotinasChanged(): boolean {
+    if (!this.editId()) return false;
+    const currentIds = [...this.formPickListTarget.map(r => r.value)].sort().join(',');
+    const originalIds = [...this.originalRotinaIds].sort().join(',');
+    return currentIds !== originalIds;
+  }
+
+  // ── Formatação de datas ─────────────────────────────────────────────────
+
+  /** Formata ISO string para DD/MM/YYYY HH:MM */
+  formatDate(value: string | null | undefined): string {
+    if (!value) return '—';
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return '—';
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  // ── Busca e listagem ────────────────────────────────────────────────────
 
   applySearch(): void {
     this.loadPerfis(0, this.currentSize);
@@ -128,6 +166,8 @@ export class PerfisListComponent {
     });
   }
 
+  // ── Rotinas ─────────────────────────────────────────────────────────────
+
   private allRotinaOptions: RotinaOption[] = [];
 
   private loadRotinaOptionsForForm(selectedIds?: string[]): void {
@@ -161,12 +201,18 @@ export class PerfisListComponent {
         const available = all.filter((o) => !selectedIds.includes(o.value));
         this.pickListSource = [...available];
         this.pickListTarget = [...selected];
+        // Guarda o estado original para detectar mudança no dialog de rotinas
+        this.originalPickListTargetIds = selected.map(o => o.value);
       },
     });
   }
 
+  // ── Dialog Criar / Editar ───────────────────────────────────────────────
+
   openCreateDialog(): void {
     this.editId.set(null);
+    this.originalFormValue = {};
+    this.originalRotinaIds = [];
     this.form.reset({
       code: '',
       name: '',
@@ -181,11 +227,22 @@ export class PerfisListComponent {
   }
 
   openEditDialog(row: Perfil): void {
+    if (row.systemDefault) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Bloqueado',
+        detail: 'Este perfil é padrão do sistema e não pode ser editado.',
+      });
+      return;
+    }
+
     this.editId.set(row.id);
     this.dialogVisible = true;
+
     this.perfisService.getById(row.id).subscribe({
       next: (perfil) => {
         const rotinaIds = perfil.rotinas?.map((r) => r.id) ?? [];
+
         this.form.patchValue({
           code: perfil.code,
           name: perfil.name,
@@ -193,6 +250,16 @@ export class PerfisListComponent {
           active: perfil.active,
           rotinaIds,
         });
+
+        // Salva o estado original para detectar campos alterados
+        this.originalFormValue = {
+          code: perfil.code,
+          name: perfil.name,
+          icon: perfil.icon ?? '',
+          active: perfil.active,
+        };
+        this.originalRotinaIds = [...rotinaIds];
+
         this.loadRotinaOptionsForForm(rotinaIds);
       },
       error: () => {
@@ -205,10 +272,37 @@ export class PerfisListComponent {
     });
   }
 
+  /** Fecha o dialog de edição; exibe alerta se houver alterações não salvas. */
   closeDialog(): void {
+    const hasUnsavedChanges = this.editId() && this.hasFormChanges();
+    if (hasUnsavedChanges) {
+      this.confirmationService.confirm({
+        message: 'Existem alterações não salvas. Deseja sair sem salvar?',
+        header: 'Alterações pendentes',
+        icon: 'pi pi-exclamation-triangle',
+        acceptLabel: 'Sair sem salvar',
+        rejectLabel: 'Continuar editando',
+        accept: () => this.doCloseDialog(),
+      });
+    } else {
+      this.doCloseDialog();
+    }
+  }
+
+  private doCloseDialog(): void {
     this.dialogVisible = false;
     this.editId.set(null);
+    this.originalFormValue = {};
+    this.originalRotinaIds = [];
   }
+
+  /** Verifica se algum campo do form ou as rotinas foram alterados. */
+  private hasFormChanges(): boolean {
+    const fieldsChanged = ['code', 'name', 'icon', 'active'].some(f => this.isFieldChanged(f));
+    return fieldsChanged || this.isRotinasChanged();
+  }
+
+  // ── Dialog Rotinas ──────────────────────────────────────────────────────
 
   openRotinasDialog(row: Perfil): void {
     this.rotinasDialogPerfil.set(row);
@@ -232,12 +326,35 @@ export class PerfisListComponent {
     this.rotinasDialogPerfil.set(null);
     this.pickListSource = [];
     this.pickListTarget = [];
+    this.originalPickListTargetIds = [];
   }
 
+  /** Salva as rotinas do dialog de gerenciamento de rotinas. */
   submitRotinas(): void {
     const perfil = this.rotinasDialogPerfil();
     if (!perfil) return;
+
     const rotinaIds = this.pickListTarget.map((t) => t.value);
+    const currentIds = [...rotinaIds].sort().join(',');
+    const originalIds = [...this.originalPickListTargetIds].sort().join(',');
+    const rotinasChanged = currentIds !== originalIds;
+
+    // Exibe confirmação se houve mudança de permissões
+    if (rotinasChanged) {
+      this.confirmationService.confirm({
+        message: 'Alterar permissões afetará usuários vinculados a este perfil. Deseja continuar?',
+        header: 'Confirmação de alteração',
+        icon: 'pi pi-exclamation-triangle',
+        acceptLabel: 'Sim, continuar',
+        rejectLabel: 'Cancelar',
+        accept: () => this.doSubmitRotinas(perfil, rotinaIds),
+      });
+    } else {
+      this.doSubmitRotinas(perfil, rotinaIds);
+    }
+  }
+
+  private doSubmitRotinas(perfil: Perfil, rotinaIds: string[]): void {
     this.savingRotinas.set(true);
     this.perfisService.update(perfil.id, {
       code: perfil.code,
@@ -266,8 +383,11 @@ export class PerfisListComponent {
     });
   }
 
+  // ── Salvar perfil ───────────────────────────────────────────────────────
+
   submit(): void {
     if (this.form.invalid) return;
+
     const value = this.form.getRawValue();
     const id = this.editId();
     const rotinaIds = this.formPickListTarget.map((t) => t.value);
@@ -278,32 +398,60 @@ export class PerfisListComponent {
       active: value.active,
       rotinaIds,
     };
-    this.saving.set(true);
-    const req = id
-      ? this.perfisService.update(id, data)
-      : this.perfisService.create(data);
-    req.subscribe({
-      next: () => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Sucesso',
-          detail: id ? 'Perfil atualizado.' : 'Perfil cadastrado.',
-        });
-        this.closeDialog();
-        this.loadPerfis(this.currentPage, this.currentSize);
-      },
-      error: (err) => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Erro',
-          detail: err.error?.message ?? 'Não foi possível salvar o perfil.',
-        });
-      },
-      complete: () => this.saving.set(false),
-    });
+
+    // Confirmação se rotinas foram alteradas em uma edição
+    const doSave = () => {
+      this.saving.set(true);
+      const req = id
+        ? this.perfisService.update(id, data)
+        : this.perfisService.create(data);
+      req.subscribe({
+        next: () => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Sucesso',
+            detail: id ? 'Perfil atualizado com sucesso.' : 'Perfil cadastrado com sucesso.',
+          });
+          this.doCloseDialog();
+          this.loadPerfis(this.currentPage, this.currentSize);
+        },
+        error: (err) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erro',
+            detail: err.error?.message ?? 'Não foi possível salvar o perfil.',
+          });
+        },
+        complete: () => this.saving.set(false),
+      });
+    };
+
+    if (id && this.isRotinasChanged()) {
+      this.confirmationService.confirm({
+        message: 'Alterar permissões afetará usuários vinculados a este perfil. Deseja continuar?',
+        header: 'Confirmação de alteração',
+        icon: 'pi pi-exclamation-triangle',
+        acceptLabel: 'Sim, continuar',
+        rejectLabel: 'Cancelar',
+        accept: doSave,
+      });
+    } else {
+      doSave();
+    }
   }
 
+  // ── Excluir ─────────────────────────────────────────────────────────────
+
   confirmDelete(row: Perfil): void {
+    if (row.systemDefault) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Bloqueado',
+        detail: 'Este perfil é padrão do sistema e não pode ser excluído.',
+      });
+      return;
+    }
+
     this.confirmationService.confirm({
       message: `Deseja excluir o perfil "${row.name}"?`,
       header: 'Confirmar exclusão',

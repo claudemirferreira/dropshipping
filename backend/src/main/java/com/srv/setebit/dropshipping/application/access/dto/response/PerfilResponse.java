@@ -23,6 +23,9 @@ public record PerfilResponse(
         @Schema(description = "Ativo")
         boolean active,
 
+        @Schema(description = "Perfil padrão do sistema — não pode ser editado nem excluído")
+        boolean systemDefault,
+
         @Schema(description = "Ordem de exibição no menu")
         int displayOrder,
 

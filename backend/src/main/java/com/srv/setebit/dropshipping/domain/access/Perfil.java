@@ -18,6 +18,7 @@ public class Perfil {
     private String name;
     private String icon;
     private boolean active;
+    private boolean systemDefault;
     private int displayOrder;
     private Instant createdAt;
     private Instant updatedAt;

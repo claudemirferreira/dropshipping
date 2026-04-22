@@ -1,0 +1,65 @@
+flowchart TD
+    subgraph FRONTEND["🖥️ Frontend — Angular"]
+        A([Usuário clica em Editar]) --> B{perfil.systemDefault?}
+        B -- Sim --> C[Toast: Perfil protegido\nnão editável]
+        B -- Não --> D[Abre Dialog\nopenEditDialog]
+        D --> E[GET /perfis/:id\ncarrega dados]
+        E --> F[Preenche form\nSalva originalFormValue\noriginalRotinaIds]
+        F --> G{Usuário edita campos}
+        G --> H[isFieldChanged detecta\nalterações em tempo real]
+        H --> I[Destaque visual:\nborda teal + badge 'alterado']
+        G --> J{Clica em Fechar}
+        J --> K{hasFormChanges?}
+        K -- Sim --> L[ConfirmDialog:\n'Alterações não salvas']
+        K -- Não --> M[Fecha dialog]
+        L -- Sair sem salvar --> M
+        L -- Continuar editando --> G
+        G --> N{Clica em Salvar}
+        N --> O{isRotinasChanged?}
+        O -- Sim --> P[ConfirmDialog:\n'Alterar permissões afeta\nusuários vinculados']
+        O -- Não --> Q[PUT /perfis/:id]
+        P -- Confirmar --> Q
+        P -- Cancelar --> G
+        Q --> R{Resposta da API}
+        R -- 200 OK --> S[Toast: Sucesso\nFecha dialog\nRecarrega lista]
+        R -- 403 Forbidden --> T[Toast: Perfil protegido]
+        R -- 409 Conflict --> U[Toast: Código duplicado]
+    end
+
+    subgraph BACKEND["☕ Backend — Spring Boot"]
+        Q --> V[PerfilController\nPUT /perfis/:id]
+        V --> W[@Valid UpdatePerfilRequest\ncode NotBlank max50\nname NotBlank max60]
+        W --> X[UpdatePerfilUseCase.execute]
+        X --> Y[findByIdWithRotinas\nou PerfilNotFoundException 404]
+        Y --> Z{isSystemDefault\nE campos mudaram?}
+        Z -- Sim --> AA[PerfilBloqueadoException\n→ 403 Forbidden]
+        Z -- Não --> AB{!systemDefault?\nexistsByCodeAndIdNot?}
+        AB -- Sim --> AC[DuplicatePerfilCodeException\n→ 409 Conflict]
+        AB -- Não --> AD[Captura estado anterior\noldCode, oldName\noldActive, oldRotinaIds]
+        AD --> AE{!systemDefault?}
+        AE -- Sim --> AF[setCode · setName\nsetIcon · setActive\nperfilRepository.save]
+        AE -- Não --> AG[Mantém campos originais\nonly rotinas update]
+        AF --> AH[replaceRotinasForPerfil]
+        AG --> AH
+        AH --> AI[findByIdWithRotinas\nrecarrega estado final]
+        AI --> AJ[Gera audit entries\npara cada campo alterado]
+        AJ --> AK[auditLogRepository.saveAll\ned_by · edited_at\nfield · before · after]
+        AK --> AL[toResponse\nretorna PerfilResponse 200]
+    end
+
+    subgraph DB["🗄️ PostgreSQL — Schema dropshipping"]
+        AF -->|UPDATE perfil| DB1[(perfil\nid · code · name · icon\nactive · system_default\ndisplay_order · created_at\nupdated_at)]
+        AH -->|DELETE + INSERT| DB2[(perfil_rotina\nperfil_id · rotina_id)]
+        AK -->|INSERT| DB3[(perfil_audit_log\nid · perfil_id · edited_by\nedited_at · field_name\nvalue_before · value_after)]
+    end
+
+    subgraph REGRAS["📋 Regras de negócio"]
+        R1["✅ code: obrigatório, único, máx 50 chars"]
+        R2["✅ name: obrigatório, máx 60 chars"]
+        R3["✅ systemDefault: bloqueia code/name/active"]
+        R4["✅ systemDefault: PERMITE alterar rotinas"]
+        R5["✅ Audit log: registra TODA alteração"]
+        R6["✅ Frontend: destaque visual em campos alterados"]
+        R7["✅ Frontend: confirma mudança de rotinas"]
+        R8["✅ Frontend: alerta alterações não salvas"]
+    end

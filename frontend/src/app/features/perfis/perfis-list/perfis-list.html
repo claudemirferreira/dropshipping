@@ -65,19 +65,30 @@
         <th>Código</th>
         <th>Nome</th>
         <th>Status</th>
+        <th class="date-th">Criado em</th>
+        <th class="date-th">Atualizado em</th>
         <th style="width: 170px">Ações</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-row>
-      <tr>
+      <tr [class.row-system-default]="row.systemDefault">
         <td>
           <i [class]="row.icon || 'pi pi-id-card'" class="perfil-icon"></i>
         </td>
         <td><code class="code-cell">{{ row.code }}</code></td>
-        <td class="name-cell">{{ row.name }}</td>
+        <td class="name-cell">
+          {{ row.name }}
+          @if (row.systemDefault) {
+            <span class="badge-system-default" pTooltip="Perfil padrão do sistema — não editável">
+              <i class="pi pi-lock"></i> Sistema
+            </span>
+          }
+        </td>
         <td>
           <span class="status-text">{{ row.active ? 'Ativo' : 'Inativo' }}</span>
         </td>
+        <td class="date-cell">{{ formatDate(row.createdAt) }}</td>
+        <td class="date-cell">{{ formatDate(row.updatedAt) }}</td>
         <td class="actions-cell">
           <div class="actions-buttons">
             <p-button
@@ -93,10 +104,11 @@
               icon="pi pi-pencil"
               [rounded]="true"
               [text]="true"
-              severity="secondary"
+              [severity]="row.systemDefault ? 'secondary' : 'secondary'"
               size="small"
               (onClick)="openEditDialog(row)"
-              pTooltip="Editar"
+              [pTooltip]="row.systemDefault ? 'Perfil protegido — não editável' : 'Editar'"
+              [disabled]="row.systemDefault"
             />
             <p-button
               icon="pi pi-trash"
@@ -105,7 +117,8 @@
               severity="secondary"
               size="small"
               (onClick)="confirmDelete(row)"
-              pTooltip="Excluir"
+              [pTooltip]="row.systemDefault ? 'Perfil protegido — não excluível' : 'Excluir'"
+              [disabled]="row.systemDefault"
             />
           </div>
         </td>
@@ -113,12 +126,12 @@
     </ng-template>
     <ng-template pTemplate="emptymessage">
       <tr>
-        <td colspan="6" class="empty-message">Nenhum perfil encontrado.</td>
+        <td colspan="7" class="empty-message">Nenhum perfil encontrado.</td>
       </tr>
     </ng-template>
     <ng-template pTemplate="loadingbody">
       <tr>
-        <td colspan="6" class="loading-message">
+        <td colspan="7" class="loading-message">
           <i class="pi pi-spin pi-spinner"></i> Carregando...
         </td>
       </tr>
@@ -129,6 +142,7 @@
   </p-table>
 </div>
 
+<!-- ── Dialog Criar / Editar perfil ─────────────────────────────────────── -->
 <p-dialog
   [header]="editId() ? 'Editar perfil' : 'Novo perfil'"
   [(visible)]="dialogVisible"
@@ -141,33 +155,61 @@
 >
   <form [formGroup]="form" class="create-form">
     <div class="form-row">
-      <div class="form-field">
-        <label for="code">Código</label>
+      <div class="form-field" [class.field-changed]="isFieldChanged('code')">
+        <label for="code">
+          Código
+          @if (isFieldChanged('code')) {
+            <span class="changed-indicator">alterado</span>
+          }
+        </label>
         <input id="code" pInputText formControlName="code" placeholder="ADMIN" />
         @if (form.get('code')?.invalid && form.get('code')?.touched) {
           <small class="field-error">Código é obrigatório</small>
         }
       </div>
-      <div class="form-field">
-        <label for="name">Nome</label>
-        <input id="name" pInputText formControlName="name" placeholder="Administrador" />
-        @if (form.get('name')?.invalid && form.get('name')?.touched) {
+      <div class="form-field" [class.field-changed]="isFieldChanged('name')">
+        <label for="name">
+          Nome
+          @if (isFieldChanged('name')) {
+            <span class="changed-indicator">alterado</span>
+          }
+        </label>
+        <input id="name" pInputText formControlName="name" placeholder="Administrador" maxlength="60" />
+        @if (form.get('name')?.errors?.['required'] && form.get('name')?.touched) {
           <small class="field-error">Nome é obrigatório</small>
+        }
+        @if (form.get('name')?.errors?.['maxlength'] && form.get('name')?.touched) {
+          <small class="field-error">Nome deve ter no máximo 60 caracteres</small>
         }
       </div>
     </div>
     <div class="form-row">
-      <div class="form-field">
-        <label for="icon">Ícone (opcional)</label>
+      <div class="form-field" [class.field-changed]="isFieldChanged('icon')">
+        <label for="icon">
+          Ícone (opcional)
+          @if (isFieldChanged('icon')) {
+            <span class="changed-indicator">alterado</span>
+          }
+        </label>
         <input id="icon" pInputText formControlName="icon" placeholder="pi pi-shield" />
       </div>
-      <div class="form-field form-field-checkbox">
+      <div class="form-field form-field-checkbox" [class.field-changed]="isFieldChanged('active')">
         <p-checkbox formControlName="active" [binary]="true" inputId="active" />
-        <label for="active">Ativo</label>
+        <label for="active">
+          Ativo
+          @if (isFieldChanged('active')) {
+            <span class="changed-indicator">alterado</span>
+          }
+        </label>
       </div>
     </div>
-    <div class="form-field">
-      <label>Rotinas do perfil</label>
+    <div class="form-field" [class.field-changed]="isRotinasChanged()">
+      <label>
+        Rotinas do perfil
+        @if (isRotinasChanged()) {
+          <span class="changed-indicator">alterado</span>
+        }
+      </label>
       <p-pickList
         [source]="formPickListSource"
         [target]="formPickListTarget"
@@ -198,6 +240,7 @@
   </ng-template>
 </p-dialog>
 
+<!-- ── Dialog Gerenciar rotinas ─────────────────────────────────────────── -->
 <p-dialog
   header="Gerenciar rotinas do perfil"
   [(visible)]="rotinasDialogVisible"

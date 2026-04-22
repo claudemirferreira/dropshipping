@@ -10,6 +10,7 @@ export interface Perfil {
   name: string;
   icon: string | null;
   active: boolean;
+  systemDefault: boolean;
   displayOrder: number;
   rotinas: Rotina[];
   createdAt: string;

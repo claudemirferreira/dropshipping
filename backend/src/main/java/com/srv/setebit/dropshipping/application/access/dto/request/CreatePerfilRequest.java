@@ -15,7 +15,7 @@ public record CreatePerfilRequest(
         String code,
 
         @NotBlank(message = "Nome é obrigatório")
-        @Length(max = 255)
+         @Length(max= 60, message = "Nome deve ter no máximo 60 caracteres")
         @Schema(description = "Nome legível", required = true)
         String name,
 

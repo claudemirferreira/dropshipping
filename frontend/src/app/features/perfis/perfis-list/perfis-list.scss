@@ -77,6 +77,20 @@
   font-size: 1rem;
 }
 
+.date-th,
+.date-cell {
+  width: 12%;
+  min-width: 9rem;
+  max-width: 15%;
+}
+
+.date-cell {
+  font-size: 0.8125rem;
+  color: #64748b;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
 .code-cell {
   font-size: 0.8125rem;
   background: #f1f5f9;
@@ -151,6 +165,56 @@
 .picklist-item {
   padding: 0.25rem 0;
   font-size: 0.875rem;
+}
+
+/* ── Campo alterado no formulário de edição ────────────────────────────── */
+.field-changed {
+  position: relative;
+
+  label {
+    color: var(--app-primary, #14b8a6);
+  }
+
+  input.p-inputtext,
+  ::ng-deep .p-checkbox .p-checkbox-box {
+    border-color: var(--app-primary, #14b8a6) !important;
+    box-shadow: 0 0 0 1px var(--app-primary, #14b8a6);
+  }
+}
+
+.changed-indicator {
+  display: inline-block;
+  margin-left: 0.4rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--app-primary, #14b8a6);
+  border-radius: 4px;
+  padding: 0.05rem 0.35rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  vertical-align: middle;
+}
+
+/* ── Badge e linha de perfil padrão do sistema ─────────────────────────── */
+.badge-system-default {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #64748b;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 0.1rem 0.4rem;
+  cursor: default;
+  vertical-align: middle;
+}
+
+.row-system-default td {
+  opacity: 0.75;
 }
 
 /* Dialog Novo/Editar perfil: conteúdo com scroll e footer sempre visível */
